@@ -1,0 +1,13 @@
+{
+  "id": "saldo_empregos",
+  "name": "Saldo de empregos",
+  "definition": "Diferença entre admissões e desligamentos formais no período de referência.",
+  "formula": "Saldo = Admissões − Desligamentos",
+  "unit": "vínculos",
+  "periodicity": "Mensal",
+  "granularity": "Município",
+  "source": "CAGED / Ministério do Trabalho (dados fictícios)",
+  "owner": "Equipe de Serviços",
+  "limitations": "Dados fictícios para fins de protótipo; não refletem números reais do CAGED.",
+  "updatedAt": "2026-07-15"
+}

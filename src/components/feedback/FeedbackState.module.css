@@ -1,0 +1,60 @@
+.state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--pg-spacing-3);
+  padding: var(--pg-spacing-8) var(--pg-spacing-4);
+  border-radius: var(--pg-radius-md);
+  text-align: center;
+  min-height: 160px;
+}
+
+.loading {
+  background-color: var(--pg-color-surface);
+  border: 1px solid var(--pg-color-border);
+  color: var(--pg-color-textSecondary);
+}
+
+.empty {
+  background-color: var(--pg-color-neutralSoft);
+  border: 1px dashed var(--pg-color-borderStrong);
+  color: var(--pg-color-textSecondary);
+}
+
+.error {
+  background-color: var(--pg-color-negativeSoft);
+  border: 1px solid var(--pg-color-negative);
+  color: var(--pg-color-negative);
+}
+
+.title {
+  font-size: var(--pg-typography-size-sm);
+  font-weight: var(--pg-typography-weight-semibold);
+}
+
+.message {
+  font-size: var(--pg-typography-size-sm);
+  max-width: 360px;
+}
+
+.spinner {
+  width: 24px;
+  height: 24px;
+  border-radius: var(--pg-radius-full);
+  border: 3px solid var(--pg-color-border);
+  border-top-color: var(--pg-color-brand);
+  animation: spin 0.8s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    animation-duration: 2s;
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

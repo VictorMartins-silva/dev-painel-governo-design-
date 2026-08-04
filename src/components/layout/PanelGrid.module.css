@@ -1,0 +1,29 @@
+.grid {
+  display: grid;
+  gap: var(--pg-spacing-4);
+  grid-template-columns: 1fr;
+}
+
+.stack {
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 768px) {
+  .grid2 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .grid3 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .grid4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .grid4 {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "id": "crescimento_populacional",
+  "name": "Crescimento populacional",
+  "definition": "Taxa de variação estimada da população no período em relação ao período anterior.",
+  "formula": "Crescimento = (População(t) − População(t-1)) / População(t-1)",
+  "unit": "%",
+  "periodicity": "Mensal (estimativa)",
+  "granularity": "Município",
+  "source": "IBGE (dados fictícios)",
+  "owner": "Equipe de Serviços",
+  "limitations": "Dados fictícios para fins de protótipo; não refletem números reais do IBGE.",
+  "updatedAt": "2026-07-15"
+}

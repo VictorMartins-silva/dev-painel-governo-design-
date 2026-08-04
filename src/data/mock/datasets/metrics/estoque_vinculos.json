@@ -1,0 +1,201 @@
+{
+  "metadata": {
+    "source": "CAGED / Ministério do Trabalho (dados fictícios)",
+    "referencePeriod": "jan/2024 – dez/2025",
+    "updatedAt": "2026-07-15"
+  },
+  "rows": [
+    {
+      "period": "2024-01",
+      "ano": "2024",
+      "mes": "01",
+      "sexo": "todos",
+      "faixaEtaria": "todas",
+      "value": 53290
+    },
+    {
+      "period": "2024-02",
+      "ano": "2024",
+      "mes": "02",
+      "sexo": "todos",
+      "faixaEtaria": "todas",
+      "value": 54686
+    },
+    {
+      "period": "2024-03",
+      "ano": "2024",
+      "mes": "03",
+      "sexo": "todos",
+      "faixaEtaria": "todas",
+      "value": 56146
+    },
+    {
+      "period": "2024-04",
+      "ano": "2024",
+      "mes": "04",
+      "sexo": "todos",
+      "faixaEtaria": "todas",
+      "value": 57622
+    },
+    {
+      "period": "2024-05",
+      "ano": "2024",
+      "mes": "05",
+      "sexo": "todos",
+      "faixaEtaria": "todas",
+      "value": 59072
+    },
+    {
+      "period": "2024-06",
+      "ano": "2024",
+      "mes": "06",
+      "sexo": "todos",
+      "faixaEtaria": "todas",
+      "value": 60472
+    },
+    {
+      "period": "2024-07",
+      "ano": "2024",
+      "mes": "07",
+      "sexo": "todos",
+      "faixaEtaria": "todas",
+      "value": 61822
+    },
+    {
+      "period": "2024-08",
+      "ano": "2024",
+      "mes": "08",
+      "sexo": "todos",
+      "faixaEtaria": "todas",
+      "value": 63146
+    },
+    {
+      "period": "2024-09",
+      "ano": "2024",
+      "mes": "09",
+      "sexo": "todos",
+      "faixaEtaria": "todas",
+      "value": 64486
+    },
+    {
+      "period": "2024-10",
+      "ano": "2024",
+      "mes": "10",
+      "sexo": "todos",
+      "faixaEtaria": "todas",
+      "value": 65890
+    },
+    {
+      "period": "2024-11",
+      "ano": "2024",
+      "mes": "11",
+      "sexo": "todos",
+      "faixaEtaria": "todas",
+      "value": 67400
+    },
+    {
+      "period": "2024-12",
+      "ano": "2024",
+      "mes": "12",
+      "sexo": "todos",
+      "faixaEtaria": "todas",
+      "value": 69040
+    },
+    {
+      "period": "2025-01",
+      "ano": "2025",
+      "mes": "01",
+      "sexo": "todos",
+      "faixaEtaria": "todas",
+      "value": 70810
+    },
+    {
+      "period": "2025-02",
+      "ano": "2025",
+      "mes": "02",
+      "sexo": "todos",
+      "faixaEtaria": "todas",
+      "value": 72686
+    },
+    {
+      "period": "2025-03",
+      "ano": "2025",
+      "mes": "03",
+      "sexo": "todos",
+      "faixaEtaria": "todas",
+      "value": 74626
+    },
+    {
+      "period": "2025-04",
+      "ano": "2025",
+      "mes": "04",
+      "sexo": "todos",
+      "faixaEtaria": "todas",
+      "value": 76582
+    },
+    {
+      "period": "2025-05",
+      "ano": "2025",
+      "mes": "05",
+      "sexo": "todos",
+      "faixaEtaria": "todas",
+      "value": 78512
+    },
+    {
+      "period": "2025-06",
+      "ano": "2025",
+      "mes": "06",
+      "sexo": "todos",
+      "faixaEtaria": "todas",
+      "value": 80392
+    },
+    {
+      "period": "2025-07",
+      "ano": "2025",
+      "mes": "07",
+      "sexo": "todos",
+      "faixaEtaria": "todas",
+      "value": 82222
+    },
+    {
+      "period": "2025-08",
+      "ano": "2025",
+      "mes": "08",
+      "sexo": "todos",
+      "faixaEtaria": "todas",
+      "value": 84026
+    },
+    {
+      "period": "2025-09",
+      "ano": "2025",
+      "mes": "09",
+      "sexo": "todos",
+      "faixaEtaria": "todas",
+      "value": 85846
+    },
+    {
+      "period": "2025-10",
+      "ano": "2025",
+      "mes": "10",
+      "sexo": "todos",
+      "faixaEtaria": "todas",
+      "value": 87730
+    },
+    {
+      "period": "2025-11",
+      "ano": "2025",
+      "mes": "11",
+      "sexo": "todos",
+      "faixaEtaria": "todas",
+      "value": 89720
+    },
+    {
+      "period": "2025-12",
+      "ano": "2025",
+      "mes": "12",
+      "sexo": "todos",
+      "faixaEtaria": "todas",
+      "value": 91840
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+[
+  { "value": "centro", "label": "Centro" },
+  { "value": "norte", "label": "Norte" },
+  { "value": "sul", "label": "Sul" },
+  { "value": "leste", "label": "Leste" },
+  { "value": "oeste", "label": "Oeste" },
+  { "value": "zona-rural", "label": "Zona Rural" }
+]

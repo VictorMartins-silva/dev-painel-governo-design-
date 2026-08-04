@@ -1,0 +1,201 @@
+{
+  "metadata": {
+    "source": "CAGED / Ministério do Trabalho (dados fictícios)",
+    "referencePeriod": "jan/2024 – dez/2025",
+    "updatedAt": "2026-07-15"
+  },
+  "rows": [
+    {
+      "period": "2024-01",
+      "ano": "2024",
+      "mes": "01",
+      "sexo": "todos",
+      "faixaEtaria": "todas",
+      "value": 1290
+    },
+    {
+      "period": "2024-02",
+      "ano": "2024",
+      "mes": "02",
+      "sexo": "todos",
+      "faixaEtaria": "todas",
+      "value": 1396
+    },
+    {
+      "period": "2024-03",
+      "ano": "2024",
+      "mes": "03",
+      "sexo": "todos",
+      "faixaEtaria": "todas",
+      "value": 1460
+    },
+    {
+      "period": "2024-04",
+      "ano": "2024",
+      "mes": "04",
+      "sexo": "todos",
+      "faixaEtaria": "todas",
+      "value": 1476
+    },
+    {
+      "period": "2024-05",
+      "ano": "2024",
+      "mes": "05",
+      "sexo": "todos",
+      "faixaEtaria": "todas",
+      "value": 1450
+    },
+    {
+      "period": "2024-06",
+      "ano": "2024",
+      "mes": "06",
+      "sexo": "todos",
+      "faixaEtaria": "todas",
+      "value": 1400
+    },
+    {
+      "period": "2024-07",
+      "ano": "2024",
+      "mes": "07",
+      "sexo": "todos",
+      "faixaEtaria": "todas",
+      "value": 1350
+    },
+    {
+      "period": "2024-08",
+      "ano": "2024",
+      "mes": "08",
+      "sexo": "todos",
+      "faixaEtaria": "todas",
+      "value": 1324
+    },
+    {
+      "period": "2024-09",
+      "ano": "2024",
+      "mes": "09",
+      "sexo": "todos",
+      "faixaEtaria": "todas",
+      "value": 1340
+    },
+    {
+      "period": "2024-10",
+      "ano": "2024",
+      "mes": "10",
+      "sexo": "todos",
+      "faixaEtaria": "todas",
+      "value": 1404
+    },
+    {
+      "period": "2024-11",
+      "ano": "2024",
+      "mes": "11",
+      "sexo": "todos",
+      "faixaEtaria": "todas",
+      "value": 1510
+    },
+    {
+      "period": "2024-12",
+      "ano": "2024",
+      "mes": "12",
+      "sexo": "todos",
+      "faixaEtaria": "todas",
+      "value": 1640
+    },
+    {
+      "period": "2025-01",
+      "ano": "2025",
+      "mes": "01",
+      "sexo": "todos",
+      "faixaEtaria": "todas",
+      "value": 1770
+    },
+    {
+      "period": "2025-02",
+      "ano": "2025",
+      "mes": "02",
+      "sexo": "todos",
+      "faixaEtaria": "todas",
+      "value": 1876
+    },
+    {
+      "period": "2025-03",
+      "ano": "2025",
+      "mes": "03",
+      "sexo": "todos",
+      "faixaEtaria": "todas",
+      "value": 1940
+    },
+    {
+      "period": "2025-04",
+      "ano": "2025",
+      "mes": "04",
+      "sexo": "todos",
+      "faixaEtaria": "todas",
+      "value": 1956
+    },
+    {
+      "period": "2025-05",
+      "ano": "2025",
+      "mes": "05",
+      "sexo": "todos",
+      "faixaEtaria": "todas",
+      "value": 1930
+    },
+    {
+      "period": "2025-06",
+      "ano": "2025",
+      "mes": "06",
+      "sexo": "todos",
+      "faixaEtaria": "todas",
+      "value": 1880
+    },
+    {
+      "period": "2025-07",
+      "ano": "2025",
+      "mes": "07",
+      "sexo": "todos",
+      "faixaEtaria": "todas",
+      "value": 1830
+    },
+    {
+      "period": "2025-08",
+      "ano": "2025",
+      "mes": "08",
+      "sexo": "todos",
+      "faixaEtaria": "todas",
+      "value": 1804
+    },
+    {
+      "period": "2025-09",
+      "ano": "2025",
+      "mes": "09",
+      "sexo": "todos",
+      "faixaEtaria": "todas",
+      "value": 1820
+    },
+    {
+      "period": "2025-10",
+      "ano": "2025",
+      "mes": "10",
+      "sexo": "todos",
+      "faixaEtaria": "todas",
+      "value": 1884
+    },
+    {
+      "period": "2025-11",
+      "ano": "2025",
+      "mes": "11",
+      "sexo": "todos",
+      "faixaEtaria": "todas",
+      "value": 1990
+    },
+    {
+      "period": "2025-12",
+      "ano": "2025",
+      "mes": "12",
+      "sexo": "todos",
+      "faixaEtaria": "todas",
+      "value": 2120
+    }
+  ]
+}

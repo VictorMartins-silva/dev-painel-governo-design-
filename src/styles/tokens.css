@@ -1,0 +1,122 @@
+/* GERADO AUTOMATICAMENTE por scripts/generate-tokens.mjs a partir de src/styles/tokens.ts */
+/* Não editar à mão — rode `npm run tokens:build` após alterar tokens.ts */
+
+:root {
+  --pg-spacing-0: 0;
+  --pg-spacing-1: 4px;
+  --pg-spacing-2: 8px;
+  --pg-spacing-3: 12px;
+  --pg-spacing-4: 16px;
+  --pg-spacing-5: 20px;
+  --pg-spacing-6: 24px;
+  --pg-spacing-8: 32px;
+  --pg-spacing-10: 40px;
+  --pg-spacing-12: 48px;
+  --pg-spacing-16: 64px;
+  --pg-typography-fontFamily: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --pg-typography-fontFamilyMono: "IBM Plex Mono", "SFMono-Regular", Consolas, monospace;
+  --pg-typography-size-xs: 12px;
+  --pg-typography-size-sm: 13px;
+  --pg-typography-size-md: 14px;
+  --pg-typography-size-lg: 16px;
+  --pg-typography-size-xl: 20px;
+  --pg-typography-size-2xl: 24px;
+  --pg-typography-size-3xl: 32px;
+  --pg-typography-weight-regular: 400;
+  --pg-typography-weight-medium: 500;
+  --pg-typography-weight-semibold: 600;
+  --pg-typography-weight-bold: 700;
+  --pg-typography-lineHeight-tight: 1.2;
+  --pg-typography-lineHeight-normal: 1.5;
+  --pg-typography-lineHeight-relaxed: 1.7;
+  --pg-radius-sm: 4px;
+  --pg-radius-md: 8px;
+  --pg-radius-lg: 12px;
+  --pg-radius-full: 9999px;
+  --pg-shadows-sm: 0 1px 2px rgba(15, 23, 42, 0.08);
+  --pg-shadows-md: 0 2px 8px rgba(15, 23, 42, 0.10);
+  --pg-shadows-lg: 0 8px 24px rgba(15, 23, 42, 0.14);
+  --pg-breakpoints-sm: 375px;
+  --pg-breakpoints-md: 768px;
+  --pg-breakpoints-lg: 1024px;
+  --pg-breakpoints-xl: 1440px;
+  --pg-chart-categorical-0: #1f4fd8;
+  --pg-chart-categorical-1: #0f8a4b;
+  --pg-chart-categorical-2: #d68a1a;
+  --pg-chart-categorical-3: #8a3fd6;
+  --pg-chart-categorical-4: #c0223a;
+  --pg-chart-categorical-5: #1a9bb0;
+  --pg-chart-categorical-6: #6b7280;
+  --pg-chart-categorical-7: #b0891a;
+  --pg-chart-sequential-0: #e8edfc;
+  --pg-chart-sequential-1: #b7c8f7;
+  --pg-chart-sequential-2: #7f9bf0;
+  --pg-chart-sequential-3: #4a6fe0;
+  --pg-chart-sequential-4: #1f4fd8;
+  --pg-chart-sequential-5: #15379e;
+  --pg-color-bg: #f5f6f8;
+  --pg-color-surface: #ffffff;
+  --pg-color-surfaceRaised: #ffffff;
+  --pg-color-border: #e2e5ea;
+  --pg-color-borderStrong: #c7cdd6;
+  --pg-color-textPrimary: #141a24;
+  --pg-color-textSecondary: #4b5563;
+  --pg-color-textMuted: #7b8697;
+  --pg-color-brand: #1f4fd8;
+  --pg-color-brandStrong: #15379e;
+  --pg-color-brandSoft: #e8edfc;
+  --pg-color-focusRing: #1f4fd8;
+  --pg-color-positive: #0f8a4b;
+  --pg-color-positiveSoft: #e5f6ec;
+  --pg-color-negative: #c0223a;
+  --pg-color-negativeSoft: #fbe6e9;
+  --pg-color-neutral: #6b7280;
+  --pg-color-neutralSoft: #eceef1;
+  --pg-color-onBrand: #ffffff;
+}
+
+:root[data-theme="dark"] {
+  --pg-color-bg: #10141c;
+  --pg-color-surface: #171d29;
+  --pg-color-surfaceRaised: #1e2534;
+  --pg-color-border: #2a3242;
+  --pg-color-borderStrong: #3a4356;
+  --pg-color-textPrimary: #eef1f6;
+  --pg-color-textSecondary: #a9b2c3;
+  --pg-color-textMuted: #78829a;
+  --pg-color-brand: #5c85ff;
+  --pg-color-brandStrong: #8aa6ff;
+  --pg-color-brandSoft: #1c2740;
+  --pg-color-focusRing: #5c85ff;
+  --pg-color-positive: #3ecb82;
+  --pg-color-positiveSoft: #123326;
+  --pg-color-negative: #f0576f;
+  --pg-color-negativeSoft: #3a1620;
+  --pg-color-neutral: #8b93a3;
+  --pg-color-neutralSoft: #242b39;
+  --pg-color-onBrand: #ffffff;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+  --pg-color-bg: #10141c;
+  --pg-color-surface: #171d29;
+  --pg-color-surfaceRaised: #1e2534;
+  --pg-color-border: #2a3242;
+  --pg-color-borderStrong: #3a4356;
+  --pg-color-textPrimary: #eef1f6;
+  --pg-color-textSecondary: #a9b2c3;
+  --pg-color-textMuted: #78829a;
+  --pg-color-brand: #5c85ff;
+  --pg-color-brandStrong: #8aa6ff;
+  --pg-color-brandSoft: #1c2740;
+  --pg-color-focusRing: #5c85ff;
+  --pg-color-positive: #3ecb82;
+  --pg-color-positiveSoft: #123326;
+  --pg-color-negative: #f0576f;
+  --pg-color-negativeSoft: #3a1620;
+  --pg-color-neutral: #8b93a3;
+  --pg-color-neutralSoft: #242b39;
+  --pg-color-onBrand: #ffffff;
+  }
+}

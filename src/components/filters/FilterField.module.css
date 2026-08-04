@@ -1,0 +1,35 @@
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--pg-spacing-1);
+  min-width: 160px;
+}
+
+.label {
+  font-size: var(--pg-typography-size-xs);
+  font-weight: var(--pg-typography-weight-medium);
+  color: var(--pg-color-textSecondary);
+}
+
+.select {
+  padding: var(--pg-spacing-2) var(--pg-spacing-3);
+  border: 1px solid var(--pg-color-border);
+  border-radius: var(--pg-radius-sm);
+  background-color: var(--pg-color-surface);
+  color: var(--pg-color-textPrimary);
+  font-size: var(--pg-typography-size-sm);
+}
+
+.checkboxGroup {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--pg-spacing-1) var(--pg-spacing-3);
+}
+
+.checkboxLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--pg-spacing-1);
+  font-size: var(--pg-typography-size-sm);
+  color: var(--pg-color-textPrimary);
+}

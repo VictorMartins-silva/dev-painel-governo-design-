@@ -1,0 +1,32 @@
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--pg-spacing-4);
+  padding: var(--pg-spacing-4);
+  border: 1px solid var(--pg-color-border);
+  border-radius: var(--pg-radius-md);
+  background-color: var(--pg-color-surface);
+}
+
+.item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--pg-spacing-1);
+}
+
+.label {
+  font-size: var(--pg-typography-size-xs);
+  font-weight: var(--pg-typography-weight-medium);
+  color: var(--pg-color-textMuted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.value {
+  font-size: var(--pg-typography-size-sm);
+  color: var(--pg-color-textPrimary);
+}
+
+.full {
+  grid-column: 1 / -1;
+}

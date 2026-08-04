@@ -1,0 +1,74 @@
+{
+  "metadata": {
+    "source": "CAGED / Ministério do Trabalho (dados fictícios)",
+    "referencePeriod": "jan/2024 – dez/2025",
+    "updatedAt": "2026-07-15"
+  },
+  "columns": [
+    {
+      "field": "atividade",
+      "label": "Atividade",
+      "type": "text"
+    },
+    {
+      "field": "vinculos",
+      "label": "Vínculos",
+      "type": "integer"
+    },
+    {
+      "field": "variacao",
+      "label": "Variação",
+      "type": "percent"
+    }
+  ],
+  "rows": [
+    {
+      "atividade": "Comércio varejista",
+      "setor": "comercio",
+      "vinculos": 8900,
+      "variacao": 0.032
+    },
+    {
+      "atividade": "Comércio atacadista",
+      "setor": "comercio",
+      "vinculos": 3100,
+      "variacao": 0.011
+    },
+    {
+      "atividade": "Serviços administrativos",
+      "setor": "servicos",
+      "vinculos": 5200,
+      "variacao": 0.045
+    },
+    {
+      "atividade": "Serviços de alimentação",
+      "setor": "servicos",
+      "vinculos": 3600,
+      "variacao": -0.008
+    },
+    {
+      "atividade": "Indústria de transformação",
+      "setor": "industria",
+      "vinculos": 6100,
+      "variacao": -0.011
+    },
+    {
+      "atividade": "Indústria têxtil",
+      "setor": "industria",
+      "vinculos": 1800,
+      "variacao": 0.006
+    },
+    {
+      "atividade": "Construção de edifícios",
+      "setor": "construcao",
+      "vinculos": 2400,
+      "variacao": 0.021
+    },
+    {
+      "atividade": "Produção agrícola",
+      "setor": "agropecuaria",
+      "vinculos": 1500,
+      "variacao": -0.004
+    }
+  ]
+}

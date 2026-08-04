@@ -1,0 +1,93 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--pg-spacing-2);
+  padding: var(--pg-spacing-4);
+  border: 1px solid var(--pg-color-border);
+  border-left-width: 3px;
+  border-radius: var(--pg-radius-md);
+  background-color: var(--pg-color-surface);
+}
+
+.cardUp {
+  border-left-color: var(--pg-color-positive);
+}
+
+.cardDown {
+  border-left-color: var(--pg-color-negative);
+}
+
+.cardStable {
+  border-left-color: var(--pg-color-neutral);
+}
+
+.title {
+  font-size: var(--pg-typography-size-sm);
+  font-weight: var(--pg-typography-weight-medium);
+  color: var(--pg-color-textSecondary);
+}
+
+.valueRow {
+  display: flex;
+  align-items: baseline;
+  gap: var(--pg-spacing-2);
+}
+
+.value {
+  font-size: var(--pg-typography-size-3xl);
+  font-weight: var(--pg-typography-weight-bold);
+  color: var(--pg-color-textPrimary);
+  line-height: var(--pg-typography-lineHeight-tight);
+}
+
+.unit {
+  font-size: var(--pg-typography-size-sm);
+  color: var(--pg-color-textMuted);
+}
+
+.comparison {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--pg-spacing-1);
+  width: fit-content;
+  padding: 2px var(--pg-spacing-2);
+  border-radius: var(--pg-radius-full);
+  font-size: var(--pg-typography-size-xs);
+  font-weight: var(--pg-typography-weight-medium);
+}
+
+.comparisonUp {
+  color: var(--pg-color-positive);
+  background-color: var(--pg-color-positiveSoft);
+}
+
+.comparisonDown {
+  color: var(--pg-color-negative);
+  background-color: var(--pg-color-negativeSoft);
+}
+
+.comparisonStable {
+  color: var(--pg-color-neutral);
+  background-color: var(--pg-color-neutralSoft);
+}
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--pg-spacing-3);
+  margin-top: auto;
+  padding-top: var(--pg-spacing-2);
+  font-size: var(--pg-typography-size-xs);
+  color: var(--pg-color-textMuted);
+}
+
+.link {
+  color: var(--pg-color-brand);
+  text-decoration: none;
+  font-weight: var(--pg-typography-weight-medium);
+}
+
+.link:hover {
+  text-decoration: underline;
+}

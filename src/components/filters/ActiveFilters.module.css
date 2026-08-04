@@ -1,0 +1,27 @@
+.list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--pg-spacing-2);
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--pg-spacing-1);
+  padding: 2px var(--pg-spacing-2);
+  border-radius: var(--pg-radius-full);
+  background-color: var(--pg-color-brandSoft);
+  color: var(--pg-color-brandStrong);
+  font-size: var(--pg-typography-size-xs);
+  font-weight: var(--pg-typography-weight-medium);
+}
+
+.remove {
+  background: none;
+  border: none;
+  padding: 0;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  line-height: 1;
+}

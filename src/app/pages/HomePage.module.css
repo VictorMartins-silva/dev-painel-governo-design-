@@ -1,0 +1,120 @@
+.hero {
+  display: flex;
+  flex-direction: column;
+  gap: var(--pg-spacing-3);
+  padding: var(--pg-spacing-8) 0;
+  text-align: center;
+  align-items: center;
+}
+
+.title {
+  font-size: var(--pg-typography-size-3xl);
+  font-weight: var(--pg-typography-weight-bold);
+  color: var(--pg-color-textPrimary);
+}
+
+.description {
+  max-width: 560px;
+  font-size: var(--pg-typography-size-lg);
+  color: var(--pg-color-textSecondary);
+  line-height: var(--pg-typography-lineHeight-relaxed);
+}
+
+.searchRow {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin-top: var(--pg-spacing-4);
+}
+
+.search {
+  width: 100%;
+  max-width: 420px;
+  padding: var(--pg-spacing-3) var(--pg-spacing-4);
+  border: 1px solid var(--pg-color-border);
+  border-radius: var(--pg-radius-md);
+  background-color: var(--pg-color-surface);
+  color: var(--pg-color-textPrimary);
+  font-size: var(--pg-typography-size-md);
+}
+
+.sectionTitle {
+  font-size: var(--pg-typography-size-xl);
+  font-weight: var(--pg-typography-weight-semibold);
+  color: var(--pg-color-textPrimary);
+  margin-bottom: var(--pg-spacing-4);
+}
+
+.lensSection {
+  margin-bottom: var(--pg-spacing-8);
+}
+
+.lensNote {
+  font-size: var(--pg-typography-size-sm);
+  color: var(--pg-color-textSecondary);
+  max-width: 68ch;
+  margin: calc(var(--pg-spacing-4) * -1) 0 var(--pg-spacing-4);
+}
+
+.lensGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: var(--pg-spacing-3);
+}
+
+.lensCard {
+  display: flex;
+  flex-direction: column;
+  gap: var(--pg-spacing-2);
+  padding: var(--pg-spacing-4);
+  border: 1px solid var(--pg-color-border);
+  border-radius: var(--pg-radius-md);
+  background-color: var(--pg-color-surface);
+  text-align: left;
+  transition: border-color 0.15s, transform 0.15s;
+}
+
+.lensCard:hover {
+  border-color: var(--pg-color-brand);
+  transform: translateY(-1px);
+}
+
+.lensTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--pg-spacing-2);
+}
+
+.lensTitle {
+  font-size: var(--pg-typography-size-md);
+  font-weight: var(--pg-typography-weight-semibold);
+  color: var(--pg-color-textPrimary);
+}
+
+.lensValueCount {
+  font-size: var(--pg-typography-size-xs);
+  color: var(--pg-color-textMuted);
+  font-variant-numeric: tabular-nums;
+}
+
+.lensDescription {
+  font-size: var(--pg-typography-size-sm);
+  color: var(--pg-color-textSecondary);
+  line-height: var(--pg-typography-lineHeight-relaxed);
+}
+
+.lensPreview {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--pg-spacing-1);
+  margin-top: auto;
+}
+
+.lensChip {
+  padding: 2px var(--pg-spacing-2);
+  border-radius: var(--pg-radius-full);
+  background-color: var(--pg-color-neutralSoft);
+  color: var(--pg-color-textSecondary);
+  font-size: var(--pg-typography-size-xs);
+}

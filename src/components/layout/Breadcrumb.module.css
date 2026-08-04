@@ -1,0 +1,31 @@
+.list {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--pg-spacing-2);
+  margin: 0 0 var(--pg-spacing-4);
+  padding: 0;
+  list-style: none;
+  font-size: var(--pg-typography-size-sm);
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: var(--pg-spacing-2);
+  color: var(--pg-color-textMuted);
+}
+
+.link {
+  color: var(--pg-color-textSecondary);
+  text-decoration: none;
+}
+
+.link:hover {
+  color: var(--pg-color-brand);
+}
+
+.current {
+  color: var(--pg-color-textPrimary);
+  font-weight: var(--pg-typography-weight-medium);
+}

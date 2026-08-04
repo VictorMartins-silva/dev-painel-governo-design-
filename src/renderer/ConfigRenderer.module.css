@@ -1,0 +1,6 @@
+.issues {
+  margin: var(--pg-spacing-2) 0 0;
+  padding-left: var(--pg-spacing-4);
+  text-align: left;
+  font-size: var(--pg-typography-size-xs);
+}
