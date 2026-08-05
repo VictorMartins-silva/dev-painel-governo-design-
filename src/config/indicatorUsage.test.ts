@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { buildIndicatorUsage } from "./indicatorUsage";
-import type { PanelConfig } from "./schemas/panel.schema";
+import type { NativePanelConfig } from "./schemas/panel.schema";
 import type { IndicatorCatalogEntry } from "./schemas/indicator.schema";
 
 function buildIndicator(overrides: Partial<IndicatorCatalogEntry>): IndicatorCatalogEntry {
@@ -22,9 +22,10 @@ function buildIndicator(overrides: Partial<IndicatorCatalogEntry>): IndicatorCat
   };
 }
 
-function buildPanel(overrides: Partial<PanelConfig>): PanelConfig {
+function buildPanel(overrides: Partial<NativePanelConfig>): NativePanelConfig {
   return {
     schemaVersion: 1,
+    kind: "native",
     id: "painel",
     title: "Painel",
     description: "Descrição",

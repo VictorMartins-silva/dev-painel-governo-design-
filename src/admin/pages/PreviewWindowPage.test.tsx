@@ -31,15 +31,14 @@ describe("PreviewWindowPage", () => {
 
     const draft = panelStore.get("demografia");
     if (!draft) throw new Error("fixture demografia não encontrada");
+    if (draft.kind !== "native") throw new Error("fixture demografia deveria ser nativa");
     const channel = new BroadcastChannel("pg-editor-preview");
     act(() => {
       channel.postMessage({ type: "draft", draft } satisfies PreviewChannelMessage);
     });
     channel.close();
 
-    await waitFor(() =>
-      expect(screen.queryByText("Aguardando editor…")).not.toBeInTheDocument(),
-    );
+    await waitFor(() => expect(screen.queryByText("Aguardando editor…")).not.toBeInTheDocument());
     expect(screen.getByRole("heading", { name: draft.title })).toBeInTheDocument();
   });
 });

@@ -1,6 +1,6 @@
 import {
   SUPPORTED_SCHEMA_VERSION,
-  type PanelConfig,
+  type NativePanelConfig,
   type PanelSectionConfig,
 } from "../../config/schemas/panel.schema";
 import type { FilterConfig, FilterType } from "../../config/schemas/filters.schema";
@@ -46,9 +46,10 @@ export function createDefaultSection(): PanelSectionConfig {
   return { id: generateId("secao"), title: "", layout: "grid-2", components: [] };
 }
 
-export function createEmptyPanelDraft(): PanelConfig {
+export function createEmptyPanelDraft(): NativePanelConfig {
   return {
     schemaVersion: SUPPORTED_SCHEMA_VERSION,
+    kind: "native",
     id: "",
     title: "",
     description: "",
@@ -61,11 +62,11 @@ export function createEmptyPanelDraft(): PanelConfig {
 }
 
 export type EditorState = {
-  draft: PanelConfig;
+  draft: NativePanelConfig;
   originalId: string | null;
 };
 
-export function createEditorState(config?: PanelConfig): EditorState {
+export function createEditorState(config?: NativePanelConfig): EditorState {
   return { draft: config ?? createEmptyPanelDraft(), originalId: config?.id ?? null };
 }
 
@@ -86,7 +87,7 @@ function updateAt<T>(list: T[], index: number, update: (item: T) => T): T[] {
 export type EditorAction =
   | { kind: "set-field"; field: "id" | "title" | "description" | "theme"; value: string }
   | { kind: "set-tags"; value: string[] }
-  | { kind: "set-metadata-field"; field: keyof PanelConfig["metadata"]; value: string }
+  | { kind: "set-metadata-field"; field: keyof NativePanelConfig["metadata"]; value: string }
   | { kind: "add-filter" }
   | { kind: "update-filter"; index: number; filter: FilterConfig }
   | { kind: "remove-filter"; index: number }

@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
-import type { PanelConfig } from "../../config/schemas/panel.schema";
+import type { NativePanelConfig } from "../../config/schemas/panel.schema";
 import { ConfigRenderer } from "../../renderer/ConfigRenderer";
 import styles from "./EditorPreview.module.css";
 
 const DEBOUNCE_MS = 300;
 
 type EditorPreviewProps = {
-  draft: PanelConfig;
+  draft: NativePanelConfig;
   onCollapse?: () => void;
   onDetach?: () => void;
 };

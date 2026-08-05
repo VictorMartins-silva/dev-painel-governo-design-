@@ -1,11 +1,11 @@
 import type { Dispatch } from "react";
-import type { PanelConfig } from "../../config/schemas/panel.schema";
+import type { NativePanelConfig } from "../../config/schemas/panel.schema";
 import type { EditorAction } from "./editorReducer";
 import { FormField } from "./FormField";
 import styles from "./PanelMetadataForm.module.css";
 
 type PanelMetadataFormProps = {
-  draft: PanelConfig;
+  draft: NativePanelConfig;
   errors: Map<string, string>;
   dispatch: Dispatch<EditorAction>;
   idEditable: boolean;

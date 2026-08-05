@@ -9,7 +9,10 @@ type PanelCardProps = {
 export function PanelCard({ panel }: PanelCardProps) {
   return (
     <Link to={`/paineis/${panel.id}`} className={styles.card}>
-      <span className={styles.theme}>{panel.theme}</span>
+      <div className={styles.headerRow}>
+        <span className={styles.theme}>{panel.theme}</span>
+        {panel.isExternal && <span className={styles.externalBadge}>Painel externo</span>}
+      </div>
       <span className={styles.title}>{panel.title}</span>
       <p className={styles.description}>{panel.description}</p>
       <div className={styles.tags}>

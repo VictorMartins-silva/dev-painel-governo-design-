@@ -20,6 +20,7 @@ function stubPanelStore(panels: PanelConfig[]): PanelStore {
 function brokenPanel(): PanelConfig {
   return {
     schemaVersion: 1,
+    kind: "native",
     id: "painel-quebrado",
     title: "Painel quebrado",
     description: "Descrição",

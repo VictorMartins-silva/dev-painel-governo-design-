@@ -1,7 +1,8 @@
-import type { PanelConfig } from "../schemas/panel.schema";
+import type { NativePanelConfig } from "../schemas/panel.schema";
 
-export const demografia: PanelConfig = {
+export const demografia: NativePanelConfig = {
   schemaVersion: 1,
+  kind: "native",
   id: "demografia",
   title: "Demografia",
   description: "Indicadores populacionais do município.",

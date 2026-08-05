@@ -32,6 +32,9 @@ export default function AdminLayout() {
             <Link to="/admin/componentes" className={styles.navLink}>
               Componentes
             </Link>
+            <Link to="/admin/configuracoes" className={styles.navLink}>
+              Configurações
+            </Link>
           </nav>
         </div>
       </header>

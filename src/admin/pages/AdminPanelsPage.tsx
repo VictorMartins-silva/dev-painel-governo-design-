@@ -114,7 +114,10 @@ export default function AdminPanelsPage() {
               }}
             />
             <Link to="/admin/paineis/novo" className={styles.primaryButton}>
-              Novo painel
+              Novo painel nativo
+            </Link>
+            <Link to="/admin/paineis/novo?kind=external" className={styles.secondaryButton}>
+              Novo painel externo
             </Link>
           </>
         }
@@ -138,6 +141,9 @@ export default function AdminPanelsPage() {
                   <span className={`${styles.badge} ${styles[origin]}`}>
                     {ORIGIN_LABEL[origin]}
                   </span>
+                  {config.kind === "external" && (
+                    <span className={styles.externalBadge}>Painel externo</span>
+                  )}
                 </div>
                 <span className={styles.meta}>
                   {config.id} · {config.theme}

@@ -1,4 +1,4 @@
-import type { PanelConfig } from "./schemas/panel.schema";
+import type { NativePanelConfig } from "./schemas/panel.schema";
 import type { IndicatorCatalogEntry } from "./schemas/indicator.schema";
 import type { ComponentConfig, ComponentType } from "./schemas/components.schema";
 
@@ -39,7 +39,7 @@ function matchesEntry(
 
 /** Índice reverso painel → indicador, incluindo indicadores órfãos e referências quebradas. */
 export function buildIndicatorUsage(
-  panels: PanelConfig[],
+  panels: NativePanelConfig[],
   catalog: IndicatorCatalogEntry[],
 ): IndicatorUsageIndex {
   const usageByIndicatorId = new Map<string, IndicatorUsageEntry[]>();

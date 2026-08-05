@@ -157,6 +157,7 @@ export class MockDataProvider implements DataProvider {
       tags: panel.tags,
       source: panel.metadata.source,
       updatedAt: freshnessByPanelId.get(panel.id)?.updatedAt ?? "—",
+      isExternal: panel.kind === "external",
     }));
   }
 
@@ -277,14 +278,20 @@ export class MockDataProvider implements DataProvider {
 
   async getIndicatorUsage(indicatorId: string): Promise<IndicatorUsageEntry[]> {
     await this.wait();
-    const panels = this.panelStore.list().map(({ config }) => config);
+    const panels = this.panelStore
+      .list()
+      .map(({ config }) => config)
+      .filter((config) => config.kind === "native");
     const usage = buildIndicatorUsage(panels, indicatorCatalog.entries);
     return usage.usageByIndicatorId.get(indicatorId) ?? [];
   }
 
   async getCatalogHealth(): Promise<CatalogHealth> {
     await this.wait();
-    const panels = this.panelStore.list().map(({ config }) => config);
+    const panels = this.panelStore
+      .list()
+      .map(({ config }) => config)
+      .filter((config) => config.kind === "native");
     const usage = buildIndicatorUsage(panels, indicatorCatalog.entries);
 
     const usageCountByIndicatorId: Record<string, number> = {};

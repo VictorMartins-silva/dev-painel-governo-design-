@@ -1,0 +1,92 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--pg-spacing-2);
+  padding: var(--pg-spacing-4);
+  margin-bottom: var(--pg-spacing-5);
+  border: 1px solid var(--pg-color-border);
+  border-radius: var(--pg-radius-md);
+  background-color: var(--pg-color-surface);
+}
+
+.label {
+  font-size: var(--pg-typography-size-sm);
+  font-weight: var(--pg-typography-weight-medium);
+  color: var(--pg-color-textSecondary);
+}
+
+.row {
+  display: flex;
+  gap: var(--pg-spacing-2);
+}
+
+.input {
+  composes: input from "../editor/controls.module.css";
+  flex: 1;
+}
+
+.primaryButton {
+  padding: var(--pg-spacing-2) var(--pg-spacing-4);
+  border: none;
+  border-radius: var(--pg-radius-sm);
+  background-color: var(--pg-color-brand);
+  color: var(--pg-color-onBrand);
+  font-size: var(--pg-typography-size-sm);
+  font-weight: var(--pg-typography-weight-medium);
+  cursor: pointer;
+}
+
+.primaryButton:hover {
+  background-color: var(--pg-color-brandStrong);
+}
+
+.error {
+  font-size: var(--pg-typography-size-sm);
+  color: var(--pg-color-negative);
+}
+
+.empty {
+  color: var(--pg-color-textSecondary);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--pg-spacing-2);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--pg-spacing-4);
+  padding: var(--pg-spacing-3) var(--pg-spacing-4);
+  border: 1px solid var(--pg-color-border);
+  border-radius: var(--pg-radius-md);
+  background-color: var(--pg-color-surface);
+}
+
+.domain {
+  font-family: var(--pg-typography-fontFamilyMono);
+  font-size: var(--pg-typography-size-sm);
+  color: var(--pg-color-textPrimary);
+}
+
+.linkButton {
+  padding: var(--pg-spacing-1) var(--pg-spacing-3);
+  border: 1px solid var(--pg-color-border);
+  border-radius: var(--pg-radius-sm);
+  background-color: transparent;
+  color: var(--pg-color-textSecondary);
+  font-size: var(--pg-typography-size-xs);
+  font-weight: var(--pg-typography-weight-medium);
+  cursor: pointer;
+}
+
+.linkButton:hover {
+  border-color: var(--pg-color-negative);
+  color: var(--pg-color-negative);
+}

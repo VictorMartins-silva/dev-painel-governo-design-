@@ -1,7 +1,8 @@
-import type { PanelConfig } from "../schemas/panel.schema";
+import type { NativePanelConfig } from "../schemas/panel.schema";
 
-export const trabalhoEmprego: PanelConfig = {
+export const trabalhoEmprego: NativePanelConfig = {
   schemaVersion: 1,
+  kind: "native",
   id: "trabalho-emprego",
   title: "Trabalho e Emprego",
   description: "Indicadores do mercado formal de trabalho no município.",

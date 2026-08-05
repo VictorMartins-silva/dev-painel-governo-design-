@@ -1,4 +1,4 @@
-import type { PanelConfig } from "../../config/schemas/panel.schema";
+import type { NativePanelConfig } from "../../config/schemas/panel.schema";
 import type { ComponentConfig } from "../../config/schemas/components.schema";
 import type { IndicatorCatalogEntry } from "../../config/schemas/indicator.schema";
 import { COMPONENT_CATALOG } from "../../config/componentCatalog";
@@ -19,7 +19,7 @@ function findIndicator(
  * em FormField sem travar salvar/publicar.
  */
 export function buildCatalogWarnings(
-  config: PanelConfig,
+  config: NativePanelConfig,
   catalog: IndicatorCatalogEntry[],
 ): Map<string, string> {
   const warnings = new Map<string, string>();

@@ -1,12 +1,10 @@
 import { useCallback, useEffect, useRef } from "react";
-import type { PanelConfig } from "../../config/schemas/panel.schema";
+import type { NativePanelConfig } from "../../config/schemas/panel.schema";
 
 const CHANNEL_NAME = "pg-editor-preview";
 
 export type PreviewChannelMessage =
-  | { type: "draft"; draft: PanelConfig }
-  | { type: "ready" }
-  | { type: "preview-closed" };
+  { type: "draft"; draft: NativePanelConfig } | { type: "ready" } | { type: "preview-closed" };
 
 type UsePreviewChannelOptions = {
   onMessage?: (message: PreviewChannelMessage) => void;

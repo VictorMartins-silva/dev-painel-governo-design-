@@ -15,12 +15,29 @@
   border-color: var(--pg-color-brand);
 }
 
+.headerRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--pg-spacing-2);
+}
+
 .theme {
   font-size: var(--pg-typography-size-xs);
   font-weight: var(--pg-typography-weight-medium);
   color: var(--pg-color-brand);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+
+.externalBadge {
+  flex-shrink: 0;
+  padding: 2px var(--pg-spacing-2);
+  border-radius: var(--pg-radius-full);
+  background-color: var(--pg-color-brandSoft);
+  color: var(--pg-color-brand);
+  font-size: var(--pg-typography-size-xs);
+  font-weight: var(--pg-typography-weight-medium);
 }
 
 .title {

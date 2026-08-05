@@ -34,6 +34,15 @@ export function ConfigRenderer({ panelId, config }: ConfigRendererProps) {
 
   const panel = result.data;
 
+  if (panel.kind !== "native") {
+    return (
+      <ErrorState
+        title="Configuração de painel inválida"
+        message="Este renderizador aceita apenas painéis nativos (com seções)."
+      />
+    );
+  }
+
   return (
     <FilterProvider panelId={panelId} filters={panel.filters}>
       <PanelFilterBar />

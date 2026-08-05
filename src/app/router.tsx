@@ -10,6 +10,7 @@ import AdminLayout from "../admin/AdminLayout";
 import AdminPanelsPage from "../admin/pages/AdminPanelsPage";
 import AdminIndicatorsPage from "../admin/pages/AdminIndicatorsPage";
 import AdminComponentsPage from "../admin/pages/AdminComponentsPage";
+import AdminSettingsPage from "../admin/pages/AdminSettingsPage";
 import PanelEditorPage from "../admin/pages/PanelEditorPage";
 import PreviewWindowPage from "../admin/pages/PreviewWindowPage";
 
@@ -34,6 +35,7 @@ export const router = createBrowserRouter([
       { index: true, element: <AdminPanelsPage /> },
       { path: "indicadores", element: <AdminIndicatorsPage /> },
       { path: "componentes", element: <AdminComponentsPage /> },
+      { path: "configuracoes", element: <AdminSettingsPage /> },
       { path: "paineis/novo", element: <PanelEditorPage /> },
       { path: "paineis/:id", element: <PanelEditorPage /> },
     ],

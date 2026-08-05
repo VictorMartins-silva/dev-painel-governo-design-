@@ -1,10 +1,11 @@
 import { describe, expect, it } from "vitest";
-import type { PanelConfig } from "../../config/schemas/panel.schema";
+import type { NativePanelConfig } from "../../config/schemas/panel.schema";
 import { readPanelConfigFile, serializePanelConfig } from "./exportImport";
 
-function buildPanel(overrides: Partial<PanelConfig> = {}): PanelConfig {
+function buildPanel(overrides: Partial<NativePanelConfig> = {}): NativePanelConfig {
   return {
     schemaVersion: 1,
+    kind: "native",
     id: "painel-teste",
     title: "Painel de teste",
     description: "Descrição do painel de teste.",

@@ -7,6 +7,7 @@ import { ErrorState } from "../../components/feedback/ErrorState";
 import { usePanelConfig } from "../../data/hooks/usePanelConfig";
 import { usePanelFreshness } from "../../data/hooks/usePanelFreshness";
 import { ConfigRenderer } from "../../renderer/ConfigRenderer";
+import { EmbedPanelView } from "../../renderer/EmbedPanelView";
 
 export default function PanelPage() {
   const { id } = useParams<{ id: string }>();
@@ -40,7 +41,11 @@ export default function PanelPage() {
             ]}
           />
           <PageHeader title={panel.title} description={panel.description} />
-          <ConfigRenderer panelId={panel.id} config={panel} />
+          {panel.kind === "external" ? (
+            <EmbedPanelView panel={panel} />
+          ) : (
+            <ConfigRenderer panelId={panel.id} config={panel} />
+          )}
           <MetadataBlock
             source={panel.metadata.source}
             referencePeriod={freshness?.referencePeriod}

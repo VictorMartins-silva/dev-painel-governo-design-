@@ -78,3 +78,77 @@ describe("panelConfigSchema", () => {
     }
   });
 });
+
+function buildValidExternalPanel() {
+  return {
+    schemaVersion: 1,
+    kind: "external",
+    id: "painel-externo",
+    title: "Painel externo",
+    description: "Painel incorporado via Power BI.",
+    theme: "Desenvolvimento Econômico",
+    tags: ["powerbi"],
+    metadata: {
+      source: "Power BI",
+      owner: "Equipe de Serviços",
+    },
+    embed: {
+      provider: "powerbi-public",
+      url: "https://app.powerbi.com/view?r=abc123",
+    },
+  };
+}
+
+describe("panelConfigSchema — painéis externos e retrocompatibilidade", () => {
+  it("aceita uma configuração nativa explícita (kind: native)", () => {
+    const result = parsePanelConfig({ ...buildValidPanel(), kind: "native" });
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.kind).toBe("native");
+    }
+  });
+
+  it("aceita uma configuração de painel externo completa e válida", () => {
+    const result = parsePanelConfig(buildValidExternalPanel());
+    expect(result.success).toBe(true);
+    if (result.success && result.data.kind === "external") {
+      expect(result.data.embed.url).toBe("https://app.powerbi.com/view?r=abc123");
+    }
+  });
+
+  it("trata uma configuração antiga sem `kind` como native (retrocompatibilidade)", () => {
+    const legacy = buildValidPanel();
+    expect("kind" in legacy).toBe(false);
+
+    const result = parsePanelConfig(legacy);
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.kind).toBe("native");
+    }
+  });
+
+  it("rejeita um painel externo sem embed.url", () => {
+    const invalid = buildValidExternalPanel();
+    invalid.embed = { provider: "powerbi-public", url: "" };
+    const result = parsePanelConfig(invalid);
+    expect(result.success).toBe(false);
+  });
+
+  it("rejeita um painel externo com provider desconhecido", () => {
+    const invalid = {
+      ...buildValidExternalPanel(),
+      embed: { provider: "outro", url: "https://x.com" },
+    };
+    const result = parsePanelConfig(invalid);
+    expect(result.success).toBe(false);
+  });
+
+  it("um painel externo não exige sections nem filters", () => {
+    const result = parsePanelConfig(buildValidExternalPanel());
+    expect(result.success).toBe(true);
+    if (result.success && result.data.kind === "external") {
+      expect("sections" in result.data).toBe(false);
+      expect("filters" in result.data).toBe(false);
+    }
+  });
+});

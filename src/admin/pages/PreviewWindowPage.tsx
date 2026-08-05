@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useState } from "react";
-import type { PanelConfig } from "../../config/schemas/panel.schema";
+import type { NativePanelConfig } from "../../config/schemas/panel.schema";
 import { ConfigRenderer } from "../../renderer/ConfigRenderer";
 import { usePreviewChannel, type PreviewChannelMessage } from "../editor/usePreviewChannel";
 import styles from "./PreviewWindowPage.module.css";
 
 export default function PreviewWindowPage() {
-  const [draft, setDraft] = useState<PanelConfig | null>(null);
+  const [draft, setDraft] = useState<NativePanelConfig | null>(null);
 
   const handleMessage = useCallback((message: PreviewChannelMessage) => {
     if (message.type === "draft") setDraft(message.draft);

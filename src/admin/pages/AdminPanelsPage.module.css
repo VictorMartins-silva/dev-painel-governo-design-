@@ -117,6 +117,15 @@
   color: var(--pg-color-positive);
 }
 
+.externalBadge {
+  padding: 2px var(--pg-spacing-2);
+  border-radius: var(--pg-radius-full);
+  background-color: var(--pg-color-brandSoft);
+  color: var(--pg-color-brand);
+  font-size: var(--pg-typography-size-xs);
+  font-weight: var(--pg-typography-weight-medium);
+}
+
 .actions {
   display: flex;
   flex-wrap: wrap;

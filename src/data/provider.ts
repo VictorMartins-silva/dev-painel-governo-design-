@@ -23,6 +23,7 @@ export type PanelSummary = {
   tags: string[];
   source: string;
   updatedAt: string;
+  isExternal: boolean;
 };
 
 export type TableQuery = {

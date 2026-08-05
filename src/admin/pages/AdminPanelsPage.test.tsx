@@ -2,14 +2,15 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router-dom";
-import type { PanelConfig } from "../../config/schemas/panel.schema";
+import type { NativePanelConfig } from "../../config/schemas/panel.schema";
 import { panelStore } from "../store/PanelStore";
 import { serializePanelConfig } from "../store/exportImport";
 import AdminPanelsPage from "./AdminPanelsPage";
 
-function buildPanel(overrides: Partial<PanelConfig> = {}): PanelConfig {
+function buildPanel(overrides: Partial<NativePanelConfig> = {}): NativePanelConfig {
   return {
     schemaVersion: 1,
+    kind: "native",
     id: "painel-teste",
     title: "Painel de teste",
     description: "Descrição do painel de teste.",
