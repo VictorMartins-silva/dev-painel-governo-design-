@@ -52,8 +52,6 @@ describe("Fluxo integrado do admin", () => {
     await user.type(screen.getByLabelText("Descrição"), "Descrição do painel de teste.");
     await user.type(screen.getByLabelText("Tema"), "Teste");
     await user.type(screen.getByLabelText("Fonte"), "Fonte de teste");
-    await user.type(screen.getByLabelText("Período de referência"), "2026");
-    await user.type(screen.getByLabelText("Atualizado em"), "2026-08-05");
     await user.type(screen.getByLabelText("Responsável"), "Equipe de Testes");
 
     await user.click(screen.getByRole("button", { name: "Adicionar seção" }));

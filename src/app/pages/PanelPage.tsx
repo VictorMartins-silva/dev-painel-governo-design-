@@ -5,11 +5,14 @@ import { MetadataBlock } from "../../components/layout/MetadataBlock";
 import { AsyncBoundary } from "../../components/feedback/AsyncBoundary";
 import { ErrorState } from "../../components/feedback/ErrorState";
 import { usePanelConfig } from "../../data/hooks/usePanelConfig";
+import { usePanelFreshness } from "../../data/hooks/usePanelFreshness";
 import { ConfigRenderer } from "../../renderer/ConfigRenderer";
 
 export default function PanelPage() {
   const { id } = useParams<{ id: string }>();
   const panelState = usePanelConfig(id ?? "");
+  const freshnessState = usePanelFreshness(id ?? "");
+  const freshness = freshnessState.status === "success" ? freshnessState.data : undefined;
 
   if (!id) {
     return (
@@ -40,8 +43,8 @@ export default function PanelPage() {
           <ConfigRenderer panelId={panel.id} config={panel} />
           <MetadataBlock
             source={panel.metadata.source}
-            referencePeriod={panel.metadata.referencePeriod}
-            updatedAt={panel.metadata.updatedAt}
+            referencePeriod={freshness?.referencePeriod}
+            updatedAt={freshness?.updatedAt}
             owner={panel.metadata.owner}
             methodologyNote={panel.metadata.methodologyNote}
           />

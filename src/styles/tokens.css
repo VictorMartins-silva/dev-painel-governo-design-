@@ -70,6 +70,8 @@
   --pg-color-positiveSoft: #e5f6ec;
   --pg-color-negative: #c0223a;
   --pg-color-negativeSoft: #fbe6e9;
+  --pg-color-warning: #a15c00;
+  --pg-color-warningSoft: #fdf0dc;
   --pg-color-neutral: #6b7280;
   --pg-color-neutralSoft: #eceef1;
   --pg-color-onBrand: #ffffff;
@@ -92,6 +94,8 @@
   --pg-color-positiveSoft: #123326;
   --pg-color-negative: #f0576f;
   --pg-color-negativeSoft: #3a1620;
+  --pg-color-warning: #e0a730;
+  --pg-color-warningSoft: #3a2c10;
   --pg-color-neutral: #8b93a3;
   --pg-color-neutralSoft: #242b39;
   --pg-color-onBrand: #ffffff;
@@ -115,6 +119,8 @@
   --pg-color-positiveSoft: #123326;
   --pg-color-negative: #f0576f;
   --pg-color-negativeSoft: #3a1620;
+  --pg-color-warning: #e0a730;
+  --pg-color-warningSoft: #3a2c10;
   --pg-color-neutral: #8b93a3;
   --pg-color-neutralSoft: #242b39;
   --pg-color-onBrand: #ffffff;

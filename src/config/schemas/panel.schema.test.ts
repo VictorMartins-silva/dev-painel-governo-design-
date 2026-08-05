@@ -11,8 +11,6 @@ function buildValidPanel() {
     tags: ["emprego", "caged"],
     metadata: {
       source: "CAGED / Ministério do Trabalho",
-      referencePeriod: "jan/2020 – dez/2025",
-      updatedAt: "2026-07-15",
       owner: "Equipe de Serviços",
     },
     filters: [{ id: "ano", type: "single-select", label: "Ano", dataField: "ano" }],

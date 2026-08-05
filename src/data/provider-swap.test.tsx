@@ -13,6 +13,7 @@ const stubProvider: DataProvider = {
   getPanelConfig: async () => {
     throw new Error("não implementado no stub");
   },
+  getPanelFreshness: async () => ({}),
   getIndicator: async () => ({
     data: { value: 42, unit: "unidades" },
     metadata: { source: "stub" },
@@ -25,6 +26,14 @@ const stubProvider: DataProvider = {
     throw new Error("não implementado no stub");
   },
   listIndicators: async () => [],
+  getIndicatorUsage: async () => [],
+  getCatalogHealth: async () => ({
+    entries: [],
+    usageCountByIndicatorId: {},
+    orphans: [],
+    dangling: [],
+    invalid: [],
+  }),
 };
 
 function Probe() {

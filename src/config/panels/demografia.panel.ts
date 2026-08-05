@@ -9,8 +9,6 @@ export const demografia: PanelConfig = {
   tags: ["população", "ibge", "demografia"],
   metadata: {
     source: "IBGE (dados fictícios)",
-    referencePeriod: "jan/2024 – dez/2025",
-    updatedAt: "2026-07-15",
     owner: "Equipe de Serviços",
     methodologyNote:
       "Estimativas populacionais fictícias para fins de protótipo, distribuídas por sexo, faixa etária e território.",

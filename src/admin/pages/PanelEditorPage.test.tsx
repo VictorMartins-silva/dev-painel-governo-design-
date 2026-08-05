@@ -164,4 +164,37 @@ describe("PanelEditorPage", () => {
     expect(confirmSpy).not.toHaveBeenCalled();
     expect(await screen.findByText("Lista de painéis")).toBeInTheDocument();
   });
+
+  it("recolhe o preview e permite mostrá-lo novamente", async () => {
+    const user = userEvent.setup();
+    renderAt("/admin/paineis/demografia");
+
+    await waitFor(() => expect(screen.getByText("Preview ao vivo")).toBeInTheDocument());
+    await user.click(screen.getByRole("button", { name: "Recolher" }));
+
+    expect(screen.queryByText("Preview ao vivo")).not.toBeInTheDocument();
+    expect(screen.getByText("Preview recolhido")).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "Mostrar preview" }));
+
+    await waitFor(() => expect(screen.getByText("Preview ao vivo")).toBeInTheDocument());
+  });
+
+  it("abre o preview em outra aba e volta ao modo inline quando ela é fechada", async () => {
+    const user = userEvent.setup();
+    const openSpy = vi.spyOn(window, "open").mockReturnValue(null);
+    renderAt("/admin/paineis/demografia");
+
+    await waitFor(() => expect(screen.getByText("Preview ao vivo")).toBeInTheDocument());
+    await user.click(screen.getByRole("button", { name: "Abrir em nova aba" }));
+
+    expect(openSpy).toHaveBeenCalledWith("/admin/preview", "pg-preview");
+    expect(screen.getByText("Preview aberto em outra aba")).toBeInTheDocument();
+
+    const channel = new BroadcastChannel("pg-editor-preview");
+    channel.postMessage({ type: "preview-closed" });
+    channel.close();
+
+    await waitFor(() => expect(screen.getByText("Preview ao vivo")).toBeInTheDocument());
+  });
 });

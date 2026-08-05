@@ -1,0 +1,18 @@
+{
+  "id": "vinculos_por_atividade",
+  "name": "Vínculos por atividade econômica",
+  "unit": "vínculos",
+  "source": "CAGED / Ministério do Trabalho (dados fictícios)",
+  "definition": "Distribuição dos vínculos empregatícios formais ativos por atividade econômica no período de referência.",
+  "periodicity": "Mensal",
+  "granularity": "Município",
+  "owner": "Equipe de Serviços",
+  "limitations": "Dados fictícios para fins de protótipo; não refletem números reais do CAGED.",
+  "updatedAt": "2026-07-15",
+  "shapes": ["table"],
+  "dimensions": [],
+  "datasets": ["vinculos_por_atividade"],
+  "defaultFormat": "integer",
+  "theme": "Desenvolvimento Econômico",
+  "tags": ["emprego", "caged", "trabalho"]
+}

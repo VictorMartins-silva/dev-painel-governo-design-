@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useReducer, useRef } from "react";
+import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
 import { Link, useBlocker, useNavigate, useParams } from "react-router-dom";
 import { Breadcrumb } from "../../components/layout/Breadcrumb";
 import { PageHeader } from "../../components/layout/PageHeader";
@@ -7,11 +7,18 @@ import { panelStore } from "../store/PanelStore";
 import { downloadPanelConfig } from "../store/exportImport";
 import { createEditorState, editorReducer } from "../editor/editorReducer";
 import { buildFieldErrors } from "../editor/validation";
+import { buildCatalogWarnings } from "../editor/catalogWarnings";
+import { useIndicatorList } from "../../data/hooks/useIndicatorList";
 import { PanelMetadataForm } from "../editor/PanelMetadataForm";
 import { FiltersForm } from "../editor/FiltersForm";
 import { SectionsForm } from "../editor/SectionsForm";
 import { EditorPreview } from "../editor/EditorPreview";
+import { usePreviewChannel, type PreviewChannelMessage } from "../editor/usePreviewChannel";
 import styles from "./PanelEditorPage.module.css";
+
+const DRAFT_SYNC_DEBOUNCE_MS = 300;
+
+type PreviewMode = "inline" | "collapsed" | "detached";
 
 function sortKeys(value: unknown): unknown {
   if (Array.isArray(value)) return value.map(sortKeys);
@@ -40,8 +47,48 @@ export default function PanelEditorPage() {
   draftRef.current = state.draft;
   const savedDraftRef = useRef(state.draft);
 
+  const [previewMode, setPreviewMode] = useState<PreviewMode>("inline");
+  const postMessageRef = useRef<((message: PreviewChannelMessage) => void) | null>(null);
+
+  const handleChannelMessage = useCallback((message: PreviewChannelMessage) => {
+    if (message.type === "ready") {
+      postMessageRef.current?.({ type: "draft", draft: draftRef.current });
+    } else if (message.type === "preview-closed") {
+      setPreviewMode("inline");
+    }
+  }, []);
+
+  const { postMessage, isSupported: canDetach } = usePreviewChannel({
+    onMessage: handleChannelMessage,
+  });
+  postMessageRef.current = postMessage;
+
+  useEffect(() => {
+    if (previewMode !== "detached") return;
+    const timer = window.setTimeout(() => {
+      postMessage({ type: "draft", draft: state.draft });
+    }, DRAFT_SYNC_DEBOUNCE_MS);
+    return () => window.clearTimeout(timer);
+  }, [state.draft, previewMode, postMessage]);
+
+  function handleDetach() {
+    if (!canDetach) return;
+    window.open("/admin/preview", "pg-preview");
+    setPreviewMode("detached");
+  }
+
   const result = useMemo(() => parsePanelConfig(state.draft), [state.draft]);
   const errors = useMemo(() => buildFieldErrors(result), [result]);
+
+  const indicatorsState = useIndicatorList();
+  const warnings = useMemo(
+    () =>
+      buildCatalogWarnings(
+        state.draft,
+        indicatorsState.status === "success" ? indicatorsState.data : [],
+      ),
+    [state.draft, indicatorsState],
+  );
 
   const idConflict =
     isNew && state.draft.id.trim() !== "" && panelStore.get(state.draft.id) !== undefined;
@@ -157,7 +204,14 @@ export default function PanelEditorPage() {
         </p>
       )}
 
-      <div className={styles.formLayout}>
+      {warnings.size > 0 && (
+        <p className={styles.warningSummary} role="status">
+          {warnings.size} aviso{warnings.size === 1 ? "" : "s"} de catálogo — não impede salvar nem
+          publicar.
+        </p>
+      )}
+
+      <div className={styles.formLayout} data-preview={previewMode}>
         <div className={styles.formColumn}>
           <PanelMetadataForm
             draft={state.draft}
@@ -166,9 +220,40 @@ export default function PanelEditorPage() {
             idEditable={isNew}
           />
           <FiltersForm filters={state.draft.filters} errors={errors} dispatch={dispatch} />
-          <SectionsForm sections={state.draft.sections} errors={errors} dispatch={dispatch} />
+          <SectionsForm
+            sections={state.draft.sections}
+            errors={errors}
+            warnings={warnings}
+            dispatch={dispatch}
+          />
         </div>
-        <EditorPreview draft={state.draft} />
+        {previewMode === "inline" ? (
+          <EditorPreview
+            draft={state.draft}
+            onCollapse={() => setPreviewMode("collapsed")}
+            onDetach={canDetach ? handleDetach : undefined}
+          />
+        ) : (
+          <div className={styles.previewBar}>
+            <span className={styles.previewBarLabel}>
+              {previewMode === "detached" ? "Preview aberto em outra aba" : "Preview recolhido"}
+            </span>
+            <div className={styles.previewBarActions}>
+              <button
+                type="button"
+                className={styles.secondaryButton}
+                onClick={() => setPreviewMode("inline")}
+              >
+                Mostrar preview
+              </button>
+              {canDetach && previewMode === "collapsed" && (
+                <button type="button" className={styles.secondaryButton} onClick={handleDetach}>
+                  Abrir em nova aba
+                </button>
+              )}
+            </div>
+          </div>
+        )}
       </div>
 
       <Link to="/admin" className={styles.backLink}>

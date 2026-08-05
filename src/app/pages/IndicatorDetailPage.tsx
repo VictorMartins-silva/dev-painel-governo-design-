@@ -1,10 +1,49 @@
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { Breadcrumb } from "../../components/layout/Breadcrumb";
 import { PageHeader } from "../../components/layout/PageHeader";
+import { Section } from "../../components/layout/Section";
 import { AsyncBoundary } from "../../components/feedback/AsyncBoundary";
 import { ErrorState } from "../../components/feedback/ErrorState";
 import { useIndicatorMetadata } from "../../data/hooks/useIndicatorMetadata";
+import { useIndicatorUsage } from "../../data/hooks/useIndicatorUsage";
+import type { IndicatorShape } from "../../config/schemas/indicator.schema";
 import styles from "./IndicatorDetailPage.module.css";
+
+const SHAPE_LABEL: Record<IndicatorShape, string> = {
+  metric: "Métrica",
+  categorical: "Categórico",
+  table: "Tabela",
+};
+
+function IndicatorUsageSection({ indicatorId }: { indicatorId: string }) {
+  const usageState = useIndicatorUsage(indicatorId);
+
+  if (usageState.status === "loading") return null;
+  if (usageState.status === "error") return null;
+
+  const usage = usageState.status === "success" ? usageState.data : [];
+
+  return (
+    <Section title="Usado nos painéis">
+      {usage.length === 0 ? (
+        <p className={styles.value}>Nenhum painel publicado usa este indicador no momento.</p>
+      ) : (
+        <ul className={styles.usageList}>
+          {usage.map((entry, index) => (
+            <li key={index} className={styles.usageItem}>
+              <Link to={`/paineis/${entry.panelId}`} className={styles.usageLink}>
+                {entry.panelTitle}
+              </Link>
+              <span className={styles.usageDetail}>
+                {entry.sectionTitle} · {entry.componentTitle}
+              </span>
+            </li>
+          ))}
+        </ul>
+      )}
+    </Section>
+  );
+}
 
 export default function IndicatorDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -28,7 +67,13 @@ export default function IndicatorDetailPage() {
     >
       {(metadata) => (
         <div>
-          <Breadcrumb items={[{ label: "Início", href: "/" }, { label: metadata.name }]} />
+          <Breadcrumb
+            items={[
+              { label: "Início", href: "/" },
+              { label: "Indicadores", href: "/indicadores" },
+              { label: metadata.name },
+            ]}
+          />
           <PageHeader title={metadata.name} description={metadata.definition} />
           <div className={styles.grid}>
             <div className={styles.item}>
@@ -55,6 +100,18 @@ export default function IndicatorDetailPage() {
               <span className={styles.label}>Atualizado em</span>
               <span className={styles.value}>{metadata.updatedAt}</span>
             </div>
+            <div className={styles.item}>
+              <span className={styles.label}>Formas de dado</span>
+              <span className={styles.value}>
+                {metadata.shapes.map((shape) => SHAPE_LABEL[shape]).join(", ")}
+              </span>
+            </div>
+            {metadata.dimensions.length > 0 && (
+              <div className={styles.item}>
+                <span className={styles.label}>Dimensões</span>
+                <span className={styles.value}>{metadata.dimensions.join(", ")}</span>
+              </div>
+            )}
             {metadata.formula && (
               <div className={`${styles.item} ${styles.full}`}>
                 <span className={styles.label}>Fórmula</span>
@@ -68,6 +125,8 @@ export default function IndicatorDetailPage() {
               </div>
             )}
           </div>
+
+          <IndicatorUsageSection indicatorId={id} />
         </div>
       )}
     </AsyncBoundary>

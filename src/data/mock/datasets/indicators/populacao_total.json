@@ -1,0 +1,18 @@
+{
+  "id": "populacao_total",
+  "name": "População total",
+  "unit": "habitantes",
+  "source": "IBGE (dados fictícios)",
+  "definition": "Número total de habitantes estimados no município no período de referência.",
+  "periodicity": "Mensal (estimativa)",
+  "granularity": "Município",
+  "owner": "Equipe de Serviços",
+  "limitations": "Dados fictícios para fins de protótipo; não refletem números reais do IBGE.",
+  "updatedAt": "2026-07-15",
+  "shapes": ["metric"],
+  "dimensions": ["sexo", "faixaEtaria"],
+  "datasets": [],
+  "defaultFormat": "integer",
+  "theme": "Demografia",
+  "tags": ["população", "ibge", "demografia"]
+}

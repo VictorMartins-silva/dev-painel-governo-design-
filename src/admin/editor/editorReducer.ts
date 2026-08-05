@@ -54,7 +54,7 @@ export function createEmptyPanelDraft(): PanelConfig {
     description: "",
     theme: "",
     tags: [],
-    metadata: { source: "", referencePeriod: "", updatedAt: "", owner: "" },
+    metadata: { source: "", owner: "" },
     filters: [],
     sections: [],
   };

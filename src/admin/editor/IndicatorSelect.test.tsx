@@ -1,24 +1,41 @@
 import { describe, expect, it, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import type { IndicatorSummary } from "../../data/provider";
+import type { IndicatorCatalogEntry } from "../../config/schemas/indicator.schema";
 import { IndicatorSelect } from "./IndicatorSelect";
 
-const indicators: IndicatorSummary[] = [
-  {
+function makeIndicator(overrides: Partial<IndicatorCatalogEntry>): IndicatorCatalogEntry {
+  return {
+    id: "indicador",
+    name: "Indicador",
+    unit: "unidade",
+    source: "Fonte",
+    definition: "Definição do indicador.",
+    periodicity: "Mensal",
+    granularity: "Município",
+    owner: "Equipe de Serviços",
+    updatedAt: "2026-07-15",
+    shapes: ["metric"],
+    dimensions: [],
+    datasets: [],
+    tags: [],
+    ...overrides,
+  };
+}
+
+const indicators: IndicatorCatalogEntry[] = [
+  makeIndicator({
     id: "populacao_total",
     name: "População total",
     unit: "habitantes",
     source: "IBGE",
-    shapes: ["metric"],
-  },
-  {
+  }),
+  makeIndicator({
     id: "saldo_empregos",
     name: "Saldo de empregos",
     unit: "vínculos",
     source: "CAGED",
-    shapes: ["metric"],
-  },
+  }),
 ];
 
 describe("IndicatorSelect", () => {

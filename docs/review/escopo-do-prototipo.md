@@ -116,17 +116,19 @@ avaliação do conceito que esta versão pretende apresentar.
 
 ## 5. Estado atual
 
-| Capacidade                           | Estado      | Leitura                                                                         |
-| ------------------------------------ | ----------- | ------------------------------------------------------------------------------- |
-| Índice único de painéis              | Demonstrado | Home e Catálogo usam a mesma lista fornecida pelo `DataProvider`.               |
-| Lentes Tema, Secretaria e ODS        | Demonstrado | Recortes combináveis; seleção refletida na query string.                        |
-| Navegação painel → indicador         | Demonstrado | Cartões com `indicatorId` levam à página de metadados do indicador.             |
-| Biblioteca fixa                      | Demonstrado | Registry fechado com quatro tipos de componente.                                |
-| Posicionamento por regras            | Demonstrado | Seções ordenadas, componentes ordenados e quatro presets de layout.             |
-| Criação e edição na ferramenta       | Demonstrado | Formulário estruturado com validação contínua.                                  |
-| Preview fiel à publicação            | Demonstrado | Preview e página pública reutilizam o `ConfigRenderer`.                         |
-| Publicação local imediata            | Demonstrado | O `PanelStore` atualiza catálogo e rota pública no mesmo navegador.             |
-| Experiência pronta para apresentação | Em evolução | O fluxo funciona; clareza, ergonomia e acabamento do editor são o próximo foco. |
+| Capacidade                           | Estado      | Leitura                                                                                                                                                  |
+| ------------------------------------ | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Índice único de painéis              | Demonstrado | Home e Catálogo usam a mesma lista fornecida pelo `DataProvider`.                                                                                        |
+| Lentes Tema, Secretaria e ODS        | Demonstrado | Recortes combináveis; seleção refletida na query string.                                                                                                 |
+| Navegação painel → indicador         | Demonstrado | Cartões com `indicatorId` levam à página de metadados do indicador.                                                                                      |
+| Biblioteca fixa                      | Demonstrado | Registry fechado com quatro tipos de componente.                                                                                                         |
+| Posicionamento por regras            | Demonstrado | Seções ordenadas, componentes ordenados e quatro presets de layout.                                                                                      |
+| Criação e edição na ferramenta       | Demonstrado | Formulário estruturado com validação contínua.                                                                                                           |
+| Preview fiel à publicação            | Demonstrado | Preview e página pública reutilizam o `ConfigRenderer`.                                                                                                  |
+| Publicação local imediata            | Demonstrado | O `PanelStore` atualiza catálogo e rota pública no mesmo navegador.                                                                                      |
+| Catálogo de indicadores              | Demonstrado | Índice público em `/indicadores` e governança (uso, órfãos, referências quebradas) em `/admin/indicadores`, a partir de um registro único por indicador. |
+| Cardápio de componentes              | Demonstrado | `/admin/componentes` documenta os quatro tipos com campos de configuração, exemplo e preview nos 4 estados de dado.                                      |
+| Experiência pronta para apresentação | Em evolução | O fluxo funciona; clareza, ergonomia e acabamento do editor são o próximo foco.                                                                          |
 
 Estado verificado em 05/08/2026 sobre a revisão `145e987`: 142 testes em 33 arquivos passando,
 build de produção válido, lint sem erros. Os números completos e a dívida técnica estão em

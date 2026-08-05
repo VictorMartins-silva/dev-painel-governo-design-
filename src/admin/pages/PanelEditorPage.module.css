@@ -54,6 +54,16 @@
   padding-left: var(--pg-spacing-5);
 }
 
+.warningSummary {
+  padding: var(--pg-spacing-3) var(--pg-spacing-4);
+  margin-bottom: var(--pg-spacing-4);
+  border: 1px solid var(--pg-color-warning);
+  border-radius: var(--pg-radius-sm);
+  background-color: var(--pg-color-warningSoft);
+  color: var(--pg-color-warning);
+  font-size: var(--pg-typography-size-sm);
+}
+
 .formLayout {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
@@ -69,14 +79,39 @@
 }
 
 @media (min-width: 1100px) {
-  .formLayout {
+  .formLayout[data-preview="inline"] {
     grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
   }
 
-  .formLayout > :last-child {
+  .formLayout[data-preview="inline"] > :last-child {
     position: sticky;
     top: var(--pg-spacing-4);
   }
+}
+
+.previewBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--pg-spacing-3);
+  padding: var(--pg-spacing-3) var(--pg-spacing-4);
+  border: 1px dashed var(--pg-color-border);
+  border-radius: var(--pg-radius-md);
+  background-color: var(--pg-color-surface);
+  /* mantém o controle do preview visível no topo, junto de onde ele aparece quando inline */
+  order: -1;
+  position: sticky;
+  top: var(--pg-spacing-4);
+}
+
+.previewBarLabel {
+  font-size: var(--pg-typography-size-sm);
+  color: var(--pg-color-textSecondary);
+}
+
+.previewBarActions {
+  display: flex;
+  gap: var(--pg-spacing-2);
 }
 
 .backLink {

@@ -7,8 +7,6 @@ export const SUPPORTED_SCHEMA_VERSION = 1;
 
 const panelMetadataSchema = z.object({
   source: z.string().min(1),
-  referencePeriod: z.string().min(1),
-  updatedAt: z.string().min(1),
   owner: z.string().min(1),
   methodologyNote: z.string().optional(),
 });

@@ -16,10 +16,11 @@ const LAYOUT_LABEL: Record<PanelLayout, string> = {
 type SectionsFormProps = {
   sections: PanelSectionConfig[];
   errors: Map<string, string>;
+  warnings?: Map<string, string>;
   dispatch: Dispatch<EditorAction>;
 };
 
-export function SectionsForm({ sections, errors, dispatch }: SectionsFormProps) {
+export function SectionsForm({ sections, errors, warnings, dispatch }: SectionsFormProps) {
   return (
     <details open className={styles.block}>
       <summary className={styles.summary}>Seções</summary>
@@ -127,9 +128,7 @@ export function SectionsForm({ sections, errors, dispatch }: SectionsFormProps) 
                 {section.components.map((component, componentIndex) => (
                   <li key={component.id} className={styles.componentRow}>
                     <div className={styles.componentRowHeader}>
-                      <span className={styles.componentIndex}>
-                        Componente {componentIndex + 1}
-                      </span>
+                      <span className={styles.componentIndex}>Componente {componentIndex + 1}</span>
                       <div className={styles.actions}>
                         <button
                           type="button"
@@ -178,6 +177,7 @@ export function SectionsForm({ sections, errors, dispatch }: SectionsFormProps) 
                     <ComponentForm
                       component={component}
                       errors={errors}
+                      warnings={warnings}
                       errorPrefix={`sections.${sectionIndex}.components.${componentIndex}`}
                       dispatch={dispatch}
                       sectionIndex={sectionIndex}

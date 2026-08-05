@@ -33,4 +33,20 @@ describe("IndicatorDetailPage", () => {
 
     expect(await screen.findByText(/não encontrados/)).toBeInTheDocument();
   });
+
+  it("renderiza indicadores que antes não tinham metadados de governança", async () => {
+    renderAt("/indicadores/distribuicao_sexo");
+
+    expect(
+      await screen.findByRole("heading", { name: "Distribuição por sexo" }),
+    ).toBeInTheDocument();
+  });
+
+  it("lista os painéis que usam o indicador", async () => {
+    renderAt("/indicadores/saldo_empregos");
+
+    await screen.findByRole("heading", { name: "Saldo de empregos" });
+    expect(await screen.findByText("Usado nos painéis")).toBeInTheDocument();
+    expect(screen.getAllByRole("link", { name: "Trabalho e Emprego" }).length).toBeGreaterThan(0);
+  });
 });

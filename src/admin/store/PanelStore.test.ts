@@ -13,8 +13,6 @@ function buildPanel(overrides: Partial<PanelConfig> = {}): PanelConfig {
     tags: [],
     metadata: {
       source: "fonte de teste",
-      referencePeriod: "2026",
-      updatedAt: "2026-08-04",
       owner: "Equipe de Testes",
     },
     filters: [],

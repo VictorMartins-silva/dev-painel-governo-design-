@@ -25,6 +25,9 @@ export function Header() {
           <Link to="/paineis" className={styles.navLink}>
             Painéis
           </Link>
+          <Link to="/indicadores" className={styles.navLink}>
+            Indicadores
+          </Link>
           <Link to="/admin" className={styles.navLink}>
             Configuração
           </Link>

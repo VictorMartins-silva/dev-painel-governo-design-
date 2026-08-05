@@ -74,10 +74,11 @@ npm run tokens:build # regenera src/styles/tokens.css a partir de tokens.ts
 `.prettierignore` e o gerador não emite saída formatada, então `npm run format:check` acusa
 `tokens.css` depois de qualquer um desses comandos — é ruído conhecido, não regressão.
 
-Rotas disponíveis: `/`, `/paineis`, `/paineis/:id`, `/indicadores/:id`, `/dev/galeria`,
-`/admin`, `/admin/paineis/novo`, `/admin/paineis/:id`. As rotas são registradas
-incondicionalmente em `src/app/router.tsx` — inclusive `/dev/galeria`, que portanto também existe
-no build de produção.
+Rotas disponíveis: `/`, `/paineis`, `/paineis/:id`, `/indicadores`, `/indicadores/:id`, `/admin`,
+`/admin/indicadores`, `/admin/componentes`, `/admin/paineis/novo`, `/admin/paineis/:id`. O cardápio
+de componentes fica dentro da área de configuração, não na navegação pública.
+`/dev/galeria` redireciona para `/admin/componentes`. As rotas são registradas incondicionalmente
+em `src/app/router.tsx`.
 
 ## Arquitetura em 4 camadas
 
@@ -103,6 +104,12 @@ Design system (tokens, tema ECharts, CSS Modules)                 MockDataProvid
   Trocar por outra implementação (ex.: uma `HttpDataProvider` futura) é uma troca de 1 linha em
   `src/main.tsx` (`new MockDataProvider()` → `new HttpDataProvider()`); veja também
   `src/data/provider-swap.test.tsx`, que prova isso com um stub mínimo.
+- **`getPanelFreshness(panelId)`** (`DataProvider`): período de referência e data de atualização
+  de um painel **não** são campos configuráveis em `PanelConfig` — vêm sempre da origem de dados.
+  `MockDataProvider` resolve isso com fixtures em `src/data/mock/datasets/freshness/<panelId>.json`
+  (simulando a tabela de monitoramento de atualizações do Fabric); em produção, o
+  `FabricDataProvider` consultará essa tabela real, que dispara automaticamente quando há dado
+  novo. `PanelPage` consome via o hook `usePanelFreshness`.
 - **`FilterContext`**: estado dos filtros globais de um painel. Os componentes analíticos nunca
   leem filtros diretamente — os hooks de dados combinam a query da config com os filtros ativos do
   contexto.
@@ -114,9 +121,11 @@ Prova de arquitetura: o Painel 2 (Demografia) foi criado tocando **apenas**
 registro em `src/config/panels/index.ts` — nenhum componente, página ou CSS novos.
 
 1. Crie os arquivos de mock em `src/data/mock/datasets/` (metrics/categorical/tables conforme o
-   conteúdo do painel, mais `indicator-metadata/` e `filter-options/<panelId>/` se necessário). Os
-   arquivos são descobertos automaticamente pelo `MockDataProvider` — não é preciso importar nada
-   manualmente.
+   conteúdo do painel, mais um registro por indicador em `indicators/<id>.json` — ver
+   `indicator.schema.ts` para os campos obrigatórios de governança — e
+   `filter-options/<panelId>/` se necessário, e `freshness/<id>.json` com
+   `referencePeriod`/`updatedAt`). Os arquivos são descobertos automaticamente pelo
+   `MockDataProvider` — não é preciso importar nada manualmente.
 2. Crie `src/config/panels/<id>.panel.ts` exportando um objeto `PanelConfig` (filtros, seções,
    componentes — só os 4 tipos do registry: `indicator-card`, `time-series`, `bar-chart`,
    `data-table`).
@@ -168,9 +177,13 @@ layout do admin lembra disso).
   listagem. Sair do editor com alterações não salvas — pelo link "Voltar", por qualquer navegação
   do React Router ou fechando/recarregando a aba — também pede confirmação (`useBlocker` do
   React Router + `beforeunload`); sem alterações pendentes, a saída é imediata.
-- **Catálogo de indicadores**: `listIndicators()` (`DataProvider`) devolve `IndicatorSummary[]`
-  (`shapes`, `dimensions`, `datasets`, `defaultFormat`), usado pelo `IndicatorSelect` para filtrar
-  o dropdown por compatibilidade com o tipo de componente escolhido.
+- **Catálogo de indicadores**: `listIndicators()` (`DataProvider`) devolve `IndicatorCatalogEntry[]`
+  — um registro por indicador que une o técnico (`shapes`, `dimensions`, `datasets`,
+  `defaultFormat`) e a governança (`definition`, `periodicity`, `granularity`, `owner`,
+  `updatedAt`). É usado pelo `IndicatorSelect` no editor, pelo índice público em `/indicadores` e
+  pela curadoria em `/admin/indicadores` (indicadores órfãos, referências quebradas e fixtures
+  inválidas), que também alimenta avisos não bloqueantes no editor quando um componente referencia
+  um indicador fora do catálogo.
 
 O caminho de migração para Fabric/API está documentado em
 `docs/plano-ambiente-configuracao.md` — `PanelStore` e `listIndicators()` são os dois pontos de
@@ -198,7 +211,7 @@ npm run test
 Todo hook de dados retorna `{ status: 'loading' | 'success' | 'empty' | 'error', ... }`;
 `<AsyncBoundary>` traduz isso em `LoadingState` / `EmptyState` / `ErrorState` de forma consistente
 em todos os componentes analíticos. Os 4 estados de cada componente podem ser inspecionados
-manualmente em `/dev/galeria` (substituto do Storybook neste protótipo) ou via os filtros reais do
+manualmente em `/admin/componentes` (cardápio de componentes, substituto do Storybook neste protótipo) ou via os filtros reais do
 Painel "Trabalho e Emprego": selecionar Sexo = Masculino/Feminino produz um estado vazio real
 (os indicadores de resumo não são segmentados por sexo/faixa etária nesse painel — ver nota
 metodológica na própria página). O metric `__mock_error__` (indicador) e dataset `__mock_error__`
@@ -236,3 +249,5 @@ metodológica na própria página). O metric `__mock_error__` (indicador) e data
 `HttpDataProvider` consultando uma API FastAPI, que por sua vez consulta o SQL Endpoint do
 Fabric — o caminho de migração está preservado pela interface `DataProvider` já ser assíncrona e
 pelo envelope de resposta (`DataEnvelope<T>`) já ser o formato que a futura API usaria.
+`getPanelFreshness()` seguirá o mesmo caminho, consultando o schema de tabelas de monitoramento
+de atualização do Fabric que disparam automaticamente quando há dado novo.

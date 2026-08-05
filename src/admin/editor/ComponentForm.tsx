@@ -1,6 +1,7 @@
 import { useState, type Dispatch } from "react";
 import type { ComponentConfig, ComponentType } from "../../config/schemas/components.schema";
-import type { IndicatorShape, IndicatorSummary } from "../../data/provider";
+import type { IndicatorCatalogEntry } from "../../config/schemas/indicator.schema";
+import { COMPONENT_CATALOG } from "../../config/componentCatalog";
 import { useIndicatorList } from "../../data/hooks/useIndicatorList";
 import { useDataProvider } from "../../data/DataProviderContext";
 import { FORMAT_TYPES, type FormatType } from "../../domain/types";
@@ -9,21 +10,7 @@ import { FormField } from "./FormField";
 import { IndicatorSelect } from "./IndicatorSelect";
 import styles from "./ComponentForm.module.css";
 
-const COMPONENT_TYPE_LABEL: Record<ComponentType, string> = {
-  "indicator-card": "Cartão de indicador",
-  "time-series": "Série temporal",
-  "bar-chart": "Gráfico de barras",
-  "data-table": "Tabela",
-};
-
-const COMPONENT_TYPES = Object.keys(COMPONENT_TYPE_LABEL) as ComponentType[];
-
-const REQUIRED_SHAPE: Record<ComponentType, IndicatorShape> = {
-  "indicator-card": "metric",
-  "time-series": "metric",
-  "bar-chart": "categorical",
-  "data-table": "table",
-};
+const COMPONENT_TYPES = Object.keys(COMPONENT_CATALOG) as ComponentType[];
 
 const FORMAT_LABEL: Record<FormatType, string> = {
   text: "Texto",
@@ -58,15 +45,19 @@ const SORT_LABEL: Record<"asc" | "desc" | "none", string> = {
 type ComponentFormProps = {
   component: ComponentConfig;
   errors: Map<string, string>;
+  warnings?: Map<string, string>;
   errorPrefix: string;
   dispatch: Dispatch<EditorAction>;
   sectionIndex: number;
   componentIndex: number;
 };
 
+const NO_WARNINGS = new Map<string, string>();
+
 export function ComponentForm({
   component,
   errors,
+  warnings = NO_WARNINGS,
   errorPrefix,
   dispatch,
   sectionIndex,
@@ -77,7 +68,7 @@ export function ComponentForm({
   const [columnsLoad, setColumnsLoad] = useState<"idle" | "loading" | "error">("idle");
 
   const allIndicators = indicatorsState.status === "success" ? indicatorsState.data : [];
-  const requiredShape = REQUIRED_SHAPE[component.type];
+  const requiredShape = COMPONENT_CATALOG[component.type].requiredShape;
   const compatibleIndicators = allIndicators.filter((indicator) =>
     indicator.shapes.includes(requiredShape),
   );
@@ -91,7 +82,7 @@ export function ComponentForm({
     dispatch({ kind: "update-component", sectionIndex, componentIndex, component: next });
   }
 
-  function handleIndicatorChange(indicator: IndicatorSummary | null) {
+  function handleIndicatorChange(indicator: IndicatorCatalogEntry | null) {
     if (!indicator) {
       update(
         component.type === "data-table"
@@ -162,7 +153,7 @@ export function ComponentForm({
           >
             {COMPONENT_TYPES.map((type) => (
               <option key={type} value={type}>
-                {COMPONENT_TYPE_LABEL[type]}
+                {COMPONENT_CATALOG[type].label}
               </option>
             ))}
           </select>
@@ -189,6 +180,7 @@ export function ComponentForm({
         value={selectedIndicator?.id ?? ""}
         onChange={handleIndicatorChange}
         error={errors.get(`${errorPrefix}.metric`) ?? errors.get(`${errorPrefix}.dataset`)}
+        warning={warnings.get(`${errorPrefix}.metric`) ?? warnings.get(`${errorPrefix}.dataset`)}
       />
 
       {component.type === "indicator-card" && (
@@ -279,6 +271,7 @@ export function ComponentForm({
             label="Dimensão"
             htmlFor={`component-dimension-${component.id}`}
             error={errors.get(`${errorPrefix}.dimension`)}
+            warning={warnings.get(`${errorPrefix}.dimension`)}
           >
             <select
               id={`component-dimension-${component.id}`}

@@ -15,3 +15,8 @@
   font-size: var(--pg-typography-size-xs);
   color: var(--pg-color-negative);
 }
+
+.warning {
+  font-size: var(--pg-typography-size-xs);
+  color: var(--pg-color-warning);
+}

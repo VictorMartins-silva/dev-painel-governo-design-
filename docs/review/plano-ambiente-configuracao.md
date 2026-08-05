@@ -126,6 +126,33 @@ O dropdown de indicadores filtra por compatibilidade com o tipo escolhido — ou
 
 **Migração Fabric:** `listIndicators()` no `FabricDataProvider` consumirá o endpoint do backend/Fabric que devolve o catálogo de indicadores prontos. O contrato `IndicatorSummary` é o acordo de API a alinhar com o time de dados.
 
+### 3.2.1 Frescor do painel — `getPanelFreshness()` (adendo — 2026-08-05)
+
+Decisão: período de referência e data de atualização deixam de ser campos editáveis do painel e
+passam a ser resolvidos pelo `DataProvider`, não persistidos em `PanelConfig`.
+
+```ts
+export type PanelFreshness = {
+  referencePeriod?: string;
+  updatedAt?: string;
+};
+
+interface DataProvider {
+  // ... métodos existentes
+  getPanelFreshness(panelId: string): Promise<PanelFreshness>;
+}
+```
+
+- `panelMetadataSchema` perdeu os campos `referencePeriod`/`updatedAt`; ficam apenas `source`,
+  `owner`, `methodologyNote`.
+- `PanelMetadataForm` não expõe mais esses campos — não são responsabilidade de quem edita o
+  painel.
+- **Implementação mock:** `src/data/mock/datasets/freshness/<panelId>.json`, consumido por
+  `MockDataProvider.getPanelFreshness()` e por `listPanels()` (preenche `PanelSummary.updatedAt`).
+- **Migração Fabric:** o `FabricDataProvider` resolve `getPanelFreshness()` a partir do schema de
+  tabelas de monitoramento de atualização do Fabric, que dispara automaticamente quando há dado
+  novo — sem intervenção manual no cadastro do painel.
+
 ### 3.3 Rotas e páginas novas
 
 ```ts
@@ -146,7 +173,7 @@ O dropdown de indicadores filtra por compatibilidade com o tipo escolhido — ou
 
 Organização em blocos colapsáveis espelhando o schema:
 
-1. **Metadados** — id (slug, imutável após criação), título, descrição, tema, tags, fonte, período de referência, responsável, nota metodológica.
+1. **Metadados** — id (slug, imutável após criação), título, descrição, tema, tags, fonte, responsável, nota metodológica. Período de referência e data de atualização **não** são campos do formulário — vêm do `DataProvider` (`getPanelFreshness`), que no backend Fabric é alimentado pela tabela de monitoramento de atualizações (ver adendo no fim deste documento).
 2. **Filtros** — lista ordenável; cada item: tipo (`single-select` | `multi-select` | `period`), label, `dataField`.
 3. **Seções** — lista ordenável; cada seção: título, layout (`grid-2|3|4|stack`) e seus **componentes**:
    - Tipo (dropdown com os tipos do `componentRegistry`);

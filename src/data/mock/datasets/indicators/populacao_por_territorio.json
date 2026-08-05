@@ -1,0 +1,18 @@
+{
+  "id": "populacao_por_territorio",
+  "name": "População por território",
+  "unit": "habitantes",
+  "source": "IBGE (dados fictícios)",
+  "definition": "Distribuição da população estimada do município por território administrativo no período de referência.",
+  "periodicity": "Mensal (estimativa)",
+  "granularity": "Território",
+  "owner": "Equipe de Serviços",
+  "limitations": "Dados fictícios para fins de protótipo; não refletem números reais do IBGE.",
+  "updatedAt": "2026-07-15",
+  "shapes": ["table"],
+  "dimensions": [],
+  "datasets": ["populacao_por_territorio"],
+  "defaultFormat": "integer",
+  "theme": "Demografia",
+  "tags": ["população", "ibge", "demografia"]
+}

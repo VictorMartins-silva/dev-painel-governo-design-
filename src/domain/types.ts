@@ -51,18 +51,10 @@ export type TableData = {
   rows: Record<string, string | number | null>[];
 };
 
-export type IndicatorMetadata = {
-  id: string;
-  name: string;
-  definition: string;
-  formula?: string;
-  unit: string;
-  periodicity: string;
-  granularity: string;
-  source: string;
-  owner: string;
-  limitations?: string;
-  updatedAt: string;
+/** Espelha a tabela de monitoramento de atualizações do Fabric para um painel. */
+export type PanelFreshness = {
+  referencePeriod?: string;
+  updatedAt?: string;
 };
 
 export type MetricQuery = {

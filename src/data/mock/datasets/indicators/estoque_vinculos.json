@@ -1,13 +1,19 @@
 {
   "id": "estoque_vinculos",
   "name": "Estoque de vínculos",
+  "unit": "vínculos",
+  "source": "CAGED / Ministério do Trabalho (dados fictícios)",
   "definition": "Quantidade total de vínculos empregatícios formais ativos ao final do período de referência.",
   "formula": "Estoque(t) = Estoque(t-1) + Saldo(t)",
-  "unit": "vínculos",
   "periodicity": "Mensal",
   "granularity": "Município",
-  "source": "CAGED / Ministério do Trabalho (dados fictícios)",
   "owner": "Equipe de Serviços",
   "limitations": "Dados fictícios para fins de protótipo; não refletem números reais do CAGED.",
-  "updatedAt": "2026-07-15"
+  "updatedAt": "2026-07-15",
+  "shapes": ["metric", "categorical"],
+  "dimensions": ["setor"],
+  "datasets": [],
+  "defaultFormat": "integer",
+  "theme": "Desenvolvimento Econômico",
+  "tags": ["emprego", "caged", "trabalho"]
 }

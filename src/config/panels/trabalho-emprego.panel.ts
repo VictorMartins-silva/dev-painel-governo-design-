@@ -9,8 +9,6 @@ export const trabalhoEmprego: PanelConfig = {
   tags: ["emprego", "caged", "trabalho"],
   metadata: {
     source: "CAGED / Ministério do Trabalho (dados fictícios)",
-    referencePeriod: "jan/2024 – dez/2025",
-    updatedAt: "2026-07-15",
     owner: "Equipe de Serviços",
     methodologyNote:
       "Saldo = admissões menos desligamentos, apurado por competência de referência. Os indicadores de resumo e a evolução mensal não são segmentados por sexo ou faixa etária nesta versão do protótipo — selecionar esses filtros pode resultar em ausência de dados.",

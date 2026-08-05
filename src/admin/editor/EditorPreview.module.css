@@ -23,6 +23,29 @@
   color: var(--pg-color-textSecondary);
 }
 
+.headerActions {
+  display: flex;
+  gap: var(--pg-spacing-2);
+  margin-left: auto;
+}
+
+.headerButton {
+  padding: var(--pg-spacing-1) var(--pg-spacing-3);
+  border: 1px solid var(--pg-color-border);
+  border-radius: var(--pg-radius-sm);
+  background-color: var(--pg-color-surface);
+  color: var(--pg-color-textSecondary);
+  font-size: var(--pg-typography-size-xs);
+  font-weight: var(--pg-typography-weight-medium);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.headerButton:hover {
+  border-color: var(--pg-color-borderStrong);
+  color: var(--pg-color-textPrimary);
+}
+
 .frame {
   border: 1px solid var(--pg-color-border);
   border-radius: var(--pg-radius-md);

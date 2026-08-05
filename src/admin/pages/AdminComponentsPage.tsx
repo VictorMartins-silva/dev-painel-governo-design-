@@ -1,4 +1,5 @@
 import { useState, type ReactNode } from "react";
+import { Link } from "react-router-dom";
 import { Breadcrumb } from "../../components/layout/Breadcrumb";
 import { PageHeader } from "../../components/layout/PageHeader";
 import { Section } from "../../components/layout/Section";
@@ -13,6 +14,8 @@ import { TimeSeriesChart } from "../../components/charts/TimeSeriesChart";
 import { BarChart } from "../../components/charts/BarChart";
 import { DataTable } from "../../components/table/DataTable";
 import { FilterBar } from "../../components/filters/FilterBar";
+import { COMPONENT_CATALOG } from "../../config/componentCatalog";
+import { useIndicatorList } from "../../data/hooks/useIndicatorList";
 import type {
   CategoricalPoint,
   IndicatorData,
@@ -20,8 +23,9 @@ import type {
   TableData,
   TimeSeriesPoint,
 } from "../../domain/types";
+import type { ComponentType } from "../../config/schemas/components.schema";
 import type { FilterConfig } from "../../config/schemas/filters.schema";
-import styles from "./DevGalleryPage.module.css";
+import styles from "./AdminComponentsPage.module.css";
 
 const demoIndicator: IndicatorData = {
   value: 2450,
@@ -112,15 +116,90 @@ function StatesRow<T>({ states, render }: StatesRowProps<T>) {
   );
 }
 
-export default function DevGalleryPage() {
+type ComponentDescriptionProps = {
+  type: ComponentType;
+  compatibleCount: number | undefined;
+};
+
+function ComponentDescription({ type, compatibleCount }: ComponentDescriptionProps) {
+  const entry = COMPONENT_CATALOG[type];
+
+  return (
+    <div className={styles.description}>
+      <p className={styles.summary}>{entry.summary}</p>
+      <p className={styles.whenToUse}>
+        <strong>Quando usar:</strong> {entry.whenToUse}
+      </p>
+
+      <div className={styles.metaRow}>
+        <span className={styles.metaItem}>
+          Exige indicador do tipo <code>{entry.requiredShape}</code>
+        </span>
+        {compatibleCount !== undefined && (
+          <Link to={`/indicadores?forma=${entry.requiredShape}`} className={styles.metaLink}>
+            {compatibleCount} indicador{compatibleCount === 1 ? "" : "es"} compatíve
+            {compatibleCount === 1 ? "l" : "is"}
+          </Link>
+        )}
+      </div>
+
+      <div className={styles.fieldTableWrapper}>
+        <table className={styles.fieldTable}>
+          <thead>
+            <tr>
+              <th>Campo</th>
+              <th>Obrigatório</th>
+              <th>Descrição</th>
+            </tr>
+          </thead>
+          <tbody>
+            {entry.fields.map((field) => (
+              <tr key={field.name}>
+                <td>
+                  <code>{field.name}</code>
+                </td>
+                <td>{field.required ? "Sim" : "Não"}</td>
+                <td>{field.description}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <details className={styles.exampleDetails}>
+        <summary>Exemplo de configuração</summary>
+        <pre className={styles.example}>{JSON.stringify(entry.example, null, 2)}</pre>
+      </details>
+    </div>
+  );
+}
+
+export default function AdminComponentsPage() {
   const [filterValues, setFilterValues] = useState<Record<string, string[]>>({ ano: ["2025"] });
+  const indicatorsState = useIndicatorList();
+
+  const compatibleCountByShape =
+    indicatorsState.status === "success"
+      ? indicatorsState.data.reduce<Record<string, number>>((counts, indicator) => {
+          for (const shape of indicator.shapes) {
+            counts[shape] = (counts[shape] ?? 0) + 1;
+          }
+          return counts;
+        }, {})
+      : undefined;
 
   return (
     <div className={styles.page}>
-      <Breadcrumb items={[{ label: "Início", href: "/" }, { label: "Galeria (dev)" }]} />
+      <Breadcrumb
+        items={[
+          { label: "Início", href: "/" },
+          { label: "Admin", href: "/admin" },
+          { label: "Componentes" },
+        ]}
+      />
       <PageHeader
-        title="Galeria de componentes"
-        description="Inspeção visual dos componentes estruturais e analíticos do design system, em todos os estados de dados, fora do fluxo de produção. Substitui o Storybook no protótipo."
+        title="Cardápio de componentes"
+        description="O que esta ferramenta sabe montar: os quatro tipos de componente analítico disponíveis para compor um painel, como configurar cada um e em quais estados de dados eles aparecem."
       />
 
       <Section title="PanelGrid — presets de layout">
@@ -160,7 +239,13 @@ export default function DevGalleryPage() {
         </div>
       </Section>
 
-      <Section title="IndicatorCard — loading / success / empty / error">
+      <Section
+        title={`${COMPONENT_CATALOG["indicator-card"].label} — loading / success / empty / error`}
+      >
+        <ComponentDescription
+          type="indicator-card"
+          compatibleCount={compatibleCountByShape?.metric}
+        />
         <StatesRow
           states={[
             loadingState<IndicatorData>(),
@@ -179,7 +264,10 @@ export default function DevGalleryPage() {
         />
       </Section>
 
-      <Section title="TimeSeriesChart — loading / success / empty / error">
+      <Section
+        title={`${COMPONENT_CATALOG["time-series"].label} — loading / success / empty / error`}
+      >
+        <ComponentDescription type="time-series" compatibleCount={compatibleCountByShape?.metric} />
         <StatesRow
           states={[
             loadingState<TimeSeriesPoint[]>(),
@@ -198,7 +286,13 @@ export default function DevGalleryPage() {
         />
       </Section>
 
-      <Section title="BarChart — loading / success / empty / error">
+      <Section
+        title={`${COMPONENT_CATALOG["bar-chart"].label} — loading / success / empty / error`}
+      >
+        <ComponentDescription
+          type="bar-chart"
+          compatibleCount={compatibleCountByShape?.categorical}
+        />
         <StatesRow
           states={[
             loadingState<CategoricalPoint[]>(),
@@ -212,7 +306,10 @@ export default function DevGalleryPage() {
         />
       </Section>
 
-      <Section title="DataTable — loading / success / empty / error">
+      <Section
+        title={`${COMPONENT_CATALOG["data-table"].label} — loading / success / empty / error`}
+      >
+        <ComponentDescription type="data-table" compatibleCount={compatibleCountByShape?.table} />
         <StatesRow
           states={[
             loadingState<TableData>(),

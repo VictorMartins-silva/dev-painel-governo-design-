@@ -3,14 +3,19 @@ import type {
   DataEnvelope,
   FilterOption,
   IndicatorData,
-  IndicatorMetadata,
   MetricQuery,
+  PanelFreshness,
   TableColumn,
   TableData,
   TimeSeriesPoint,
 } from "../../domain/types";
-import type { DataProvider, IndicatorSummary, PanelSummary, TableQuery } from "../provider";
+import type { CatalogHealth, DataProvider, PanelSummary, TableQuery } from "../provider";
 import { panelStore as defaultPanelStore, type PanelStore } from "../../admin/store/PanelStore";
+import {
+  parseIndicatorCatalog,
+  type IndicatorCatalogEntry,
+} from "../../config/schemas/indicator.schema";
+import { buildIndicatorUsage, type IndicatorUsageEntry } from "../../config/indicatorUsage";
 import { randomDelay } from "./delay";
 import { matchesFilters } from "./matchesFilters";
 
@@ -45,17 +50,18 @@ const tableFixtures = import.meta.glob("./datasets/tables/*.json", {
   import: "default",
 }) as Record<string, TableFixture>;
 
-const indicatorMetadataFixtures = import.meta.glob("./datasets/indicator-metadata/*.json", {
+// Simula a tabela de monitoramento de atualizações do Fabric, uma entrada por painel.
+const freshnessFixtures = import.meta.glob("./datasets/freshness/*.json", {
   eager: true,
   import: "default",
-}) as Record<string, IndicatorMetadata>;
+}) as Record<string, PanelFreshness>;
 
-const indicatorsFixture = import.meta.glob("./datasets/indicators.json", {
+const indicatorCatalogFixtures = import.meta.glob("./datasets/indicators/*.json", {
   eager: true,
   import: "default",
-}) as Record<string, IndicatorSummary[]>;
+}) as Record<string, unknown>;
 
-const indicatorSummaries: IndicatorSummary[] = Object.values(indicatorsFixture)[0] ?? [];
+const indicatorCatalog = parseIndicatorCatalog(Object.values(indicatorCatalogFixtures));
 
 const filterOptionFixtures = import.meta.glob("./datasets/filter-options/*/*.json", {
   eager: true,
@@ -75,10 +81,11 @@ function keyByFilename(fixtures: Record<string, unknown>): Map<string, unknown> 
 const metricsById = keyByFilename(metricFixtures) as Map<string, MetricFixture>;
 const categoricalById = keyByFilename(categoricalFixtures) as Map<string, CategoricalFixture>;
 const tablesById = keyByFilename(tableFixtures) as Map<string, TableFixture>;
-const indicatorMetadataById = keyByFilename(indicatorMetadataFixtures) as Map<
-  string,
-  IndicatorMetadata
->;
+const freshnessByPanelId = keyByFilename(freshnessFixtures) as Map<string, PanelFreshness>;
+
+const indicatorCatalogById = new Map<string, IndicatorCatalogEntry>(
+  indicatorCatalog.entries.map((entry) => [entry.id, entry]),
+);
 
 function filterOptionsKey(panelId: string, filterId: string): string {
   return `${panelId}/${filterId}`;
@@ -149,7 +156,7 @@ export class MockDataProvider implements DataProvider {
       theme: panel.theme,
       tags: panel.tags,
       source: panel.metadata.source,
-      updatedAt: panel.metadata.updatedAt,
+      updatedAt: freshnessByPanelId.get(panel.id)?.updatedAt ?? "—",
     }));
   }
 
@@ -160,6 +167,11 @@ export class MockDataProvider implements DataProvider {
       throw new Error(`Painel "${panelId}" não encontrado.`);
     }
     return panel;
+  }
+
+  async getPanelFreshness(panelId: string): Promise<PanelFreshness> {
+    await this.wait();
+    return freshnessByPanelId.get(panelId) ?? {};
   }
 
   async getIndicator(query: MetricQuery): Promise<DataEnvelope<IndicatorData>> {
@@ -249,17 +261,43 @@ export class MockDataProvider implements DataProvider {
     return filterOptionsByPanelAndFilter.get(filterOptionsKey(panelId, filterId)) ?? [];
   }
 
-  async getIndicatorMetadata(metricId: string): Promise<IndicatorMetadata> {
+  async getIndicatorMetadata(indicatorId: string): Promise<IndicatorCatalogEntry> {
     await this.wait();
-    const metadata = indicatorMetadataById.get(metricId);
-    if (!metadata) {
-      throw new Error(`Metadados do indicador "${metricId}" não encontrados.`);
+    const entry = indicatorCatalogById.get(indicatorId);
+    if (!entry) {
+      throw new Error(`Metadados do indicador "${indicatorId}" não encontrados.`);
     }
-    return metadata;
+    return entry;
   }
 
-  async listIndicators(): Promise<IndicatorSummary[]> {
+  async listIndicators(): Promise<IndicatorCatalogEntry[]> {
     await this.wait();
-    return indicatorSummaries;
+    return indicatorCatalog.entries;
+  }
+
+  async getIndicatorUsage(indicatorId: string): Promise<IndicatorUsageEntry[]> {
+    await this.wait();
+    const panels = this.panelStore.list().map(({ config }) => config);
+    const usage = buildIndicatorUsage(panels, indicatorCatalog.entries);
+    return usage.usageByIndicatorId.get(indicatorId) ?? [];
+  }
+
+  async getCatalogHealth(): Promise<CatalogHealth> {
+    await this.wait();
+    const panels = this.panelStore.list().map(({ config }) => config);
+    const usage = buildIndicatorUsage(panels, indicatorCatalog.entries);
+
+    const usageCountByIndicatorId: Record<string, number> = {};
+    for (const [id, entries] of usage.usageByIndicatorId) {
+      usageCountByIndicatorId[id] = entries.length;
+    }
+
+    return {
+      entries: indicatorCatalog.entries,
+      usageCountByIndicatorId,
+      orphans: usage.orphans,
+      dangling: usage.dangling,
+      invalid: indicatorCatalog.invalid,
+    };
   }
 }

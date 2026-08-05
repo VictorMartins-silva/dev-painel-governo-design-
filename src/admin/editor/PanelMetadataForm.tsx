@@ -89,44 +89,6 @@ export function PanelMetadataForm({ draft, errors, dispatch, idEditable }: Panel
           />
         </FormField>
 
-        <FormField
-          label="Período de referência"
-          htmlFor="panel-reference-period"
-          error={errors.get("metadata.referencePeriod")}
-        >
-          <input
-            id="panel-reference-period"
-            className={styles.input}
-            value={draft.metadata.referencePeriod}
-            onChange={(event) =>
-              dispatch({
-                kind: "set-metadata-field",
-                field: "referencePeriod",
-                value: event.target.value,
-              })
-            }
-          />
-        </FormField>
-
-        <FormField
-          label="Atualizado em"
-          htmlFor="panel-updated-at"
-          error={errors.get("metadata.updatedAt")}
-        >
-          <input
-            id="panel-updated-at"
-            className={styles.input}
-            value={draft.metadata.updatedAt}
-            onChange={(event) =>
-              dispatch({
-                kind: "set-metadata-field",
-                field: "updatedAt",
-                value: event.target.value,
-              })
-            }
-          />
-        </FormField>
-
         <FormField label="Responsável" htmlFor="panel-owner" error={errors.get("metadata.owner")}>
           <input
             id="panel-owner"

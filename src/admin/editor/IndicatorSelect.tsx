@@ -1,16 +1,17 @@
 import { useMemo, useState } from "react";
 import type { RequestStatus } from "../../domain/types";
-import type { IndicatorSummary } from "../../data/provider";
+import type { IndicatorCatalogEntry } from "../../config/schemas/indicator.schema";
 import { FormField } from "./FormField";
 import styles from "./IndicatorSelect.module.css";
 
 type IndicatorSelectProps = {
   id: string;
-  indicators: IndicatorSummary[];
+  indicators: IndicatorCatalogEntry[];
   status: RequestStatus;
   value: string;
-  onChange: (indicator: IndicatorSummary | null) => void;
+  onChange: (indicator: IndicatorCatalogEntry | null) => void;
   error?: string;
+  warning?: string;
 };
 
 export function IndicatorSelect({
@@ -20,6 +21,7 @@ export function IndicatorSelect({
   value,
   onChange,
   error,
+  warning,
 }: IndicatorSelectProps) {
   const [search, setSearch] = useState("");
 
@@ -44,7 +46,7 @@ export function IndicatorSelect({
         />
       </FormField>
 
-      <FormField label="Indicador" htmlFor={id} error={error}>
+      <FormField label="Indicador" htmlFor={id} error={error} warning={warning}>
         <select
           id={id}
           className={styles.select}

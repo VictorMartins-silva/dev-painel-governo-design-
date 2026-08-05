@@ -26,6 +26,12 @@ export default function AdminLayout() {
             <Link to="/admin" className={styles.navLink}>
               Painéis
             </Link>
+            <Link to="/admin/indicadores" className={styles.navLink}>
+              Indicadores
+            </Link>
+            <Link to="/admin/componentes" className={styles.navLink}>
+              Componentes
+            </Link>
           </nav>
         </div>
       </header>
