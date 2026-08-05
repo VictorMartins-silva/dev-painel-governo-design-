@@ -1,0 +1,110 @@
+.shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--pg-color-bg);
+}
+
+.skipLink {
+  position: absolute;
+  top: -48px;
+  left: var(--pg-spacing-3);
+  z-index: 100;
+  padding: var(--pg-spacing-2) var(--pg-spacing-4);
+  background-color: var(--pg-color-brand);
+  color: var(--pg-color-onBrand);
+  border-radius: var(--pg-radius-sm);
+  text-decoration: none;
+  transition: top 0.15s;
+}
+
+.skipLink:focus {
+  top: var(--pg-spacing-3);
+}
+
+.banner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--pg-spacing-3);
+  padding: var(--pg-spacing-2) var(--pg-spacing-4);
+  background-color: var(--pg-color-brandSoft);
+  border-bottom: 1px solid var(--pg-color-border);
+}
+
+.badge {
+  flex-shrink: 0;
+  padding: 2px var(--pg-spacing-2);
+  border-radius: var(--pg-radius-full);
+  background-color: var(--pg-color-brand);
+  color: var(--pg-color-onBrand);
+  font-size: var(--pg-typography-size-xs);
+  font-weight: var(--pg-typography-weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.bannerText {
+  flex: 1;
+  min-width: 200px;
+  font-size: var(--pg-typography-size-sm);
+  color: var(--pg-color-textSecondary);
+}
+
+.exitLink {
+  flex-shrink: 0;
+  font-size: var(--pg-typography-size-sm);
+  font-weight: var(--pg-typography-weight-medium);
+  color: var(--pg-color-brand);
+}
+
+.header {
+  border-bottom: 1px solid var(--pg-color-border);
+  background-color: var(--pg-color-surface);
+}
+
+.inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: var(--pg-spacing-4);
+  display: flex;
+  align-items: center;
+  gap: var(--pg-spacing-6);
+}
+
+.brand {
+  font-size: var(--pg-typography-size-lg);
+  font-weight: var(--pg-typography-weight-semibold);
+  color: var(--pg-color-textPrimary);
+  text-decoration: none;
+}
+
+.nav {
+  display: flex;
+  gap: var(--pg-spacing-5);
+}
+
+.navLink {
+  font-size: var(--pg-typography-size-sm);
+  font-weight: var(--pg-typography-weight-medium);
+  color: var(--pg-color-textSecondary);
+  text-decoration: none;
+}
+
+.navLink:hover {
+  color: var(--pg-color-brand);
+}
+
+.main {
+  flex: 1;
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: var(--pg-spacing-6) var(--pg-spacing-4);
+}
+
+@media (min-width: 768px) {
+  .main {
+    padding: var(--pg-spacing-8) var(--pg-spacing-6);
+  }
+}

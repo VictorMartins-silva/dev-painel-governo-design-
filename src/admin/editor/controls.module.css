@@ -1,0 +1,23 @@
+.input,
+.select,
+.textarea {
+  padding: var(--pg-spacing-2) var(--pg-spacing-3);
+  border: 1px solid var(--pg-color-border);
+  border-radius: var(--pg-radius-sm);
+  background-color: var(--pg-color-surface);
+  color: var(--pg-color-textPrimary);
+  font-size: var(--pg-typography-size-sm);
+  font-family: inherit;
+}
+
+.input:focus,
+.select:focus,
+.textarea:focus {
+  outline: 2px solid var(--pg-color-focusRing);
+  outline-offset: 1px;
+}
+
+.textarea {
+  min-height: 4.5em;
+  resize: vertical;
+}

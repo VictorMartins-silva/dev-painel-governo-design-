@@ -1,0 +1,28 @@
+.block {
+  padding: var(--pg-spacing-4);
+  border: 1px solid var(--pg-color-border);
+  border-radius: var(--pg-radius-md);
+  background-color: var(--pg-color-surface);
+}
+
+.summary {
+  font-size: var(--pg-typography-size-md);
+  font-weight: var(--pg-typography-weight-semibold);
+  color: var(--pg-color-textPrimary);
+  cursor: pointer;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--pg-spacing-4);
+  margin-top: var(--pg-spacing-4);
+}
+
+.input {
+  composes: input from "./controls.module.css";
+}
+
+.textarea {
+  composes: textarea from "./controls.module.css";
+}

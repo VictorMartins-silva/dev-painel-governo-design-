@@ -1,0 +1,26 @@
+.wrapper {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--pg-spacing-4);
+  align-items: start;
+}
+
+.input {
+  composes: input from "./controls.module.css";
+}
+
+.select {
+  composes: select from "./controls.module.css";
+}
+
+.blockError {
+  grid-column: 1 / -1;
+  color: var(--pg-color-negative);
+  font-size: var(--pg-typography-size-xs);
+}
+
+.hint {
+  grid-column: 1 / -1;
+  color: var(--pg-color-textMuted);
+  font-size: var(--pg-typography-size-xs);
+}

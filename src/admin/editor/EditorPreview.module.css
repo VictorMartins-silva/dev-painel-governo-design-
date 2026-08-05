@@ -1,0 +1,32 @@
+.preview {
+  display: flex;
+  flex-direction: column;
+  gap: var(--pg-spacing-3);
+  min-width: 0;
+}
+
+.header {
+  display: flex;
+  align-items: baseline;
+  gap: var(--pg-spacing-2);
+}
+
+.heading {
+  margin: 0;
+  font-size: var(--pg-typography-size-md);
+  font-weight: var(--pg-typography-weight-semibold);
+  color: var(--pg-color-textPrimary);
+}
+
+.pending {
+  font-size: var(--pg-typography-size-xs);
+  color: var(--pg-color-textSecondary);
+}
+
+.frame {
+  border: 1px solid var(--pg-color-border);
+  border-radius: var(--pg-radius-md);
+  padding: var(--pg-spacing-4);
+  background-color: var(--pg-color-surface);
+  overflow: auto;
+}

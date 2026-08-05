@@ -1,0 +1,87 @@
+.headerActions {
+  display: flex;
+  gap: var(--pg-spacing-2);
+}
+
+.primaryButton {
+  padding: var(--pg-spacing-2) var(--pg-spacing-4);
+  border: none;
+  border-radius: var(--pg-radius-sm);
+  background-color: var(--pg-color-brand);
+  color: var(--pg-color-onBrand);
+  font-size: var(--pg-typography-size-sm);
+  font-weight: var(--pg-typography-weight-medium);
+  cursor: pointer;
+}
+
+.primaryButton:hover:not(:disabled) {
+  background-color: var(--pg-color-brandStrong);
+}
+
+.primaryButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.secondaryButton {
+  padding: var(--pg-spacing-2) var(--pg-spacing-4);
+  border: 1px solid var(--pg-color-border);
+  border-radius: var(--pg-radius-sm);
+  background-color: var(--pg-color-surface);
+  color: var(--pg-color-textSecondary);
+  font-size: var(--pg-typography-size-sm);
+  font-weight: var(--pg-typography-weight-medium);
+  cursor: pointer;
+}
+
+.secondaryButton:hover {
+  border-color: var(--pg-color-borderStrong);
+  color: var(--pg-color-textPrimary);
+}
+
+.validationSummary {
+  padding: var(--pg-spacing-3) var(--pg-spacing-4);
+  margin-bottom: var(--pg-spacing-4);
+  border: 1px solid var(--pg-color-negative);
+  border-radius: var(--pg-radius-sm);
+  background-color: var(--pg-color-negativeSoft);
+  color: var(--pg-color-negative);
+  font-size: var(--pg-typography-size-sm);
+}
+
+.validationSummary ul {
+  margin: var(--pg-spacing-2) 0 0;
+  padding-left: var(--pg-spacing-5);
+}
+
+.formLayout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--pg-spacing-6);
+  align-items: start;
+}
+
+.formColumn {
+  display: flex;
+  flex-direction: column;
+  gap: var(--pg-spacing-4);
+  min-width: 0;
+}
+
+@media (min-width: 1100px) {
+  .formLayout {
+    grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+  }
+
+  .formLayout > :last-child {
+    position: sticky;
+    top: var(--pg-spacing-4);
+  }
+}
+
+.backLink {
+  display: inline-block;
+  margin-top: var(--pg-spacing-6);
+  font-size: var(--pg-typography-size-sm);
+  color: var(--pg-color-brand);
+}

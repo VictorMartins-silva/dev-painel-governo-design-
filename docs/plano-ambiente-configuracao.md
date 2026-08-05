@@ -214,10 +214,10 @@ src/
 - [ ] Pré-preenchimento de colunas de tabela a partir do dataset.
 
 ### Etapa 5 — Preview ao vivo e polimento
-- [ ] `EditorPreview` (split view, debounce, estado de "config inválida").
-- [ ] Confirmações destrutivas (excluir, restaurar, sair sem salvar).
-- [ ] Testes de integração: criar painel do zero → salvar → renderizar em `/paineis/:id`; editar estático → sombrear → restaurar.
-- [ ] Atualização do README (seção "Ambiente de configuração").
+- [x] `EditorPreview` (split view, debounce, estado de "config inválida").
+- [x] Confirmações destrutivas (excluir, restaurar, sair sem salvar).
+- [x] Testes de integração: criar painel do zero → salvar → renderizar em `/paineis/:id`; editar estático → sombrear → restaurar.
+- [x] Atualização do README (seção "Ambiente de configuração").
 
 *(Etapas 1–2 destravam valor imediato; 3–5 completam o editor. Cada etapa termina com testes verdes.)*
 

@@ -9,8 +9,8 @@ import type {
   TableData,
   TimeSeriesPoint,
 } from "../../domain/types";
-import type { DataProvider, PanelSummary, TableQuery } from "../provider";
-import { panelRegistry, findPanelConfig } from "../../config/panels";
+import type { DataProvider, IndicatorSummary, PanelSummary, TableQuery } from "../provider";
+import { panelStore as defaultPanelStore, type PanelStore } from "../../admin/store/PanelStore";
 import { randomDelay } from "./delay";
 import { matchesFilters } from "./matchesFilters";
 
@@ -49,6 +49,13 @@ const indicatorMetadataFixtures = import.meta.glob("./datasets/indicator-metadat
   eager: true,
   import: "default",
 }) as Record<string, IndicatorMetadata>;
+
+const indicatorsFixture = import.meta.glob("./datasets/indicators.json", {
+  eager: true,
+  import: "default",
+}) as Record<string, IndicatorSummary[]>;
+
+const indicatorSummaries: IndicatorSummary[] = Object.values(indicatorsFixture)[0] ?? [];
 
 const filterOptionFixtures = import.meta.glob("./datasets/filter-options/*/*.json", {
   eager: true,
@@ -110,15 +117,18 @@ const ERROR_SENTINEL = "__mock_error__";
 export type MockDataProviderOptions = {
   simulateLatency?: boolean;
   latencyRange?: [number, number];
+  panelStore?: PanelStore;
 };
 
 export class MockDataProvider implements DataProvider {
   private readonly simulateLatency: boolean;
   private readonly latencyRange: [number, number];
+  private readonly panelStore: PanelStore;
 
   constructor(options: MockDataProviderOptions = {}) {
     this.simulateLatency = options.simulateLatency ?? true;
     this.latencyRange = options.latencyRange ?? [300, 600];
+    this.panelStore = options.panelStore ?? defaultPanelStore;
   }
 
   private async wait(): Promise<void> {
@@ -132,7 +142,7 @@ export class MockDataProvider implements DataProvider {
 
   async listPanels(): Promise<PanelSummary[]> {
     await this.wait();
-    return panelRegistry.map((panel) => ({
+    return this.panelStore.list().map(({ config: panel }) => ({
       id: panel.id,
       title: panel.title,
       description: panel.description,
@@ -145,7 +155,7 @@ export class MockDataProvider implements DataProvider {
 
   async getPanelConfig(panelId: string) {
     await this.wait();
-    const panel = findPanelConfig(panelId);
+    const panel = this.panelStore.get(panelId);
     if (!panel) {
       throw new Error(`Painel "${panelId}" não encontrado.`);
     }
@@ -246,5 +256,10 @@ export class MockDataProvider implements DataProvider {
       throw new Error(`Metadados do indicador "${metricId}" não encontrados.`);
     }
     return metadata;
+  }
+
+  async listIndicators(): Promise<IndicatorSummary[]> {
+    await this.wait();
+    return indicatorSummaries;
   }
 }

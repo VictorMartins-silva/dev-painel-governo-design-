@@ -24,6 +24,7 @@ const stubProvider: DataProvider = {
   getIndicatorMetadata: async () => {
     throw new Error("não implementado no stub");
   },
+  listIndicators: async () => [],
 };
 
 function Probe() {

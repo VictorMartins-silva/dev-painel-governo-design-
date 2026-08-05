@@ -38,7 +38,8 @@ npm run format:check # Prettier (só verifica)
 npm run tokens:build  # regenera src/styles/tokens.css a partir de tokens.ts
 ```
 
-Rotas disponíveis: `/`, `/paineis`, `/paineis/:id`, `/indicadores/:id`, `/dev/galeria`.
+Rotas disponíveis: `/`, `/paineis`, `/paineis/:id`, `/indicadores/:id`, `/dev/galeria`,
+`/admin`, `/admin/paineis/novo`, `/admin/paineis/:id`.
 
 ## Arquitetura em 4 camadas
 
@@ -99,13 +100,53 @@ Sem essas 4 alterações, um `type` presente na config mas ausente no registry r
 `ErrorState` localizado em vez de quebrar a página — o comportamento é testado em
 `src/renderer/ConfigRenderer.test.tsx`.
 
+## Ambiente de configuração (`/admin`)
+
+Editor administrativo para criar e editar painéis sem escrever código — formulário estruturado
+que produz objetos `PanelConfig` válidos, mais um preview ao vivo reaproveitando o próprio
+`ConfigRenderer`. Acesso livre em `/admin`, sem autenticação nesta versão (aviso fixo no topo do
+layout do admin lembra disso).
+
+- **`PanelStore`** (`src/admin/store/PanelStore.ts`): camada de persistência com overlay —
+  painéis salvos em `localStorage` sobrepõem os estáticos do `panelRegistry` por id. Um painel
+  estático editado passa a ser "sombreado" por uma cópia local (badge *Modificado* na listagem,
+  com ação *Restaurar original*); um painel novo existe só no `localStorage` até ser exportado.
+  Toda escrita passa por `panelConfigSchema.parse()` — configuração inválida nunca é persistida.
+  `MockDataProvider.listPanels()`/`getPanelConfig()` consultam o `PanelStore`, então as páginas
+  públicas (`/paineis`, `/paineis/:id`) refletem imediatamente as edições feitas no admin.
+- **`AdminPanelsPage`** (`src/admin/pages/AdminPanelsPage.tsx`): lista painéis estáticos e custom
+  com badge de origem (*Original*/*Modificado*/*Novo*); ações de criar, duplicar, excluir (só
+  custom), restaurar original, exportar (download de `<id>.panel.json`) e importar (upload +
+  validação Zod + confirmação em caso de conflito de id).
+- **`PanelEditorPage`** (`src/admin/pages/PanelEditorPage.tsx`): editor em split view — formulário
+  à esquerda (`PanelMetadataForm`, `FiltersForm`, `SectionsForm` → `ComponentForm` por componente)
+  e `EditorPreview` à direita, que renderiza o draft atual através do `ConfigRenderer` com
+  debounce de 300 ms. Config inválida aparece no preview como o mesmo `ErrorState` estruturado
+  (issues do Zod) usado pelas páginas públicas — o preview também serve de feedback de validação.
+  `ComponentForm` traz campos condicionais por tipo de componente e o `IndicatorSelect` (busca +
+  filtro de compatibilidade tipo ↔ indicador via `listIndicators()`); colunas de `data-table` podem
+  ser pré-preenchidas a partir do schema real do dataset selecionado.
+- **Confirmações destrutivas**: excluir e restaurar pedem confirmação (`window.confirm`) na
+  listagem. Sair do editor com alterações não salvas — pelo link "Voltar", por qualquer navegação
+  do React Router ou fechando/recarregando a aba — também pede confirmação (`useBlocker` do
+  React Router + `beforeunload`); sem alterações pendentes, a saída é imediata.
+- **Catálogo de indicadores**: `listIndicators()` (`DataProvider`) devolve `IndicatorSummary[]`
+  (`shapes`, `dimensions`, `datasets`, `defaultFormat`), usado pelo `IndicatorSelect` para filtrar
+  o dropdown por compatibilidade com o tipo de componente escolhido.
+
+O caminho de migração para Fabric/API está documentado em
+`docs/plano-ambiente-configuracao.md` — `PanelStore` e `listIndicators()` são os dois pontos de
+troca (localStorage → endpoints HTTP, mock → catálogo real).
+
 ## Testes
 
-65 testes cobrindo: schemas Zod (casos válidos e inválidos), `MockDataProvider` (filtro em
+142 testes cobrindo: schemas Zod (casos válidos e inválidos), `MockDataProvider` (filtro em
 memória, soma por período, erros simulados), hooks de dados (4 estados: loading/success/empty/
 error), componentes analíticos e de filtro (RTL), o renderizador (config sintética, config
 inválida, componente não registrado, refetch ao mudar filtro), os dois painéis reais (schema +
-integração end-to-end) e as páginas de navegação (Home, Catálogo, Detalhe do indicador).
+integração end-to-end), as páginas de navegação (Home, Catálogo, Detalhe do indicador) e o
+ambiente de configuração (`PanelStore`, editor por etapa, preview ao vivo e os fluxos integrados
+criar → salvar → renderizar / editar estático → sombrear → restaurar).
 
 ```bash
 npm run test
@@ -132,8 +173,10 @@ metodológica na própria página). O metric `__mock_error__` (indicador) e data
 - Secretaria e ODS no Catálogo são mapeados heuristicamente a partir do `theme` de cada painel
   (não são campos do contrato `PanelConfig`) — a spec permite dados simulados para esses filtros
   nesta etapa.
-- Sem autenticação, editor visual, drag-and-drop ou motor de consultas — fora de escopo por
-  decisão de arquitetura (ver seção 11 do plano de execução).
+- Sem autenticação no `/admin`, sem rascunho/publicado/versionamento e sem motor de consultas —
+  fora de escopo da v1 (ver `docs/plano-ambiente-configuracao.md`, seção 8). O editor
+  administrativo é um formulário estruturado com preview ao vivo, não um construtor visual
+  drag-and-drop.
 - Bundle de produção ainda não usa code-splitting (aviso do Vite no build); aceitável para o
   volume atual do protótipo.
 

@@ -47,4 +47,16 @@ describe("MockDataProvider", () => {
     const periods = series.data.map((point) => point.period);
     expect(new Set(periods).size).toBe(periods.length);
   });
+
+  it("lista o catálogo de indicadores com formas e ids únicos", async () => {
+    const indicators = await provider.listIndicators();
+
+    expect(indicators.length).toBeGreaterThan(0);
+    const ids = indicators.map((indicator) => indicator.id);
+    expect(new Set(ids).size).toBe(ids.length);
+    expect(indicators.every((indicator) => indicator.shapes.length > 0)).toBe(true);
+
+    const estoque = indicators.find((indicator) => indicator.id === "estoque_vinculos");
+    expect(estoque?.shapes).toEqual(expect.arrayContaining(["metric", "categorical"]));
+  });
 });

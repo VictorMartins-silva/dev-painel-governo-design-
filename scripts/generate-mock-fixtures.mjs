@@ -1,5 +1,6 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
+import prettier from "prettier";
 
 const projectRoot = fileURLToPath(new URL("..", import.meta.url));
 const datasetsDir = `${projectRoot}src/data/mock/datasets`;
@@ -264,6 +265,129 @@ await writeFile(
   "utf8",
 );
 
+// --- Catálogo de indicadores (listIndicators) ---
+
+function dimensionsOf(rows, excludeKeys) {
+  if (rows.length === 0) return [];
+  const candidateKeys = Object.keys(rows[0]).filter((key) => !excludeKeys.includes(key));
+  return candidateKeys.filter((key) => new Set(rows.map((row) => row[key])).size > 1);
+}
+
+function indicatorEntry({ id, name, unit, source, shapes, dimensions, datasets, defaultFormat }) {
+  const entry = { id, name, unit, source, shapes };
+  if (dimensions && dimensions.length > 0) entry.dimensions = dimensions;
+  if (datasets && datasets.length > 0) entry.datasets = datasets;
+  if (defaultFormat) entry.defaultFormat = defaultFormat;
+  return entry;
+}
+
+const metricExclude = ["period", "value", "ano", "mes"];
+const categoricalExclude = ["category", "value"];
+
+const indicators = [
+  indicatorEntry({
+    id: "populacao_total",
+    name: "População total",
+    unit: "habitantes",
+    source: demografiaMetadata.source,
+    shapes: ["metric"],
+    dimensions: dimensionsOf(populacaoTotalRows, metricExclude),
+    defaultFormat: "integer",
+  }),
+  indicatorEntry({
+    id: "crescimento_populacional",
+    name: "Crescimento populacional",
+    unit: "%",
+    source: demografiaMetadata.source,
+    shapes: ["metric"],
+    dimensions: dimensionsOf(crescimentoPopulacionalRows, metricExclude),
+    defaultFormat: "percent",
+  }),
+  indicatorEntry({
+    id: "saldo_empregos",
+    name: "Saldo de empregos",
+    unit: "vínculos",
+    source: metricasMetadata.source,
+    shapes: ["metric"],
+    dimensions: dimensionsOf(saldoRows, metricExclude),
+    defaultFormat: "integer",
+  }),
+  indicatorEntry({
+    id: "admissoes",
+    name: "Admissões",
+    unit: "vínculos",
+    source: metricasMetadata.source,
+    shapes: ["metric"],
+    dimensions: dimensionsOf(admissoesRows, metricExclude),
+    defaultFormat: "integer",
+  }),
+  indicatorEntry({
+    id: "desligamentos",
+    name: "Desligamentos",
+    unit: "vínculos",
+    source: metricasMetadata.source,
+    shapes: ["metric"],
+    dimensions: dimensionsOf(desligamentosRows, metricExclude),
+    defaultFormat: "integer",
+  }),
+  indicatorEntry({
+    id: "estoque_vinculos",
+    name: "Estoque de vínculos",
+    unit: "vínculos",
+    source: metricasMetadata.source,
+    shapes: ["metric", "categorical"],
+    dimensions: [
+      ...dimensionsOf(estoqueRows, metricExclude),
+      ...dimensionsOf(estoquePorSetor.rows, categoricalExclude),
+    ],
+    defaultFormat: "integer",
+  }),
+  indicatorEntry({
+    id: "distribuicao_sexo",
+    name: "Distribuição por sexo",
+    unit: "habitantes",
+    source: demografiaMetadata.source,
+    shapes: ["categorical"],
+    dimensions: dimensionsOf(distribuicaoSexo.rows, categoricalExclude),
+    defaultFormat: "integer",
+  }),
+  indicatorEntry({
+    id: "distribuicao_faixa_etaria",
+    name: "Distribuição por faixa etária",
+    unit: "habitantes",
+    source: demografiaMetadata.source,
+    shapes: ["categorical"],
+    dimensions: dimensionsOf(distribuicaoFaixaEtaria.rows, categoricalExclude),
+    defaultFormat: "integer",
+  }),
+  indicatorEntry({
+    id: "populacao_por_territorio",
+    name: "População por território",
+    unit: "habitantes",
+    source: demografiaMetadata.source,
+    shapes: ["table"],
+    datasets: ["populacao_por_territorio"],
+    defaultFormat: "integer",
+  }),
+  indicatorEntry({
+    id: "vinculos_por_atividade",
+    name: "Vínculos por atividade econômica",
+    unit: "vínculos",
+    source: metricasMetadata.source,
+    shapes: ["table"],
+    datasets: ["vinculos_por_atividade"],
+    defaultFormat: "integer",
+  }),
+];
+
+const prettierConfig = await prettier.resolveConfig(`${projectRoot}indicators.json`);
+const formattedIndicators = await prettier.format(JSON.stringify(indicators), {
+  ...prettierConfig,
+  parser: "json",
+});
+
+await writeFile(`${datasetsDir}/indicators.json`, formattedIndicators, "utf8");
+
 console.log(
-  "Mock fixtures gerados: metrics/{saldo_empregos,admissoes,desligamentos,estoque_vinculos,populacao_total,crescimento_populacional}.json, categorical/{estoque_vinculos,distribuicao_sexo,distribuicao_faixa_etaria}.json, tables/{vinculos_por_atividade,populacao_por_territorio}.json",
+  "Mock fixtures gerados: metrics/{saldo_empregos,admissoes,desligamentos,estoque_vinculos,populacao_total,crescimento_populacional}.json, categorical/{estoque_vinculos,distribuicao_sexo,distribuicao_faixa_etaria}.json, tables/{vinculos_por_atividade,populacao_por_territorio}.json, indicators.json",
 );

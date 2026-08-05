@@ -1,0 +1,17 @@
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--pg-spacing-1);
+  min-width: 0;
+}
+
+.label {
+  font-size: var(--pg-typography-size-xs);
+  font-weight: var(--pg-typography-weight-medium);
+  color: var(--pg-color-textSecondary);
+}
+
+.error {
+  font-size: var(--pg-typography-size-xs);
+  color: var(--pg-color-negative);
+}

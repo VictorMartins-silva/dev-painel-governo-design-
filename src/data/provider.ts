@@ -2,6 +2,7 @@ import type {
   CategoricalPoint,
   DataEnvelope,
   FilterOption,
+  FormatType,
   IndicatorData,
   IndicatorMetadata,
   MetricQuery,
@@ -26,6 +27,22 @@ export type TableQuery = {
   limit?: number;
 };
 
+export type IndicatorShape = "metric" | "categorical" | "table";
+
+export type IndicatorSummary = {
+  id: string;
+  name: string;
+  unit: string;
+  source: string;
+  /** Formas de dado que o indicador oferece — determina os tipos de componente compatíveis */
+  shapes: IndicatorShape[];
+  /** Dimensões disponíveis para quebra (ex.: "sexo", "setor") — alimenta bar-chart/time-series */
+  dimensions?: string[];
+  /** Datasets tabulares associados (para data-table) */
+  datasets?: string[];
+  defaultFormat?: FormatType;
+};
+
 export type DataProvider = {
   listPanels(): Promise<PanelSummary[]>;
   getPanelConfig(panelId: string): Promise<PanelConfig>;
@@ -35,4 +52,5 @@ export type DataProvider = {
   getTable(query: TableQuery): Promise<DataEnvelope<TableData>>;
   getFilterOptions(panelId: string, filterId: string): Promise<FilterOption[]>;
   getIndicatorMetadata(metricId: string): Promise<IndicatorMetadata>;
+  listIndicators(): Promise<IndicatorSummary[]>;
 };
