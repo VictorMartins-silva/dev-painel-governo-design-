@@ -6,6 +6,36 @@ interpreta arquivos de configuração validados por schema e monta os painéis a
 registry fechado de componentes analíticos. O objetivo é provar que um segundo painel pode ser
 adicionado **apenas por configuração + dados**, sem escrever JSX ou CSS novos.
 
+## Escopo da validação
+
+O objetivo desta versão é validar o **conceito operacional**, e não prontidão para produção:
+
+- um único índice de painéis, navegado por lentes combináveis de Tema, Secretaria e ODS;
+- navegação dos painéis para os detalhes de seus indicadores;
+- criação e edição de painéis dentro da própria ferramenta;
+- composição restrita a quatro componentes fixos e padronizados;
+- posicionamento definido por seções ordenadas e layouts `grid-2`, `grid-3`, `grid-4` ou `stack`;
+- preview e publicação usando o mesmo renderizador;
+- painel salvo aparecendo imediatamente na área pública da aplicação no mesmo navegador.
+
+Nesta fase, **publicar** significa validar e salvar no armazenamento local do protótipo, tornando o
+painel acessível no catálogo e na rota pública da própria ferramenta. Não significa ainda publicação
+multiusuário com backend, autenticação, aprovação, histórico ou operação produtiva.
+
+O escopo completo, os critérios de sucesso e o estado de cada capacidade estão documentados em
+[`docs/escopo-do-prototipo.md`](docs/escopo-do-prototipo.md). A próxima etapa é melhorar a experiência
+da página de configuração até chegar às telas e aos comportamentos necessários para apresentar esse
+conceito com clareza.
+
+Documentação relacionada:
+
+| Documento                                                                            | Para quê                                                                      |
+| ------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------- |
+| [`docs/escopo-do-prototipo.md`](docs/escopo-do-prototipo.md)                         | O que a validação precisa provar e o que está deliberadamente fora dela.      |
+| [`docs/plano-ambiente-configuracao.md`](docs/plano-ambiente-configuracao.md)         | Arquitetura do `/admin` e caminho de migração para Fabric/API.                |
+| [`docs/relatorio-avaliacao-aplicacao.html`](docs/relatorio-avaliacao-aplicacao.html) | Avaliação técnica com números verificados, dívida técnica e roadmap.          |
+| [`docs/discordancias-documentacao.md`](docs/discordancias-documentacao.md)           | Divergências apuradas entre a documentação e o código, e o que foi corrigido. |
+
 ## Stack
 
 - **Vite + React 18 + TypeScript (`strict: true`)**
@@ -16,30 +46,38 @@ adicionado **apenas por configuração + dados**, sem escrever JSX ou CSS novos.
 - **Vitest + React Testing Library**
 - **ESLint (strict + stylistic) + Prettier**
 
-Ver `_discover/painel-governo-react/plano-execucao.md` (no acervo operacional) para o racional
-completo das decisões técnicas.
+O racional completo das decisões técnicas está no plano de execução mantido no acervo operacional
+do projeto, fora deste repositório.
 
 ## Como rodar
 
-Pré-requisito: Node.js. O projeto foi desenvolvido e testado em Node 18.16 — algumas
-dependências (`vitest`, `jsdom`) foram fixadas em versões compatíveis com Node 18 porque as
-versões mais recentes exigem Node ≥ 20. Se o ambiente tiver Node 20+, as versões podem ser
-atualizadas em `package.json` sem alterar o código.
+Pré-requisito: Node.js. O projeto foi desenvolvido e testado em Node 18.16 — `vitest` (2.x) e
+`jsdom` (25.x) são mantidos nessas linhas major porque as versões mais recentes exigem Node ≥ 20.
+As faixas em `package.json` usam `^`, então quem garante a reprodutibilidade é o
+`package-lock.json`; se o ambiente tiver Node 20+, as majors podem ser atualizadas sem alterar o
+código de aplicação.
 
 ```bash
 npm install
-npm run dev        # servidor de desenvolvimento
-npm run build       # build de produção (gera tokens.css antes)
-npm run test        # roda a suíte de testes uma vez
-npm run test:watch  # testes em modo watch
+npm run dev          # servidor de desenvolvimento (gera tokens.css antes)
+npm run build        # build de produção (gera tokens.css antes)
+npm run preview      # serve o build de dist/
+npm run test         # roda a suíte de testes uma vez (gera tokens.css antes)
+npm run test:watch   # testes em modo watch
 npm run lint         # ESLint
 npm run format       # Prettier (escreve)
 npm run format:check # Prettier (só verifica)
-npm run tokens:build  # regenera src/styles/tokens.css a partir de tokens.ts
+npm run tokens:build # regenera src/styles/tokens.css a partir de tokens.ts
 ```
 
+`dev`, `build` e `test` regeneram `src/styles/tokens.css`. Esse arquivo não está no
+`.prettierignore` e o gerador não emite saída formatada, então `npm run format:check` acusa
+`tokens.css` depois de qualquer um desses comandos — é ruído conhecido, não regressão.
+
 Rotas disponíveis: `/`, `/paineis`, `/paineis/:id`, `/indicadores/:id`, `/dev/galeria`,
-`/admin`, `/admin/paineis/novo`, `/admin/paineis/:id`.
+`/admin`, `/admin/paineis/novo`, `/admin/paineis/:id`. As rotas são registradas
+incondicionalmente em `src/app/router.tsx` — inclusive `/dev/galeria`, que portanto também existe
+no build de produção.
 
 ## Arquitetura em 4 camadas
 
@@ -109,13 +147,13 @@ layout do admin lembra disso).
 
 - **`PanelStore`** (`src/admin/store/PanelStore.ts`): camada de persistência com overlay —
   painéis salvos em `localStorage` sobrepõem os estáticos do `panelRegistry` por id. Um painel
-  estático editado passa a ser "sombreado" por uma cópia local (badge *Modificado* na listagem,
-  com ação *Restaurar original*); um painel novo existe só no `localStorage` até ser exportado.
+  estático editado passa a ser "sombreado" por uma cópia local (badge _Modificado_ na listagem,
+  com ação _Restaurar original_); um painel novo existe só no `localStorage` até ser exportado.
   Toda escrita passa por `panelConfigSchema.parse()` — configuração inválida nunca é persistida.
   `MockDataProvider.listPanels()`/`getPanelConfig()` consultam o `PanelStore`, então as páginas
   públicas (`/paineis`, `/paineis/:id`) refletem imediatamente as edições feitas no admin.
 - **`AdminPanelsPage`** (`src/admin/pages/AdminPanelsPage.tsx`): lista painéis estáticos e custom
-  com badge de origem (*Original*/*Modificado*/*Novo*); ações de criar, duplicar, excluir (só
+  com badge de origem (_Original_/_Modificado_/_Novo_); ações de criar, duplicar, excluir (só
   custom), restaurar original, exportar (download de `<id>.panel.json`) e importar (upload +
   validação Zod + confirmação em caso de conflito de id).
 - **`PanelEditorPage`** (`src/admin/pages/PanelEditorPage.tsx`): editor em split view — formulário
@@ -152,6 +190,9 @@ criar → salvar → renderizar / editar estático → sombrear → restaurar).
 npm run test
 ```
 
+`@vitest/coverage-v8` está instalado, mas não há script `test:coverage` nem bloco `coverage` em
+`vite.config.ts` — nenhuma métrica de cobertura é produzida hoje.
+
 ## Estados de carregamento, vazio e erro
 
 Todo hook de dados retorna `{ status: 'loading' | 'success' | 'empty' | 'error', ... }`;
@@ -177,8 +218,18 @@ metodológica na própria página). O metric `__mock_error__` (indicador) e data
   fora de escopo da v1 (ver `docs/plano-ambiente-configuracao.md`, seção 8). O editor
   administrativo é um formulário estruturado com preview ao vivo, não um construtor visual
   drag-and-drop.
-- Bundle de produção ainda não usa code-splitting (aviso do Vite no build); aceitável para o
-  volume atual do protótipo.
+- Bundle de produção ainda não usa code-splitting (aviso do Vite no build): um único JS de
+  ~994 kB minificado / ~319 kB gzip, carregando ECharts e o admin junto com a área pública.
+  Aceitável para o volume atual do protótipo.
+- `panelConfigSchema` valida estrutura e formato, não semântica: não checa unicidade de IDs de
+  filtros/seções/componentes nem se as métricas e datasets referenciados existem. O editor evita
+  isso pela seleção guiada, mas um JSON importado à mão pode ser aceito e render componentes
+  permanentemente vazios ou em erro.
+- Sem CI, deploy, telemetria ou tratamento global de falhas. `createBrowserRouter` exige rewrite
+  para `index.html` no servidor que hospedar o `dist/`.
+- `npm audit` reporta 8 ocorrências (2 críticas, 3 altas, 3 moderadas), concentradas em
+  ferramentas de desenvolvimento; com `--omit=dev` restam 2 altas na cadeia `react-router`,
+  relativas ao modo RSC que esta SPA não usa.
 
 ## Pós-protótipo (não implementado)
 

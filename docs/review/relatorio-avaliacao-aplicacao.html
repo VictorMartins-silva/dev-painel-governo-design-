@@ -1,0 +1,1586 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Relatório técnico de avaliação do protótipo Painel de Governo."
+    />
+    <title>Relatório de avaliação — Painel de Governo</title>
+    <style>
+      :root {
+        --ink: #17212b;
+        --muted: #5f6c79;
+        --paper: #f4f7f8;
+        --surface: #ffffff;
+        --line: #d9e1e5;
+        --navy: #12324a;
+        --blue: #176b87;
+        --teal: #168378;
+        --teal-soft: #dff3ee;
+        --amber: #a56100;
+        --amber-soft: #fff1d6;
+        --red: #b33535;
+        --red-soft: #fde7e5;
+        --green: #197148;
+        --green-soft: #e1f2e8;
+        --shadow: 0 10px 32px rgba(18, 50, 74, 0.09);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        color: var(--ink);
+        background: var(--paper);
+        font-family:
+          Inter,
+          ui-sans-serif,
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          sans-serif;
+        font-size: 16px;
+        line-height: 1.62;
+      }
+
+      a {
+        color: var(--blue);
+      }
+
+      a:focus-visible,
+      summary:focus-visible {
+        outline: 3px solid #75c7ce;
+        outline-offset: 3px;
+      }
+
+      .hero {
+        position: relative;
+        overflow: hidden;
+        color: white;
+        background:
+          radial-gradient(circle at 88% 15%, rgba(86, 205, 191, 0.22), transparent 30rem),
+          linear-gradient(135deg, #0d293f 0%, #124b61 62%, #176f79 100%);
+      }
+
+      .hero::after {
+        position: absolute;
+        right: -8rem;
+        bottom: -14rem;
+        width: 34rem;
+        height: 34rem;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 50%;
+        content: "";
+      }
+
+      .wrap {
+        width: min(1160px, calc(100% - 40px));
+        margin: 0 auto;
+      }
+
+      .hero-content {
+        position: relative;
+        z-index: 1;
+        padding: 72px 0 62px;
+      }
+
+      .eyebrow {
+        margin: 0 0 16px;
+        color: #8de0d5;
+        font-size: 0.78rem;
+        font-weight: 800;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+      }
+
+      h1,
+      h2,
+      h3 {
+        line-height: 1.18;
+      }
+
+      h1 {
+        max-width: 790px;
+        margin: 0;
+        font-size: clamp(2.35rem, 6vw, 4.8rem);
+        font-weight: 760;
+        letter-spacing: -0.055em;
+      }
+
+      .hero-lead {
+        max-width: 750px;
+        margin: 22px 0 0;
+        color: #dcebf0;
+        font-size: clamp(1.05rem, 2vw, 1.3rem);
+      }
+
+      .hero-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px 22px;
+        margin-top: 30px;
+        color: #b9d3dc;
+        font-size: 0.9rem;
+      }
+
+      .hero-meta strong {
+        color: white;
+      }
+
+      .toc {
+        position: sticky;
+        z-index: 5;
+        top: 0;
+        border-bottom: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.94);
+        backdrop-filter: blur(12px);
+      }
+
+      .toc nav {
+        display: flex;
+        gap: 24px;
+        overflow-x: auto;
+        padding: 13px 0;
+        white-space: nowrap;
+        scrollbar-width: thin;
+      }
+
+      .toc a {
+        color: #39505e;
+        font-size: 0.86rem;
+        font-weight: 700;
+        text-decoration: none;
+      }
+
+      main {
+        padding: 44px 0 76px;
+      }
+
+      section {
+        margin-top: 56px;
+        scroll-margin-top: 70px;
+      }
+
+      section:first-child {
+        margin-top: 0;
+      }
+
+      h2 {
+        margin: 0 0 18px;
+        color: var(--navy);
+        font-size: clamp(1.65rem, 3vw, 2.35rem);
+        letter-spacing: -0.035em;
+      }
+
+      h3 {
+        margin: 0 0 10px;
+        color: var(--navy);
+        font-size: 1.08rem;
+      }
+
+      p {
+        margin: 0 0 12px;
+      }
+
+      .section-lead {
+        max-width: 820px;
+        color: var(--muted);
+        font-size: 1.05rem;
+      }
+
+      .verdict {
+        display: grid;
+        grid-template-columns: minmax(180px, 0.42fr) 1fr;
+        gap: 28px;
+        align-items: stretch;
+      }
+
+      .score-card,
+      .card,
+      .finding,
+      .roadmap-item,
+      .evidence-box {
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        background: var(--surface);
+        box-shadow: var(--shadow);
+      }
+
+      .score-card {
+        display: grid;
+        place-items: center;
+        min-height: 265px;
+        padding: 28px;
+        color: white;
+        text-align: center;
+        background: linear-gradient(145deg, var(--navy), var(--teal));
+      }
+
+      .score {
+        font-size: 4.8rem;
+        font-weight: 800;
+        line-height: 0.9;
+        letter-spacing: -0.07em;
+      }
+
+      .score small {
+        font-size: 1.2rem;
+        font-weight: 600;
+        letter-spacing: 0;
+      }
+
+      .score-label {
+        margin-top: 14px;
+        color: #d8f0ec;
+        font-size: 0.88rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .verdict-copy {
+        padding: 30px;
+      }
+
+      .verdict-copy .headline {
+        margin-bottom: 16px;
+        color: var(--navy);
+        font-size: 1.45rem;
+        font-weight: 760;
+        line-height: 1.35;
+      }
+
+      .pill-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 20px;
+      }
+
+      .method-note {
+        margin: 20px 0 0;
+        padding: 14px 16px;
+        border-left: 3px solid var(--blue);
+        border-radius: 0 10px 10px 0;
+        background: #eef5f8;
+        color: var(--muted);
+        font-size: 0.88rem;
+      }
+
+      .method-note strong {
+        color: var(--navy);
+      }
+
+      .pill,
+      .priority,
+      .status {
+        display: inline-flex;
+        align-items: center;
+        border-radius: 999px;
+        padding: 5px 10px;
+        font-size: 0.76rem;
+        font-weight: 800;
+        line-height: 1.2;
+      }
+
+      .pill.good,
+      .status.pass {
+        color: var(--green);
+        background: var(--green-soft);
+      }
+
+      .pill.warn,
+      .status.warn,
+      .priority.p1 {
+        color: var(--amber);
+        background: var(--amber-soft);
+      }
+
+      .pill.risk,
+      .status.fail,
+      .priority.p0 {
+        color: var(--red);
+        background: var(--red-soft);
+      }
+
+      .priority.p2 {
+        color: var(--blue);
+        background: #e0f0f5;
+      }
+
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 14px;
+        margin-top: 18px;
+      }
+
+      .stat {
+        padding: 20px;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        background: var(--surface);
+      }
+
+      .stat-value {
+        display: block;
+        color: var(--navy);
+        font-size: 1.8rem;
+        font-weight: 800;
+        letter-spacing: -0.04em;
+      }
+
+      .stat-label {
+        display: block;
+        margin-top: 3px;
+        color: var(--muted);
+        font-size: 0.82rem;
+      }
+
+      .grid-2,
+      .grid-3 {
+        display: grid;
+        gap: 16px;
+        margin-top: 20px;
+      }
+
+      .grid-2 {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .grid-3 {
+        grid-template-columns: repeat(3, 1fr);
+      }
+
+      .card {
+        padding: 24px;
+      }
+
+      .card p:last-child,
+      .finding p:last-child {
+        margin-bottom: 0;
+      }
+
+      .architecture {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 12px;
+        margin-top: 22px;
+      }
+
+      .layer {
+        position: relative;
+        min-height: 150px;
+        padding: 20px;
+        border: 1px solid #b9d9dc;
+        border-radius: 14px;
+        background: linear-gradient(160deg, white, #edf7f6);
+      }
+
+      .layer:not(:last-child)::after {
+        position: absolute;
+        z-index: 2;
+        top: 50%;
+        right: -19px;
+        width: 24px;
+        color: var(--teal);
+        content: "→";
+        font-size: 1.3rem;
+        font-weight: 900;
+        text-align: center;
+      }
+
+      .layer-number {
+        display: block;
+        margin-bottom: 8px;
+        color: var(--teal);
+        font-size: 0.76rem;
+        font-weight: 800;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+      }
+
+      .layer strong {
+        display: block;
+        margin-bottom: 6px;
+        color: var(--navy);
+      }
+
+      .layer span:last-child {
+        color: var(--muted);
+        font-size: 0.84rem;
+      }
+
+      .score-table,
+      .check-table {
+        width: 100%;
+        margin-top: 20px;
+        overflow: hidden;
+        border: 1px solid var(--line);
+        border-collapse: separate;
+        border-spacing: 0;
+        border-radius: 14px;
+        background: var(--surface);
+      }
+
+      th,
+      td {
+        padding: 14px 16px;
+        border-bottom: 1px solid var(--line);
+        vertical-align: top;
+        text-align: left;
+      }
+
+      th {
+        color: #43545e;
+        background: #eef3f4;
+        font-size: 0.76rem;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+      }
+
+      tr:last-child td {
+        border-bottom: 0;
+      }
+
+      .dimension {
+        min-width: 170px;
+        font-weight: 750;
+      }
+
+      .rating {
+        min-width: 95px;
+        color: var(--navy);
+        font-size: 1.12rem;
+        font-weight: 850;
+        white-space: nowrap;
+      }
+
+      .bar {
+        width: 120px;
+        height: 8px;
+        margin-top: 7px;
+        overflow: hidden;
+        border-radius: 99px;
+        background: #e2e8eb;
+      }
+
+      .bar > span {
+        display: block;
+        width: var(--value);
+        height: 100%;
+        border-radius: inherit;
+        background: linear-gradient(90deg, var(--blue), var(--teal));
+      }
+
+      .findings {
+        display: grid;
+        gap: 14px;
+        margin-top: 22px;
+      }
+
+      .finding {
+        display: grid;
+        grid-template-columns: 8px 1fr;
+        overflow: hidden;
+        box-shadow: none;
+      }
+
+      .finding-accent {
+        background: var(--teal);
+      }
+
+      .finding.risk .finding-accent {
+        background: var(--red);
+      }
+
+      .finding.warn .finding-accent {
+        background: #d58a18;
+      }
+
+      /* Limite deliberado de escopo: não é defeito, não recebe acento de risco. */
+      .finding.scoped .finding-accent {
+        background: repeating-linear-gradient(
+          135deg,
+          var(--blue),
+          var(--blue) 5px,
+          #7fb4c6 5px,
+          #7fb4c6 10px
+        );
+      }
+
+      .finding-body {
+        padding: 21px 24px;
+      }
+
+      .finding-top {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+        margin-bottom: 7px;
+      }
+
+      .finding h3 {
+        margin: 0;
+      }
+
+      code {
+        padding: 2px 5px;
+        border-radius: 5px;
+        color: #214f63;
+        background: #eaf2f4;
+        font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+        font-size: 0.88em;
+      }
+
+      ul {
+        margin: 10px 0 0;
+        padding-left: 21px;
+      }
+
+      li + li {
+        margin-top: 7px;
+      }
+
+      .roadmap {
+        display: grid;
+        gap: 14px;
+        margin-top: 20px;
+      }
+
+      .roadmap-item {
+        display: grid;
+        grid-template-columns: 74px minmax(200px, 0.8fr) 1.4fr;
+        gap: 18px;
+        align-items: start;
+        padding: 22px;
+        box-shadow: none;
+      }
+
+      .roadmap-item h3 {
+        margin-top: 3px;
+      }
+
+      .roadmap-item p {
+        color: var(--muted);
+      }
+
+      .roadmap-item strong {
+        color: var(--ink);
+      }
+
+      .evidence-box {
+        padding: 24px;
+        box-shadow: none;
+      }
+
+      .command {
+        display: inline-block;
+        margin: 2px 6px 2px 0;
+        padding: 5px 8px;
+        border-radius: 6px;
+        color: #d8f3ee;
+        background: #173340;
+        font-family: "SFMono-Regular", Consolas, monospace;
+        font-size: 0.78rem;
+      }
+
+      details {
+        margin-top: 14px;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        background: white;
+      }
+
+      summary {
+        padding: 15px 18px;
+        color: var(--navy);
+        cursor: pointer;
+        font-weight: 750;
+      }
+
+      details > div {
+        padding: 0 18px 17px;
+        color: var(--muted);
+      }
+
+      .footnote {
+        padding-top: 24px;
+        border-top: 1px solid var(--line);
+        color: var(--muted);
+        font-size: 0.83rem;
+      }
+
+      footer {
+        padding: 30px 0;
+        color: #bdd0d8;
+        background: var(--navy);
+        font-size: 0.84rem;
+      }
+
+      @media (max-width: 900px) {
+        .verdict,
+        .grid-3,
+        .architecture {
+          grid-template-columns: repeat(2, 1fr);
+        }
+
+        .stats {
+          grid-template-columns: repeat(2, 1fr);
+        }
+
+        .layer:nth-child(2)::after {
+          display: none;
+        }
+
+        .roadmap-item {
+          grid-template-columns: 68px 1fr;
+        }
+
+        .roadmap-item > p {
+          grid-column: 2;
+        }
+      }
+
+      @media (max-width: 620px) {
+        .wrap {
+          width: min(100% - 26px, 1160px);
+        }
+
+        .hero-content {
+          padding: 52px 0 44px;
+        }
+
+        .verdict,
+        .grid-2,
+        .grid-3,
+        .architecture {
+          grid-template-columns: 1fr;
+        }
+
+        .layer::after {
+          display: none;
+        }
+
+        .stats {
+          grid-template-columns: 1fr 1fr;
+        }
+
+        .score-table,
+        .check-table {
+          display: block;
+          overflow-x: auto;
+        }
+
+        .roadmap-item {
+          grid-template-columns: 1fr;
+        }
+
+        .roadmap-item > p {
+          grid-column: 1;
+        }
+      }
+
+      @media print {
+        @page {
+          margin: 14mm;
+          size: A4;
+        }
+
+        body {
+          background: white;
+          font-size: 10pt;
+        }
+
+        .wrap {
+          width: 100%;
+        }
+
+        .hero-content {
+          padding: 28px 0;
+        }
+
+        h1 {
+          font-size: 30pt;
+        }
+
+        .toc {
+          display: none;
+        }
+
+        main {
+          padding: 20px 0;
+        }
+
+        section {
+          margin-top: 30px;
+        }
+
+        .score-card,
+        .card,
+        .finding,
+        .roadmap-item,
+        .evidence-box {
+          break-inside: avoid;
+          box-shadow: none;
+        }
+
+        footer {
+          color: var(--ink);
+          background: white;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="hero">
+      <div class="wrap hero-content">
+        <p class="eyebrow">Avaliação técnica independente</p>
+        <h1>Painel de Governo</h1>
+        <p class="hero-lead">
+          Diagnóstico da arquitetura, qualidade, segurança, experiência, desempenho e prontidão
+          operacional do protótipo orientado a configuração.
+        </p>
+        <div class="hero-meta">
+          <span><strong>Repositório:</strong> dev-painel-governo</span>
+          <span><strong>Revisão:</strong> 145e987 <em>+ alterações locais não commitadas</em></span>
+          <span><strong>Data:</strong> 5 de agosto de 2026</span>
+          <span><strong>Escopo:</strong> código e artefatos locais</span>
+        </div>
+      </div>
+    </header>
+
+    <div class="toc">
+      <div class="wrap">
+        <nav aria-label="Seções do relatório">
+          <a href="#sumario">Sumário</a>
+          <a href="#contexto">Contexto</a>
+          <a href="#notas">Notas</a>
+          <a href="#pontos-fortes">Pontos fortes</a>
+          <a href="#riscos">Riscos</a>
+          <a href="#seguranca">Segurança</a>
+          <a href="#roadmap">Roadmap</a>
+          <a href="#evidencias">Evidências</a>
+        </nav>
+      </div>
+    </div>
+
+    <main class="wrap">
+      <section id="sumario">
+        <div class="verdict">
+          <div class="score-card" aria-label="Aderência ao conceito 8,7 de 10">
+            <div>
+              <div class="score">8,7<small>/10</small></div>
+              <div class="score-label">Aderência ao conceito</div>
+            </div>
+          </div>
+          <div class="card verdict-copy">
+            <p class="eyebrow" style="color: var(--teal)">Parecer executivo</p>
+            <p class="headline">
+              O conceito operacional está demonstrado: navegar por lentes sobre um índice único e
+              criar, editar e publicar localmente painéis compostos por elementos padronizados.
+            </p>
+            <p>
+              O próximo passo coerente não é ampliar infraestrutura, mas melhorar a página de
+              configuração e o roteiro de demonstração. A prioridade deve ser tornar evidente e
+              fluido o ciclo criar → compor → visualizar → salvar → abrir o painel publicado.
+            </p>
+            <div class="pill-row" aria-label="Síntese do parecer">
+              <span class="pill good">Protótipo aprovado</span>
+              <span class="pill good">Conceito demonstrado</span>
+              <span class="pill good">142 testes verdes</span>
+              <span class="pill warn">Editor em evolução</span>
+            </div>
+            <p class="method-note">
+              A nota 8,7 mede <strong>apenas aderência ao conceito operacional</strong> definido em
+              <a href="escopo-do-prototipo.md">escopo-do-prototipo.md</a>. Ela
+              <strong>não é a média</strong> da tabela de dimensões técnicas mais adiante — aquelas
+              notas usam critérios de produto maduro e são deliberadamente mais duras do que o
+              critério de aceite desta fase. As duas escalas não devem ser comparadas.
+            </p>
+          </div>
+        </div>
+
+        <div class="stats" aria-label="Números principais">
+          <div class="stat">
+            <span class="stat-value">175</span><span class="stat-label">arquivos em src</span>
+          </div>
+          <div class="stat">
+            <span class="stat-value">7.742</span
+            ><span class="stat-label">linhas TS/TSX (2.548 em testes)</span>
+          </div>
+          <div class="stat">
+            <span class="stat-value">33</span><span class="stat-label">arquivos de teste</span>
+          </div>
+          <div class="stat">
+            <span class="stat-value">142/142</span><span class="stat-label">testes aprovados</span>
+          </div>
+        </div>
+      </section>
+
+      <section id="contexto">
+        <h2>Escopo exato da validação</h2>
+        <p class="section-lead">
+          Este relatório avalia se a aplicação consegue demonstrar o conceito operacional. Não usa
+          prontidão para produção como critério de aceite do protótipo; segurança, backend e
+          operação aparecem apenas como referências para uma fase futura.
+          <a href="escopo-do-prototipo.md">Ver definição completa e critérios de sucesso.</a>
+        </p>
+
+        <div class="architecture" aria-label="Arquitetura observada em quatro camadas">
+          <div class="layer">
+            <span class="layer-number">Camada 1</span>
+            <strong>Páginas e rotas</strong>
+            <span>Home, catálogo, painel, indicador, galeria e ambiente administrativo.</span>
+          </div>
+          <div class="layer">
+            <span class="layer-number">Camada 2</span>
+            <strong>Motor de configuração</strong>
+            <span>Zod, ConfigRenderer, FilterContext e registry fechado de componentes.</span>
+          </div>
+          <div class="layer">
+            <span class="layer-number">Camada 3</span>
+            <strong>UI analítica</strong>
+            <span>Cards, gráficos ECharts, tabelas, filtros e estados de feedback.</span>
+          </div>
+          <div class="layer">
+            <span class="layer-number">Camada 4</span>
+            <strong>Dados e persistência</strong>
+            <span>DataProvider assíncrono, fixtures mock e overlay em localStorage.</span>
+          </div>
+        </div>
+
+        <div class="grid-3">
+          <div class="card">
+            <h3>Índice único e lentes</h3>
+            <p>
+              Tema, Secretaria e ODS recortam o mesmo índice de painéis. O usuário abre o painel e
+              chega aos indicadores no contexto dele, sem catálogos editoriais paralelos.
+            </p>
+          </div>
+          <div class="card">
+            <h3>Composição controlada</h3>
+            <p>
+              Quatro componentes fixos são organizados em seções ordenadas, com layouts
+              <code>grid-2</code>, <code>grid-3</code>, <code>grid-4</code> ou <code>stack</code>.
+            </p>
+          </div>
+          <div class="card">
+            <h3>Publicação no protótipo</h3>
+            <p>
+              Salvar significa validar e disponibilizar imediatamente o painel no catálogo e na rota
+              pública da mesma ferramenta e do mesmo navegador.
+            </p>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top: 16px">
+          <h3>Fora do critério de aceite desta fase</h3>
+          <p>
+            API, Fabric, dados oficiais, autenticação, publicação multiusuário, aprovação editorial,
+            histórico, infraestrutura e operação produtiva. Esses temas são relevantes para o
+            produto futuro, mas não invalidam a demonstração atual do conceito.
+          </p>
+        </div>
+      </section>
+
+      <section id="notas">
+        <h2>Avaliação por dimensão</h2>
+        <p class="section-lead">
+          As dimensões abaixo são medidas contra um padrão de <strong>produto em produção</strong>,
+          não contra o critério de aceite do protótipo. Servem para orientar a evolução e priorizar
+          dívida técnica. Notas baixas em Desempenho, Segurança e Operação refletem itens que o
+          escopo desta fase coloca explicitamente fora do critério de aceite — elas não contradizem
+          o parecer de aprovação, e a média desta tabela não é a nota de aderência ao conceito.
+        </p>
+
+        <table class="score-table">
+          <thead>
+            <tr>
+              <th>Dimensão</th>
+              <th>Nota</th>
+              <th>Evidência e leitura</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="dimension">Arquitetura</td>
+              <td class="rating">
+                8,6
+                <div class="bar"><span style="--value: 86%"></span></div>
+              </td>
+              <td>
+                Separação clara, contratos tipados, injeção de provider, validação runtime e
+                extensão por configuração.
+              </td>
+            </tr>
+            <tr>
+              <td class="dimension">Funcionalidade</td>
+              <td class="rating">
+                8,1
+                <div class="bar"><span style="--value: 81%"></span></div>
+              </td>
+              <td>
+                Fluxos públicos e administrativos são coerentes com a proposta e possuem tratamento
+                de loading, vazio e erro.
+              </td>
+            </tr>
+            <tr>
+              <td class="dimension">Qualidade de código</td>
+              <td class="rating">
+                8,0
+                <div class="bar"><span style="--value: 80%"></span></div>
+              </td>
+              <td>
+                TypeScript estrito e organização consistente; 3 avisos de lint e 2 arquivos fora do
+                padrão Prettier — um deles é <code>src/styles/tokens.css</code>, gerado pelo build e
+                ausente do <code>.prettierignore</code>.
+              </td>
+            </tr>
+            <tr>
+              <td class="dimension">Testes</td>
+              <td class="rating">
+                8,5
+                <div class="bar"><span style="--value: 85%"></span></div>
+              </td>
+              <td>
+                142 testes passam, incluindo schemas, hooks, componentes e integrações.
+                <code>@vitest/coverage-v8</code> está instalado, mas não há script nem configuração
+                de cobertura — nenhuma métrica é produzida.
+              </td>
+            </tr>
+            <tr>
+              <td class="dimension">UX e acessibilidade</td>
+              <td class="rating">
+                7,2
+                <div class="bar"><span style="--value: 72%"></span></div>
+              </td>
+              <td>
+                Semântica, foco visível e rótulos ARIA presentes; gráficos em canvas têm apenas
+                descrição genérica e faltam testes automatizados de a11y.
+              </td>
+            </tr>
+            <tr>
+              <td class="dimension">Desempenho</td>
+              <td class="rating">
+                5,6
+                <div class="bar"><span style="--value: 56%"></span></div>
+              </td>
+              <td>
+                Build válido, mas JS inicial tem 994 kB minificado/319 kB gzip e não há divisão por
+                rota.
+              </td>
+            </tr>
+            <tr>
+              <td class="dimension">Segurança</td>
+              <td class="rating">
+                4,7
+                <div class="bar"><span style="--value: 47%"></span></div>
+              </td>
+              <td>
+                Schema reduz entrada inválida, porém o admin é aberto; audit registra 8
+                vulnerabilidades totais e 2 em produção.
+              </td>
+            </tr>
+            <tr>
+              <td class="dimension">Operação e entrega</td>
+              <td class="rating">
+                3,8
+                <div class="bar"><span style="--value: 38%"></span></div>
+              </td>
+              <td>
+                Não foram encontrados pipeline CI, Dockerfile, telemetria, tratamento global de
+                falhas ou configuração de deploy SPA.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="pontos-fortes">
+        <h2>Pontos fortes confirmados</h2>
+        <div class="findings">
+          <article class="finding">
+            <div class="finding-accent"></div>
+            <div class="finding-body">
+              <div class="finding-top">
+                <span class="pill good">Alto valor</span>
+                <h3>Configuração como contrato executável</h3>
+              </div>
+              <p>
+                Os objetos de painel passam por schemas Zod antes de renderizar e antes de
+                persistir. Isso mantém TypeScript e validação em runtime alinhados e transforma
+                erros de conteúdo em feedback localizado.
+              </p>
+            </div>
+          </article>
+          <article class="finding">
+            <div class="finding-accent"></div>
+            <div class="finding-body">
+              <div class="finding-top">
+                <span class="pill good">Alto valor</span>
+                <h3>Baixo acoplamento com a fonte de dados</h3>
+              </div>
+              <p>
+                A interface <code>DataProvider</code> cobre painéis, indicadores, séries, tabelas,
+                filtros e metadados. O teste de troca por stub demonstra que hooks e componentes não
+                dependem diretamente dos mocks.
+              </p>
+            </div>
+          </article>
+          <article class="finding">
+            <div class="finding-accent"></div>
+            <div class="finding-body">
+              <div class="finding-top">
+                <span class="pill good">Confiabilidade</span>
+                <h3>Estados assíncronos uniformes</h3>
+              </div>
+              <p>
+                <code>RequestState</code> e <code>AsyncBoundary</code> padronizam loading, sucesso,
+                vazio e erro. O cancelamento lógico em efeitos reduz atualizações tardias após
+                desmontagem.
+              </p>
+            </div>
+          </article>
+          <article class="finding">
+            <div class="finding-accent"></div>
+            <div class="finding-body">
+              <div class="finding-top">
+                <span class="pill good">Manutenibilidade</span>
+                <h3>Design system e gráficos centralizados</h3>
+              </div>
+              <p>
+                Tokens gerados, CSS Modules e um único adaptador ECharts reduzem deriva visual. A
+                inicialização e o descarte dos gráficos estão encapsulados e usam
+                <code>ResizeObserver</code>.
+              </p>
+            </div>
+          </article>
+          <article class="finding">
+            <div class="finding-accent"></div>
+            <div class="finding-body">
+              <div class="finding-top">
+                <span class="pill good">Cobertura funcional</span>
+                <h3>Testes em níveis complementares</h3>
+              </div>
+              <p>
+                A suíte cobre unidade, componentes e fluxos integrados. Os 142 testes passaram em 33
+                arquivos, incluindo criação de painel, edição, restauração e renderização por
+                configuração.
+              </p>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section id="riscos">
+        <h2>Limites conhecidos e dívida técnica</h2>
+        <p class="section-lead">
+          Os dois primeiros itens são limites deliberados do protótipo — aparecem com acento
+          listrado para não serem lidos como defeito. Só se tornam bloqueadores quando houver
+          decisão de evoluir para publicação real e multiusuário. Os demais são dívida técnica real
+          dentro do escopo atual.
+        </p>
+        <div class="findings">
+          <article class="finding scoped">
+            <div class="finding-accent"></div>
+            <div class="finding-body">
+              <div class="finding-top">
+                <span class="priority p2">Limite de escopo</span>
+                <h3>Admin aberto e sem fronteira de confiança</h3>
+              </div>
+              <p>
+                A rota <code>/admin</code> não tem autenticação nem autorização. Hoje isso altera
+                apenas o navegador do próprio usuário, mas conectar o editor a uma API sem antes
+                implementar identidade, papéis e autorização no servidor criaria risco crítico de
+                alteração indevida.
+              </p>
+            </div>
+          </article>
+          <article class="finding scoped">
+            <div class="finding-accent"></div>
+            <div class="finding-body">
+              <div class="finding-top">
+                <span class="priority p2">Limite de escopo</span>
+                <h3>Persistência valida o fluxo, não publicação multiusuário</h3>
+              </div>
+              <p>
+                <code>localStorage</code> é por navegador/origem, sem backup automático,
+                concorrência, versionamento, aprovação, trilha de auditoria ou separação
+                rascunho/publicado. Edições não são compartilhadas com outros usuários.
+              </p>
+            </div>
+          </article>
+          <article class="finding warn">
+            <div class="finding-accent"></div>
+            <div class="finding-body">
+              <div class="finding-top">
+                <span class="priority p1">P1</span>
+                <h3>Bundle inicial elevado</h3>
+              </div>
+              <p>
+                O build produz um único JS de <strong>993,97 kB</strong> minificado (<strong
+                  >318,63 kB gzip</strong
+                >). A aplicação pública carrega código do admin e ECharts sem divisão por rota,
+                afetando tempo de carregamento e dispositivos/rede modestos.
+              </p>
+            </div>
+          </article>
+          <article class="finding warn">
+            <div class="finding-accent"></div>
+            <div class="finding-body">
+              <div class="finding-top">
+                <span class="priority p1">P1</span>
+                <h3>Ausência de automação de entrega</h3>
+              </div>
+              <p>
+                Não há configuração de CI no repositório, estratégia de deploy, health check,
+                logging, métricas ou captura de erros. O <code>createBrowserRouter</code> também
+                exige rewrite para <code>index.html</code> no servidor de hospedagem.
+              </p>
+            </div>
+          </article>
+          <article class="finding warn">
+            <div class="finding-accent"></div>
+            <div class="finding-body">
+              <div class="finding-top">
+                <span class="priority p1">P1</span>
+                <h3>Contratos ainda permitem inconsistências semânticas</h3>
+              </div>
+              <p>
+                O schema garante estrutura mínima — <code>sections</code> e
+                <code>components</code> exigem ao menos um item, então um painel estruturalmente
+                vazio é rejeitado. O que ele <em>não</em> verifica é semântica: unicidade de IDs de
+                filtros/seções/componentes, existência real das métricas e datasets referenciados,
+                validade de datas e compatibilidade entre filtros declarados e dimensões dos
+                datasets. O editor reduz parte do risco pela seleção guiada, mas um JSON importado à
+                mão pode passar na validação e render componentes permanentemente em estado vazio ou
+                de erro, ou com IDs duplicados que tornam a reordenação ambígua.
+              </p>
+            </div>
+          </article>
+          <article class="finding warn">
+            <div class="finding-accent"></div>
+            <div class="finding-body">
+              <div class="finding-top">
+                <span class="priority p1">P1</span>
+                <h3>Acessibilidade dos dados visuais é parcial</h3>
+              </div>
+              <p>
+                Os gráficos recebem <code>role="img"</code> e rótulo, porém usuários de leitor de
+                tela não recebem os pontos da série, tendências ou alternativa tabular. A tabela
+                ordenável também não expõe <code>aria-sort</code> no cabeçalho.
+              </p>
+            </div>
+          </article>
+          <article class="finding">
+            <div class="finding-accent"></div>
+            <div class="finding-body">
+              <div class="finding-top">
+                <span class="priority p2">P2</span>
+                <h3>Higiene de engenharia inconsistente</h3>
+              </div>
+              <p>
+                O lint termina com 3 avisos de Fast Refresh; o Prettier acusa 2 arquivos; e testes
+                com ECharts escrevem repetidamente avisos de dimensões zero no stderr. Não impedem o
+                funcionamento, mas reduzem o sinal dos checks. O caso do Prettier é estrutural:
+                <code>src/styles/tokens.css</code> é regenerado pelos hooks
+                <code>prebuild</code>/<code>predev</code>/<code>pretest</code> e não está no
+                <code>.prettierignore</code>, então <code>format:check</code> volta a falhar depois
+                de qualquer build — ou o gerador emite código já formatado, ou o arquivo entra no
+                ignore.
+              </p>
+            </div>
+          </article>
+          <article class="finding">
+            <div class="finding-accent"></div>
+            <div class="finding-body">
+              <div class="finding-top">
+                <span class="priority p2">P2</span>
+                <h3>Rota de desenvolvimento embarcada no build público</h3>
+              </div>
+              <p>
+                <code>/dev/galeria</code> é registrada incondicionalmente em
+                <code>src/app/router.tsx</code>, sem checagem de <code>import.meta.env.DEV</code>. A
+                galeria de estados — substituta do Storybook — vai para o bundle de produção e fica
+                acessível por URL direta. É inofensiva em termos de dados, mas soma peso ao bundle
+                já sinalizado e expõe uma tela interna durante a apresentação.
+              </p>
+            </div>
+          </article>
+          <article class="finding">
+            <div class="finding-accent"></div>
+            <div class="finding-body">
+              <div class="finding-top">
+                <span class="priority p2">P2</span>
+                <h3>Documentação operacional ainda é de protótipo</h3>
+              </div>
+              <p>
+                O README explica bem arquitetura e extensão, mas não define versões suportadas por
+                matriz, variáveis/ambientes, decisão de hospedagem, cache, rollback, SLO,
+                recuperação ou responsáveis operacionais.
+              </p>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section id="seguranca">
+        <h2>Leitura de segurança e dependências</h2>
+        <p class="section-lead">
+          O resultado do audit precisa de contexto: a maior parte das ocorrências está em
+          ferramentas de desenvolvimento; isso não elimina a necessidade de atualização, mas muda a
+          exposição.
+        </p>
+
+        <div class="stats">
+          <div class="stat">
+            <span class="stat-value">8</span
+            ><span class="stat-label">vulnerabilidades no audit completo</span>
+          </div>
+          <div class="stat">
+            <span class="stat-value">2</span
+            ><span class="stat-label">críticas — vitest e @vitest/coverage-v8</span>
+          </div>
+          <div class="stat">
+            <span class="stat-value">3</span><span class="stat-label">altas — árvore completa</span>
+          </div>
+          <div class="stat">
+            <span class="stat-value">2</span><span class="stat-label">altas com --omit=dev</span>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <h3>Dependências de produção</h3>
+            <p>
+              <code>react-router-dom</code>/<code>react-router</code> aparecem em um advisory alto
+              de bypass CSRF no modo RSC. Esta aplicação é SPA e não usa ações RSC, portanto a
+              exposição observada é condicional, não uma exploração confirmada neste código.
+            </p>
+          </div>
+          <div class="card">
+            <h3>Ferramentas de desenvolvimento</h3>
+            <p>
+              Vitest, Vite, esbuild e dependências transitivas concentram os demais avisos,
+              incluindo leitura/execução via servidor de UI de testes e exposições do servidor de
+              desenvolvimento. Servidores dev/teste não devem ser publicados ou expostos.
+            </p>
+            <p>
+              Uma das duas críticas vem de <code>@vitest/coverage-v8</code>, que está declarado em
+              <code>devDependencies</code> mas não é usado por nenhum script nem configurado em
+              <code>vite.config.ts</code>. Removê-lo — ou, preferencialmente, ligá-lo a um script
+              <code>test:coverage</code> e atualizá-lo — elimina um advisory crítico sem custo
+              funcional.
+            </p>
+          </div>
+        </div>
+
+        <table class="check-table">
+          <thead>
+            <tr>
+              <th>Controle</th>
+              <th>Situação</th>
+              <th>Observação</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Validação de configuração</td>
+              <td><span class="status pass">Presente</span></td>
+              <td>Zod na renderização, importação e persistência.</td>
+            </tr>
+            <tr>
+              <td>Uso inseguro de HTML/eval</td>
+              <td><span class="status pass">Não encontrado</span></td>
+              <td>
+                Busca não encontrou <code>dangerouslySetInnerHTML</code>, <code>innerHTML</code> ou
+                <code>eval</code> em src.
+              </td>
+            </tr>
+            <tr>
+              <td>Autenticação e autorização</td>
+              <td><span class="status fail">Ausente</span></td>
+              <td>
+                Fora do critério de aceite desta fase; obrigatório antes de conectar escrita remota.
+              </td>
+            </tr>
+            <tr>
+              <td>Headers CSP/HSTS e política de deploy</td>
+              <td><span class="status fail">Não definidos</span></td>
+              <td>
+                Devem ser configurados na hospedagem; há script inline de tema em
+                <code>index.html</code>.
+              </td>
+            </tr>
+            <tr>
+              <td>Gestão automática de dependências</td>
+              <td><span class="status fail">Não encontrada</span></td>
+              <td>Sem pipeline ou bot de atualização visível.</td>
+            </tr>
+            <tr>
+              <td>Auditoria de alterações</td>
+              <td><span class="status fail">Ausente</span></td>
+              <td>
+                Fora do critério de aceite desta fase; <code>localStorage</code> não registra
+                autoria ou histórico.
+              </td>
+            </tr>
+            <tr>
+              <td>Superfície pública do build</td>
+              <td><span class="status warn">Revisar</span></td>
+              <td>
+                <code>/dev/galeria</code> é registrada sem checagem de ambiente e vai para o bundle
+                de produção.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="roadmap">
+        <h2>Roadmap recomendado</h2>
+        <p class="section-lead">
+          Sequência orientada à próxima meta: apresentar o conceito operacional com clareza. Os
+          requisitos de produção ficam em uma trilha futura e não bloqueiam a evolução visual e
+          comportamental do protótipo.
+        </p>
+        <div class="roadmap">
+          <article class="roadmap-item">
+            <div><span class="priority p0">P0</span></div>
+            <h3>Lapidar a jornada principal do editor</h3>
+            <p>
+              <strong>Resultado:</strong> um fluxo evidente para criar → compor → visualizar →
+              salvar → abrir publicado, com ações primárias claras, feedback de salvamento e retorno
+              simples ao painel público.
+            </p>
+          </article>
+          <article class="roadmap-item">
+            <div><span class="priority p0">P0</span></div>
+            <h3>Tornar as regras de composição visíveis</h3>
+            <p>
+              <strong>Resultado:</strong> explicar seções, ordem e presets de layout dentro da
+              interface; melhorar adicionar, duplicar, remover e mover; mostrar no preview o efeito
+              de cada decisão de posicionamento.
+            </p>
+          </article>
+          <article class="roadmap-item">
+            <div><span class="priority p0">P0</span></div>
+            <h3>Preparar a narrativa da demonstração</h3>
+            <p>
+              <strong>Resultado:</strong> painéis e indicadores de exemplo consistentes, roteiro
+              curto cobrindo lentes, edição, preview e publicação, além de estados vazios e erros
+              que não distraiam durante a apresentação.
+            </p>
+          </article>
+          <article class="roadmap-item">
+            <div><span class="priority p1">P1</span></div>
+            <h3>Melhorar seleção e compatibilidade de indicadores</h3>
+            <p>
+              <strong>Resultado:</strong> busca, agrupamento e explicações mais claras no seletor;
+              somente combinações válidas entre indicador, componente, dimensão, dataset e filtro.
+            </p>
+          </article>
+          <article class="roadmap-item">
+            <div><span class="priority p1">P1</span></div>
+            <h3>Dar mais protagonismo ao preview</h3>
+            <p>
+              <strong>Resultado:</strong> preview responsivo, legível e fiel, com indicação de
+              atualização, controle de largura/dispositivo e navegação rápida até o componente que
+              está sendo editado.
+            </p>
+          </article>
+          <article class="roadmap-item">
+            <div><span class="priority p1">P1</span></div>
+            <h3>Completar acessibilidade</h3>
+            <p>
+              <strong>Resultado:</strong> alternativa textual/tabular para gráficos,
+              <code>aria-sort</code>, testes axe, navegação integral por teclado e auditoria WCAG
+              2.2 AA com usuários.
+            </p>
+          </article>
+          <article class="roadmap-item">
+            <div><span class="priority p2">Futuro</span></div>
+            <h3>Preparar a passagem para produto</h3>
+            <p>
+              <strong>Resultado:</strong> quando o conceito estiver validado, planejar backend,
+              identidade, publicação multiusuário, rascunho/aprovação, auditoria, observabilidade e
+              operação. Esta trilha não bloqueia a apresentação atual.
+            </p>
+          </article>
+          <article class="roadmap-item">
+            <div><span class="priority p2">P2</span></div>
+            <h3>Sanear a base técnica da demonstração</h3>
+            <p>
+              <strong>Resultado:</strong> atualizar dependências vulneráveis, eliminar avisos de
+              lint/teste, normalizar a formatação e aplicar lazy loading ao admin para manter a
+              demonstração estável e ágil.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section id="evidencias">
+        <h2>Evidências e método</h2>
+        <div class="evidence-box">
+          <h3>Verificações executadas</h3>
+          <p>
+            <span class="command">npm run lint</span>
+            <span class="command">npm run test -- --reporter=verbose</span>
+            <span class="command">npm run build</span>
+            <span class="command">npm run format:check</span>
+            <span class="command">npm audit --json</span>
+            <span class="command">npm audit --omit=dev --json</span>
+          </p>
+          <table class="check-table">
+            <thead>
+              <tr>
+                <th>Check</th>
+                <th>Resultado observado</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Testes</td>
+                <td>
+                  <span class="status pass">Aprovado</span> 33 arquivos e 142 testes; ~50 s na
+                  máquina de avaliação (a duração varia por máquina e não é um indicador estável).
+                </td>
+              </tr>
+              <tr>
+                <td>Build TypeScript + Vite</td>
+                <td>
+                  <span class="status pass">Aprovado</span> 849 módulos; CSS 38,12 kB; JS 993,97 kB.
+                </td>
+              </tr>
+              <tr>
+                <td>Lint</td>
+                <td>
+                  <span class="status warn">Com avisos</span> 0 erros e 3 avisos de Fast Refresh.
+                </td>
+              </tr>
+              <tr>
+                <td>Formatação</td>
+                <td>
+                  <span class="status fail">Reprovado</span> 2 arquivos:
+                  <code>src/app/pages/HomePage.module.css</code> e
+                  <code>src/styles/tokens.css</code> (este último é gerado pelo build).
+                </td>
+              </tr>
+              <tr>
+                <td>Audit completo</td>
+                <td>
+                  <span class="status fail">Atenção</span> 8 ocorrências: 2 críticas, 3 altas e 3
+                  moderadas.
+                </td>
+              </tr>
+              <tr>
+                <td>Audit de produção</td>
+                <td>
+                  <span class="status warn">Condicionado</span> 2 altas na cadeia React Router,
+                  associadas a RSC não usado nesta SPA.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <details>
+            <summary>Arquivos e áreas inspecionados</summary>
+            <div>
+              README e plano do admin; package/lock e configurações TypeScript, Vite, ESLint e
+              Prettier; rotas e páginas; schemas e configurações de painéis; renderer e registry;
+              provider, mocks e hooks; store/importação; componentes de gráfico, tabela, filtro e
+              feedback; tokens e estilos globais; testes e artefatos do build.
+            </div>
+          </details>
+          <details>
+            <summary>Correções aplicadas na revisão desta versão do relatório</summary>
+            <div>
+              Todos os números foram reexecutados contra a árvore local. Quatro afirmações da versão
+              anterior não se sustentaram e foram corrigidas:
+              <ul>
+                <li>
+                  <strong>Linhas TS/TSX:</strong> constavam 6.868; a contagem em
+                  <code>src/**/*.{ts,tsx}</code> devolve 7.742 (5.194 de produção + 2.548 de teste).
+                </li>
+                <li>
+                  <strong>Arquivos fora do Prettier:</strong> constavam 12;
+                  <code>format:check</code> reporta 2.
+                </li>
+                <li>
+                  <strong>Duração da suíte:</strong> constava 62,29 s como evidência; a reexecução
+                  deu 47,50 s. Passou a ser descrita como faixa dependente de máquina.
+                </li>
+                <li>
+                  <strong>“Importações podem gerar painéis vazios”:</strong> o schema exige ao menos
+                  uma seção e ao menos um componente por seção, então o caso descrito é impossível.
+                  O risco real — referências inexistentes e IDs duplicados — foi reescrito.
+                </li>
+              </ul>
+              Confirmados sem alteração: 175 arquivos em <code>src</code>; 33 arquivos e 142 testes
+              aprovados; build com 849 módulos, 38,12 kB de CSS e 993,97 kB de JS (318,63 kB gzip);
+              lint com 0 erros e 3 avisos; audit com 8 ocorrências (2 críticas, 3 altas, 3
+              moderadas) e 2 altas com <code>--omit=dev</code>; ausência de
+              <code>dangerouslySetInnerHTML</code>, <code>innerHTML</code> e <code>eval</code> em
+              <code>src</code>; <code>role="img"</code> nos gráficos e ausência de
+              <code>aria-sort</code> na tabela.
+            </div>
+          </details>
+          <details>
+            <summary>Critérios e limitações da avaliação</summary>
+            <div>
+              Avaliação estática e automatizada do repositório na revisão indicada. Não foram
+              realizados teste com usuários, pentest, análise dinâmica em ambiente publicado,
+              auditoria visual pixel a pixel, benchmark Lighthouse, validação de API/Fabric ou
+              revisão de infraestrutura — esses elementos não existem no escopo local analisado. As
+              notas representam adequação técnica ao objetivo declarado, não certificação de
+              segurança, acessibilidade ou conformidade legal.
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <section>
+        <h2>Conclusão</h2>
+        <div class="card">
+          <p>
+            O projeto já prova a hipótese central: um único índice pode ser explorado por lentes e
+            novos painéis podem ser criados, organizados e disponibilizados na própria ferramenta a
+            partir de componentes e layouts controlados. Preview e publicação reutilizam o mesmo
+            motor, o que dá consistência ao conceito.
+          </p>
+          <p>
+            A recomendação é <strong>aprovar a evolução do protótipo</strong> e concentrar o próximo
+            ciclo na experiência da página de configuração e no roteiro de apresentação. Requisitos
+            de produção devem permanecer documentados como etapa posterior, sem competir agora com o
+            objetivo de tornar a demonstração clara, fluida e convincente.
+          </p>
+        </div>
+      </section>
+
+      <p class="footnote">
+        Relatório gerado a partir do estado local do repositório em 05/08/2026, fuso
+        America/Sao_Paulo, sobre a revisão 145e987 acrescida de alterações ainda não commitadas em
+        <code>README.md</code> e <code>docs/</code>. A execução do build regenerou
+        <code>src/styles/tokens.css</code> pelo script oficial do projeto — que é justamente um dos
+        dois arquivos reprovados no <code>format:check</code>. As divergências entre esta versão e a
+        anterior estão registradas em
+        <a href="discordancias-documentacao.md">discordancias-documentacao.md</a>.
+      </p>
+    </main>
+
+    <footer>
+      <div class="wrap">Painel de Governo · Relatório técnico de avaliação · Revisão 145e987</div>
+    </footer>
+  </body>
+</html>
