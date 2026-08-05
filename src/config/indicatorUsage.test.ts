@@ -32,6 +32,7 @@ function buildPanel(overrides: Partial<NativePanelConfig>): NativePanelConfig {
     theme: "Tema",
     tags: [],
     metadata: { source: "Fonte", owner: "Equipe" },
+    presentation: "default",
     filters: [],
     sections: [
       {

@@ -20,6 +20,7 @@ function buildPanel(overrides: Partial<NativePanelConfig> = {}): NativePanelConf
       source: "fonte de teste",
       owner: "Equipe de Testes",
     },
+    presentation: "default",
     filters: [],
     sections: [
       {

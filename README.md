@@ -23,18 +23,18 @@ painel acessível no catálogo e na rota pública da própria ferramenta. Não s
 multiusuário com backend, autenticação, aprovação, histórico ou operação produtiva.
 
 O escopo completo, os critérios de sucesso e o estado de cada capacidade estão documentados em
-[`docs/escopo-do-prototipo.md`](docs/escopo-do-prototipo.md). A próxima etapa é melhorar a experiência
+[`docs/review/escopo-do-prototipo.md`](docs/review/escopo-do-prototipo.md). A próxima etapa é melhorar a experiência
 da página de configuração até chegar às telas e aos comportamentos necessários para apresentar esse
 conceito com clareza.
 
 Documentação relacionada:
 
-| Documento                                                                            | Para quê                                                                      |
-| ------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------- |
-| [`docs/escopo-do-prototipo.md`](docs/escopo-do-prototipo.md)                         | O que a validação precisa provar e o que está deliberadamente fora dela.      |
-| [`docs/plano-ambiente-configuracao.md`](docs/plano-ambiente-configuracao.md)         | Arquitetura do `/admin` e caminho de migração para Fabric/API.                |
-| [`docs/relatorio-avaliacao-aplicacao.html`](docs/relatorio-avaliacao-aplicacao.html) | Avaliação técnica com números verificados, dívida técnica e roadmap.          |
-| [`docs/discordancias-documentacao.md`](docs/discordancias-documentacao.md)           | Divergências apuradas entre a documentação e o código, e o que foi corrigido. |
+| Documento                                                                                          | Para quê                                                                      |
+| -------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| [`docs/review/escopo-do-prototipo.md`](docs/review/escopo-do-prototipo.md)                         | O que a validação precisa provar e o que está deliberadamente fora dela.      |
+| [`docs/review/plano-ambiente-configuracao.md`](docs/review/plano-ambiente-configuracao.md)         | Arquitetura do `/admin`, opções de deploy e migração para Fabric/API.         |
+| [`docs/review/relatorio-avaliacao-aplicacao.html`](docs/review/relatorio-avaliacao-aplicacao.html) | Avaliação técnica com números verificados, dívida técnica e roadmap.          |
+| [`docs/review/discordancias-documentacao.md`](docs/review/discordancias-documentacao.md)           | Divergências apuradas entre a documentação e o código, e o que foi corrigido. |
 
 ## Stack
 
@@ -186,7 +186,7 @@ layout do admin lembra disso).
   um indicador fora do catálogo.
 
 O caminho de migração para Fabric/API está documentado em
-`docs/plano-ambiente-configuracao.md` — `PanelStore` e `listIndicators()` são os dois pontos de
+`docs/review/plano-ambiente-configuracao.md` — `PanelStore` e `listIndicators()` são os dois pontos de
 troca (localStorage → endpoints HTTP, mock → catálogo real).
 
 ## Testes
@@ -228,7 +228,7 @@ metodológica na própria página). O metric `__mock_error__` (indicador) e data
   (não são campos do contrato `PanelConfig`) — a spec permite dados simulados para esses filtros
   nesta etapa.
 - Sem autenticação no `/admin`, sem rascunho/publicado/versionamento e sem motor de consultas —
-  fora de escopo da v1 (ver `docs/plano-ambiente-configuracao.md`, seção 8). O editor
+  fora de escopo da v1 (ver `docs/review/plano-ambiente-configuracao.md`, seção 8). O editor
   administrativo é um formulário estruturado com preview ao vivo, não um construtor visual
   drag-and-drop.
 - Bundle de produção ainda não usa code-splitting (aviso do Vite no build): um único JS de

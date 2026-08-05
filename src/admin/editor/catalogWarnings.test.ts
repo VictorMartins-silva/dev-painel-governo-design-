@@ -34,6 +34,7 @@ function buildPanel(
     theme: "Tema",
     tags: [],
     metadata: { source: "Fonte", owner: "Equipe" },
+    presentation: "default",
     filters: [],
     sections: [{ id: "secao", title: "Seção", layout: "grid-2", components }],
   };

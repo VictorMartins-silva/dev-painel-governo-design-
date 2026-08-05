@@ -5,9 +5,14 @@ import CatalogPage from "./pages/CatalogPage";
 import PanelPage from "./pages/PanelPage";
 import IndicatorCatalogPage from "./pages/IndicatorCatalogPage";
 import IndicatorDetailPage from "./pages/IndicatorDetailPage";
+import CollectionsPage from "./pages/CollectionsPage";
+import CollectionDetailPage from "./pages/CollectionDetailPage";
+import KioskPresentationPage from "./pages/KioskPresentationPage";
 import NotFoundPage from "./pages/NotFoundPage";
 import AdminLayout from "../admin/AdminLayout";
 import AdminPanelsPage from "../admin/pages/AdminPanelsPage";
+import AdminCollectionsPage from "../admin/pages/AdminCollectionsPage";
+import CollectionEditorPage from "../admin/pages/CollectionEditorPage";
 import AdminIndicatorsPage from "../admin/pages/AdminIndicatorsPage";
 import AdminComponentsPage from "../admin/pages/AdminComponentsPage";
 import AdminSettingsPage from "../admin/pages/AdminSettingsPage";
@@ -24,6 +29,8 @@ export const router = createBrowserRouter([
       { path: "paineis/:id", element: <PanelPage /> },
       { path: "indicadores", element: <IndicatorCatalogPage /> },
       { path: "indicadores/:id", element: <IndicatorDetailPage /> },
+      { path: "sala", element: <CollectionsPage /> },
+      { path: "sala/:id", element: <CollectionDetailPage /> },
       { path: "dev/galeria", element: <Navigate to="/admin/componentes" replace /> },
       { path: "*", element: <NotFoundPage /> },
     ],
@@ -38,10 +45,17 @@ export const router = createBrowserRouter([
       { path: "configuracoes", element: <AdminSettingsPage /> },
       { path: "paineis/novo", element: <PanelEditorPage /> },
       { path: "paineis/:id", element: <PanelEditorPage /> },
+      { path: "colecoes", element: <AdminCollectionsPage /> },
+      { path: "colecoes/novo", element: <CollectionEditorPage /> },
+      { path: "colecoes/:id", element: <CollectionEditorPage /> },
     ],
   },
   {
     path: "admin/preview",
     element: <PreviewWindowPage />,
+  },
+  {
+    path: "sala/:id/apresentar",
+    element: <KioskPresentationPage />,
   },
 ]);

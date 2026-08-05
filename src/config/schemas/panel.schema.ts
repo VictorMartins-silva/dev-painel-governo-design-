@@ -18,6 +18,11 @@ export const panelSectionSchema = z.object({
   components: z.array(componentConfigSchema).min(1),
 });
 
+/** Painéis "kiosk" são desenhados para telão (fontes maiores, só o essencial) e não
+ *  aparecem no catálogo público — só na Sala de Situação e no admin. */
+export const PANEL_PRESENTATIONS = ["default", "kiosk"] as const;
+export type PanelPresentation = (typeof PANEL_PRESENTATIONS)[number];
+
 const panelBaseSchema = {
   schemaVersion: z.literal(SUPPORTED_SCHEMA_VERSION),
   id: z.string().min(1),
@@ -26,6 +31,9 @@ const panelBaseSchema = {
   theme: z.string().min(1),
   tags: z.array(z.string()).default([]),
   metadata: panelMetadataSchema,
+  presentation: z.enum(PANEL_PRESENTATIONS).default("default"),
+  /** Id do painel de origem, quando este é a versão de telão de outro painel. */
+  variantOf: z.string().optional(),
 };
 
 export const nativePanelConfigSchema = z.object({

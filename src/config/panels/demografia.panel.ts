@@ -14,6 +14,7 @@ export const demografia: NativePanelConfig = {
     methodologyNote:
       "Estimativas populacionais fictícias para fins de protótipo, distribuídas por sexo, faixa etária e território.",
   },
+  presentation: "default",
   filters: [
     { id: "ano", type: "single-select", label: "Ano", dataField: "ano" },
     { id: "sexo", type: "multi-select", label: "Sexo", dataField: "sexo" },

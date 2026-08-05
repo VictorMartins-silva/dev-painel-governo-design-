@@ -56,6 +56,7 @@ export function createEmptyPanelDraft(): NativePanelConfig {
     theme: "",
     tags: [],
     metadata: { source: "", owner: "" },
+    presentation: "default",
     filters: [],
     sections: [],
   };

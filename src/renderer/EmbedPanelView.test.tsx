@@ -13,6 +13,7 @@ function buildExternalPanel(overrides: Partial<ExternalPanelConfig> = {}): Exter
     theme: "Tema",
     tags: [],
     metadata: { source: "Power BI", owner: "Equipe" },
+    presentation: "default",
     embed: { provider: "powerbi-public", url: "https://app.powerbi.com/view?r=abc123" },
     ...overrides,
   };

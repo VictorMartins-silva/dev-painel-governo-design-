@@ -28,6 +28,9 @@ export function Header() {
           <Link to="/indicadores" className={styles.navLink}>
             Indicadores
           </Link>
+          <Link to="/sala" className={styles.navLink}>
+            Sala de situação
+          </Link>
           <Link to="/admin" className={styles.navLink}>
             Configuração
           </Link>

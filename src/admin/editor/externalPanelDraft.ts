@@ -13,6 +13,7 @@ export function createEmptyExternalPanelDraft(): ExternalPanelConfig {
     theme: "",
     tags: [],
     metadata: { source: "", owner: "" },
+    presentation: "default",
     embed: { provider: "powerbi-public", url: "" },
   };
 }

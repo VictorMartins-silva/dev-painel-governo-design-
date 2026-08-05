@@ -27,6 +27,7 @@ function brokenPanel(): PanelConfig {
     theme: "Tema",
     tags: [],
     metadata: { source: "Fonte", owner: "Equipe" },
+    presentation: "default",
     filters: [],
     sections: [
       {

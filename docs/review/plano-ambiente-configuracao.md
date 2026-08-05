@@ -264,6 +264,31 @@ _(Etapas 1–2 destravam valor imediato; 3–5 completam o editor. Cada etapa te
 
 ## 6. Migração futura para Fabric/API
 
+### 6.1 Decisão de deploy e necessidade de API
+
+O protótipo atual não exige API para ser publicado. O build gerado por `npm run build` pode ser
+hospedado como site estático, desde que o servidor redirecione as rotas da SPA para `index.html`.
+Nesse modo, as configurações estáticas e os dados mock fazem parte do bundle, enquanto as edições
+do `/admin` permanecem no `localStorage` de cada navegador.
+
+Esse deploy estático é adequado para demonstração ou homologação do conceito, mas não representa
+publicação compartilhada: as alterações não são vistas por outros usuários, não têm backup
+central, podem ser perdidas ao limpar o navegador e o `/admin` continua sem autenticação.
+
+Para operação produtiva, a arquitetura prevista é frontend estático + API autenticada. A API deve
+centralizar as configurações dos painéis, aplicar autorização e expor os dados analíticos vindos do
+Fabric/SQL Endpoint. O frontend trocará o `MockDataProvider` por um `HttpDataProvider` e o
+`PanelStore` local por um cliente HTTP. A URL pública da API pode ser configurada no build (por
+exemplo, `VITE_API_BASE_URL`); credenciais e segredos do Fabric devem existir somente no backend,
+nunca em variáveis `VITE_*`, pois estas são incorporadas ao JavaScript entregue ao navegador.
+
+| Ambiente                 | Topologia                                                   | Persistência da configuração             |
+| ------------------------ | ----------------------------------------------------------- | ---------------------------------------- |
+| Demonstração/homologação | Site estático (`dist/`), sem API                            | Bundle + `localStorage` por navegador    |
+| Produção                 | Site estático + API autenticada + Fabric/armazenamento real | Central, compartilhada e com autorização |
+
+### 6.2 Pontos de substituição
+
 | Peça da v1                  | Substituição na fase Fabric                                                                 |
 | --------------------------- | ------------------------------------------------------------------------------------------- |
 | `PanelStore` (localStorage) | Endpoints `GET/PUT/POST/DELETE /panels` — o store vira um client HTTP com a mesma interface |

@@ -14,6 +14,7 @@ export const trabalhoEmprego: NativePanelConfig = {
     methodologyNote:
       "Saldo = admissões menos desligamentos, apurado por competência de referência. Os indicadores de resumo e a evolução mensal não são segmentados por sexo ou faixa etária nesta versão do protótipo — selecionar esses filtros pode resultar em ausência de dados.",
   },
+  presentation: "default",
   filters: [
     { id: "ano", type: "single-select", label: "Ano", dataField: "ano" },
     { id: "mes", type: "single-select", label: "Mês", dataField: "mes" },
