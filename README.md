@@ -51,11 +51,18 @@ do projeto, fora deste repositório.
 
 ## Como rodar
 
-Pré-requisito: Node.js. O projeto foi desenvolvido e testado em Node 18.16 — `vitest` (2.x) e
-`jsdom` (25.x) são mantidos nessas linhas major porque as versões mais recentes exigem Node ≥ 20.
+Pré-requisito: Node.js na faixa declarada em `engines` (`^22.22.2 || ^24.15.0 || >=26`). O piso vem
+do `jsdom` (30.x), a dependência mais restritiva. O projeto é desenvolvido e testado em Node 24 —
+há um `.nvmrc` na raiz, então gerenciadores de versão (`fnm`, `nvm`) selecionam o runtime correto
+automaticamente ao entrar na pasta.
+
+Node 18 **não funciona mais**: o `jsdom` daquela época injetava a própria classe `AbortSignal` no
+escopo global, e o `undici` embutido no Node moderno recusa esse objeto ao construir um `Request`.
+Isso derrubava os testes que disparam navegação do React Router (fluxos do admin). O `jsdom` 30
+passou a reutilizar os globais do runtime e o problema deixou de existir.
+
 As faixas em `package.json` usam `^`, então quem garante a reprodutibilidade é o
-`package-lock.json`; se o ambiente tiver Node 20+, as majors podem ser atualizadas sem alterar o
-código de aplicação.
+`package-lock.json`.
 
 ```bash
 npm install
