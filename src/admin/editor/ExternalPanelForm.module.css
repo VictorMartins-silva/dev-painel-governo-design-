@@ -13,7 +13,7 @@
 
 .previewFrame {
   width: 100%;
-  min-height: 480px;
+  min-height: 100vh;
   border: 1px solid var(--pg-color-border);
   border-radius: var(--pg-radius-md);
   background-color: var(--pg-color-surface);
