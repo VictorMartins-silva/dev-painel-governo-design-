@@ -16,6 +16,7 @@ import { createEditorState, editorReducer } from "../editor/editorReducer";
 import { createEmptyExternalPanelDraft } from "../editor/externalPanelDraft";
 import { buildFieldErrors } from "../editor/validation";
 import { buildCatalogWarnings } from "../editor/catalogWarnings";
+import { ValidationDisplayProvider } from "../editor/ValidationDisplayContext";
 import { useIndicatorList } from "../../data/hooks/useIndicatorList";
 import { PanelMetadataForm } from "../editor/PanelMetadataForm";
 import { FiltersForm } from "../editor/FiltersForm";
@@ -92,6 +93,7 @@ function NativePanelEditor({ existing, isNew }: NativePanelEditorProps) {
   const draftRef = useRef(state.draft);
   draftRef.current = state.draft;
   const savedDraftRef = useRef(state.draft);
+  const [submitAttempted, setSubmitAttempted] = useState(false);
 
   const [previewMode, setPreviewMode] = useState<PreviewMode>("inline");
   const postMessageRef = useRef<((message: PreviewChannelMessage) => void) | null>(null);
@@ -138,7 +140,6 @@ function NativePanelEditor({ existing, isNew }: NativePanelEditorProps) {
 
   const idConflict =
     isNew && state.draft.id.trim() !== "" && panelStore.get(state.draft.id) !== undefined;
-  const canSave = result.success && !idConflict;
   const isDirty = !isSameDraft(state.draft, savedDraftRef.current);
 
   const blocker = useBlocker(({ currentLocation, nextLocation }) => {
@@ -169,7 +170,10 @@ function NativePanelEditor({ existing, isNew }: NativePanelEditorProps) {
   }, [isDirty]);
 
   function handleSave() {
-    if (!result.success || idConflict) return;
+    if (!result.success || idConflict) {
+      setSubmitAttempted(true);
+      return;
+    }
     const saved = panelStore.save(result.data);
     savedDraftRef.current = saved as NativePanelConfig;
     navigate("/admin/paineis");
@@ -197,19 +201,14 @@ function NativePanelEditor({ existing, isNew }: NativePanelEditorProps) {
                 Exportar original
               </button>
             )}
-            <button
-              type="button"
-              className={styles.primaryButton}
-              onClick={handleSave}
-              disabled={!canSave}
-            >
+            <button type="button" className={styles.primaryButton} onClick={handleSave}>
               Salvar
             </button>
           </div>
         }
       />
 
-      {!result.success && (
+      {submitAttempted && !result.success && (
         <div className={styles.validationSummary} role="alert">
           <p>Corrija os campos destacados abaixo para salvar:</p>
           <ul>
@@ -236,21 +235,23 @@ function NativePanelEditor({ existing, isNew }: NativePanelEditorProps) {
       )}
 
       <div className={styles.formLayout} data-preview={previewMode}>
-        <div className={styles.formColumn}>
-          <PanelMetadataForm
-            draft={state.draft}
-            errors={errors}
-            dispatch={dispatch}
-            idEditable={isNew}
-          />
-          <FiltersForm filters={state.draft.filters} errors={errors} dispatch={dispatch} />
-          <SectionsForm
-            sections={state.draft.sections}
-            errors={errors}
-            warnings={warnings}
-            dispatch={dispatch}
-          />
-        </div>
+        <ValidationDisplayProvider forceShow={submitAttempted}>
+          <div className={styles.formColumn}>
+            <PanelMetadataForm
+              draft={state.draft}
+              errors={errors}
+              dispatch={dispatch}
+              idEditable={isNew}
+            />
+            <FiltersForm filters={state.draft.filters} errors={errors} dispatch={dispatch} />
+            <SectionsForm
+              sections={state.draft.sections}
+              errors={errors}
+              warnings={warnings}
+              dispatch={dispatch}
+            />
+          </div>
+        </ValidationDisplayProvider>
         {previewMode === "inline" ? (
           <EditorPreview
             draft={state.draft}
@@ -301,6 +302,7 @@ function ExternalPanelEditor({ existing, isNew }: ExternalPanelEditorProps) {
   const draftRef = useRef(draft);
   draftRef.current = draft;
   const savedDraftRef = useRef(draft);
+  const [submitAttempted, setSubmitAttempted] = useState(false);
 
   const settings = useMemo(() => settingsStore.get(), []);
 
@@ -342,7 +344,10 @@ function ExternalPanelEditor({ existing, isNew }: ExternalPanelEditorProps) {
   }, [isDirty]);
 
   function handleSave() {
-    if (!canSave || !result.success) return;
+    if (!canSave || !result.success) {
+      setSubmitAttempted(true);
+      return;
+    }
     const saved = panelStore.save(result.data);
     savedDraftRef.current = saved as ExternalPanelConfig;
     navigate("/admin/paineis");
@@ -370,19 +375,14 @@ function ExternalPanelEditor({ existing, isNew }: ExternalPanelEditorProps) {
                 Exportar original
               </button>
             )}
-            <button
-              type="button"
-              className={styles.primaryButton}
-              onClick={handleSave}
-              disabled={!canSave}
-            >
+            <button type="button" className={styles.primaryButton} onClick={handleSave}>
               Salvar
             </button>
           </div>
         }
       />
 
-      {!result.success && (
+      {submitAttempted && !result.success && (
         <div className={styles.validationSummary} role="alert">
           <p>Corrija os campos destacados abaixo para salvar:</p>
           <ul>
@@ -401,13 +401,15 @@ function ExternalPanelEditor({ existing, isNew }: ExternalPanelEditorProps) {
         </p>
       )}
 
-      <ExternalPanelForm
-        draft={draft}
-        errors={errors}
-        allowedEmbedDomains={settings.allowedEmbedDomains}
-        idEditable={isNew}
-        onChange={setDraft}
-      />
+      <ValidationDisplayProvider forceShow={submitAttempted}>
+        <ExternalPanelForm
+          draft={draft}
+          errors={errors}
+          allowedEmbedDomains={settings.allowedEmbedDomains}
+          idEditable={isNew}
+          onChange={setDraft}
+        />
+      </ValidationDisplayProvider>
 
       <Link to="/admin/paineis" className={styles.backLink}>
         ← Voltar para a lista de painéis

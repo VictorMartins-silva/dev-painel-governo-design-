@@ -8,6 +8,7 @@ import type { ComponentConfig } from "../../config/schemas/components.schema";
 import type { EditorAction } from "./editorReducer";
 import { createDefaultComponent } from "./editorReducer";
 import { ComponentForm } from "./ComponentForm";
+import { ValidationDisplayProvider } from "./ValidationDisplayContext";
 
 const provider = new MockDataProvider({ simulateLatency: false });
 
@@ -192,14 +193,16 @@ describe("ComponentForm", () => {
       ["sections.0.components.0.dimension", "Dimensão é obrigatória"],
     ]);
     renderWithProvider(
-      <ComponentForm
-        component={component}
-        errors={errors}
-        errorPrefix="sections.0.components.0"
-        dispatch={vi.fn()}
-        sectionIndex={0}
-        componentIndex={0}
-      />,
+      <ValidationDisplayProvider forceShow>
+        <ComponentForm
+          component={component}
+          errors={errors}
+          errorPrefix="sections.0.components.0"
+          dispatch={vi.fn()}
+          sectionIndex={0}
+          componentIndex={0}
+        />
+      </ValidationDisplayProvider>,
     );
 
     expect(screen.getByText("Título é obrigatório")).toBeInTheDocument();

@@ -38,12 +38,17 @@ describe("PanelEditorPage", () => {
     vi.unstubAllGlobals();
   });
 
-  it("mostra formulário vazio para um novo painel, com salvar desabilitado", () => {
+  it("mostra formulário vazio para um novo painel, sem alertas até tentar salvar", async () => {
     renderAt("/admin/paineis/novo");
 
     expect(screen.getByRole("heading", { name: "Novo painel" })).toBeInTheDocument();
     expect(screen.getByLabelText("Id (slug)")).toBeEnabled();
-    expect(screen.getByRole("button", { name: "Salvar" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Salvar" })).toBeEnabled();
+    expect(screen.queryAllByRole("alert")).toHaveLength(0);
+
+    const user = userEvent.setup();
+    await user.click(screen.getByRole("button", { name: "Salvar" }));
+
     expect(screen.getAllByRole("alert").length).toBeGreaterThan(0);
   });
 
@@ -92,7 +97,10 @@ describe("PanelEditorPage", () => {
     await user.type(screen.getByLabelText("Id (slug)"), "demografia");
 
     expect(screen.getByText(/Já existe um painel com o id/)).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Salvar" })).toBeDisabled();
+
+    await user.click(screen.getByRole("button", { name: "Salvar" }));
+
+    expect(screen.queryByText("Lista de painéis")).not.toBeInTheDocument();
   });
 
   it("remover todas as seções de um painel válido bloqueia salvar novamente", async () => {
@@ -107,7 +115,10 @@ describe("PanelEditorPage", () => {
       removeSectionButtons = screen.queryAllByRole("button", { name: "Remover seção" });
     }
 
-    expect(screen.getByRole("button", { name: "Salvar" })).toBeDisabled();
+    await user.click(screen.getByRole("button", { name: "Salvar" }));
+
+    expect(screen.queryByText("Lista de painéis")).not.toBeInTheDocument();
+    expect(screen.getByText("Corrija os campos destacados abaixo para salvar:")).toBeInTheDocument();
   });
 
   it("mostra mensagem de não encontrado para um id inexistente", () => {

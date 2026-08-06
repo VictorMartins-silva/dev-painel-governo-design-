@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from "react";
 import type { ExternalPanelConfig } from "../../config/schemas/panel.schema";
 import { validateEmbedUrl } from "../../domain/embedUrl";
 import { FormField } from "./FormField";
@@ -20,6 +21,26 @@ export function ExternalPanelForm({
   idEditable,
   onChange,
 }: ExternalPanelFormProps) {
+  const [tagsText, setTagsText] = useState(() => draft.tags.join(", "));
+  const lastEmittedTags = useRef(draft.tags);
+
+  useEffect(() => {
+    if (draft.tags !== lastEmittedTags.current) {
+      lastEmittedTags.current = draft.tags;
+      setTagsText(draft.tags.join(", "));
+    }
+  }, [draft.tags]);
+
+  const handleTagsChange = (value: string) => {
+    setTagsText(value);
+    const parsed = value
+      .split(",")
+      .map((tag) => tag.trim())
+      .filter(Boolean);
+    lastEmittedTags.current = parsed;
+    onChange({ ...draft, tags: parsed });
+  };
+
   const urlValidation = draft.embed.url
     ? validateEmbedUrl(draft.embed.url, allowedEmbedDomains)
     : null;
@@ -30,7 +51,12 @@ export function ExternalPanelForm({
   return (
     <div className={styles.block}>
       <div className={styles.grid}>
-        <FormField label="Id (slug)" htmlFor="external-panel-id" error={errors.get("id")}>
+        <FormField
+          label="Id (slug)"
+          htmlFor="external-panel-id"
+          hint="Identificador único usado na URL, ex.: saude-atencao-basica"
+          error={errors.get("id")}
+        >
           <input
             id="external-panel-id"
             className={styles.input}
@@ -43,6 +69,7 @@ export function ExternalPanelForm({
         <FormField
           label="Título do painel"
           htmlFor="external-panel-title"
+          hint="Nome exibido no catálogo e no cabeçalho do painel"
           error={errors.get("title")}
         >
           <input
@@ -56,6 +83,7 @@ export function ExternalPanelForm({
         <FormField
           label="Descrição"
           htmlFor="external-panel-description"
+          hint="Resumo curto do que este painel mostra"
           error={errors.get("description")}
         >
           <textarea
@@ -66,7 +94,12 @@ export function ExternalPanelForm({
           />
         </FormField>
 
-        <FormField label="Tema" htmlFor="external-panel-theme" error={errors.get("theme")}>
+        <FormField
+          label="Tema"
+          htmlFor="external-panel-theme"
+          hint="Categoria usada para agrupar e filtrar painéis no catálogo"
+          error={errors.get("theme")}
+        >
           <input
             id="external-panel-theme"
             className={styles.input}
@@ -79,22 +112,15 @@ export function ExternalPanelForm({
           <input
             id="external-panel-tags"
             className={styles.input}
-            value={draft.tags.join(", ")}
-            onChange={(event) =>
-              onChange({
-                ...draft,
-                tags: event.target.value
-                  .split(",")
-                  .map((tag) => tag.trim())
-                  .filter(Boolean),
-              })
-            }
+            value={tagsText}
+            onChange={(event) => handleTagsChange(event.target.value)}
           />
         </FormField>
 
         <FormField
           label="Fonte"
           htmlFor="external-panel-source"
+          hint="Origem oficial dos dados, ex.: nome do sistema ou secretaria"
           error={errors.get("metadata.source")}
         >
           <input
@@ -110,6 +136,7 @@ export function ExternalPanelForm({
         <FormField
           label="Responsável"
           htmlFor="external-panel-owner"
+          hint="Área ou pessoa responsável por manter estes dados"
           error={errors.get("metadata.owner")}
         >
           <input
@@ -139,6 +166,7 @@ export function ExternalPanelForm({
         <FormField
           label="URL de incorporação (Power BI — Publicar na web)"
           htmlFor="external-panel-url"
+          hint="Gerada em Arquivo → Publicar na web, no Power BI Desktop ou Service"
           error={urlError}
         >
           <input

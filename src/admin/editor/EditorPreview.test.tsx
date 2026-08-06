@@ -27,11 +27,14 @@ describe("EditorPreview", () => {
     vi.useRealTimers();
   });
 
-  it("renderiza a config inválida do painel vazio como erro estruturado", () => {
+  it("mostra um aviso amigável em vez do erro estruturado quando o painel está vazio", () => {
     renderPreview(createEmptyPanelDraft());
     act(() => vi.advanceTimersByTime(300));
 
-    expect(screen.getByText("Configuração de painel inválida")).toBeInTheDocument();
+    expect(
+      screen.getByText("Preencha os campos obrigatórios para visualizar o preview."),
+    ).toBeInTheDocument();
+    expect(screen.queryByText("Configuração de painel inválida")).not.toBeInTheDocument();
   });
 
   it("só aplica alterações do draft ao preview após o debounce", () => {

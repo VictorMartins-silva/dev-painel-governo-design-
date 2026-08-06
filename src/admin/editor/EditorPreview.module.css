@@ -29,6 +29,13 @@
   margin-left: auto;
 }
 
+.placeholder {
+  font-size: var(--pg-typography-size-sm);
+  color: var(--pg-color-textSecondary);
+  text-align: center;
+  padding: var(--pg-spacing-6) var(--pg-spacing-3);
+}
+
 .headerButton {
   padding: var(--pg-spacing-1) var(--pg-spacing-3);
   border: 1px solid var(--pg-color-border);

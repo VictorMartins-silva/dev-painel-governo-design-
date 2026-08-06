@@ -8,6 +8,7 @@ import { FORMAT_TYPES, type FormatType } from "../../domain/types";
 import type { EditorAction } from "./editorReducer";
 import { FormField } from "./FormField";
 import { IndicatorSelect } from "./IndicatorSelect";
+import { useForceShowErrors } from "./ValidationDisplayContext";
 import styles from "./ComponentForm.module.css";
 
 const COMPONENT_TYPES = Object.keys(COMPONENT_CATALOG) as ComponentType[];
@@ -66,6 +67,7 @@ export function ComponentForm({
   const indicatorsState = useIndicatorList();
   const provider = useDataProvider();
   const [columnsLoad, setColumnsLoad] = useState<"idle" | "loading" | "error">("idle");
+  const forceShowErrors = useForceShowErrors();
 
   const allIndicators = indicatorsState.status === "success" ? indicatorsState.data : [];
   const requiredShape = COMPONENT_CATALOG[component.type].requiredShape;
@@ -387,7 +389,7 @@ export function ComponentForm({
               Não foi possível carregar as colunas do dataset selecionado.
             </p>
           )}
-          {errors.get(`${errorPrefix}.columns`) && (
+          {errors.get(`${errorPrefix}.columns`) && forceShowErrors && (
             <p className={styles.blockError} role="alert">
               {errors.get(`${errorPrefix}.columns`)}
             </p>

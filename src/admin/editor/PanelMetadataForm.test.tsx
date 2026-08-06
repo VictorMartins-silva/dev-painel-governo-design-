@@ -3,6 +3,7 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { createEmptyPanelDraft } from "./editorReducer";
 import { PanelMetadataForm } from "./PanelMetadataForm";
+import { ValidationDisplayProvider } from "./ValidationDisplayContext";
 
 describe("PanelMetadataForm", () => {
   it("exibe os valores do draft e desabilita o id quando não editável", () => {
@@ -71,15 +72,17 @@ describe("PanelMetadataForm", () => {
     });
   });
 
-  it("mostra mensagens de erro por campo", () => {
+  it("mostra mensagens de erro por campo depois de tocado ou ao forçar exibição", () => {
     const errors = new Map([["title", "Título é obrigatório"]]);
     render(
-      <PanelMetadataForm
-        draft={createEmptyPanelDraft()}
-        errors={errors}
-        dispatch={vi.fn()}
-        idEditable
-      />,
+      <ValidationDisplayProvider forceShow>
+        <PanelMetadataForm
+          draft={createEmptyPanelDraft()}
+          errors={errors}
+          dispatch={vi.fn()}
+          idEditable
+        />
+      </ValidationDisplayProvider>,
     );
 
     expect(screen.getByText("Título é obrigatório")).toBeInTheDocument();

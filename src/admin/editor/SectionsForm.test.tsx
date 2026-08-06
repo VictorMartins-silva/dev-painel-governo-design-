@@ -6,6 +6,7 @@ import { DataProviderRoot } from "../../data/DataProviderContext";
 import { MockDataProvider } from "../../data/mock/MockDataProvider";
 import { createDefaultComponent, createDefaultSection } from "./editorReducer";
 import { SectionsForm } from "./SectionsForm";
+import { ValidationDisplayProvider } from "./ValidationDisplayContext";
 
 const provider = new MockDataProvider({ simulateLatency: false });
 
@@ -95,7 +96,11 @@ describe("SectionsForm", () => {
       ["sections", "Adicione ao menos uma seção"],
       ["sections.0.components", "Adicione ao menos um componente"],
     ]);
-    renderWithProvider(<SectionsForm sections={[section]} errors={errors} dispatch={vi.fn()} />);
+    renderWithProvider(
+      <ValidationDisplayProvider forceShow>
+        <SectionsForm sections={[section]} errors={errors} dispatch={vi.fn()} />
+      </ValidationDisplayProvider>,
+    );
 
     expect(screen.getByText("Adicione ao menos uma seção")).toBeInTheDocument();
     expect(screen.getByText("Adicione ao menos um componente")).toBeInTheDocument();

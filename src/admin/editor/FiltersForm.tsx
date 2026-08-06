@@ -55,6 +55,7 @@ export function FiltersForm({ filters, errors, dispatch }: FiltersFormProps) {
             <FormField
               label="Rótulo"
               htmlFor={`filter-label-${filter.id}`}
+              hint="Texto exibido ao lado do filtro para o usuário"
               error={errors.get(`filters.${index}.label`)}
             >
               <input
@@ -74,6 +75,7 @@ export function FiltersForm({ filters, errors, dispatch }: FiltersFormProps) {
             <FormField
               label="Campo de dados"
               htmlFor={`filter-data-field-${filter.id}`}
+              hint="Nome do campo no conjunto de dados usado para filtrar"
               error={errors.get(`filters.${index}.dataField`)}
             >
               <input

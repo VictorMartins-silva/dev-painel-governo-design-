@@ -4,6 +4,7 @@ import type { PanelSectionConfig } from "../../config/schemas/panel.schema";
 import type { EditorAction } from "./editorReducer";
 import { ComponentForm } from "./ComponentForm";
 import { FormField } from "./FormField";
+import { useForceShowErrors } from "./ValidationDisplayContext";
 import styles from "./SectionsForm.module.css";
 
 const LAYOUT_LABEL: Record<PanelLayout, string> = {
@@ -21,10 +22,11 @@ type SectionsFormProps = {
 };
 
 export function SectionsForm({ sections, errors, warnings, dispatch }: SectionsFormProps) {
+  const forceShowErrors = useForceShowErrors();
   return (
     <details open className={styles.block}>
       <summary className={styles.summary}>Seções</summary>
-      {errors.get("sections") && (
+      {forceShowErrors && errors.get("sections") && (
         <p className={styles.blockError} role="alert">
           {errors.get("sections")}
         </p>
@@ -48,6 +50,7 @@ export function SectionsForm({ sections, errors, warnings, dispatch }: SectionsF
                 <FormField
                   label="Título da seção"
                   htmlFor={`section-title-${section.id}`}
+                  hint="Nome exibido acima dos componentes desta seção"
                   error={errors.get(`sections.${sectionIndex}.title`)}
                 >
                   <input
@@ -118,7 +121,7 @@ export function SectionsForm({ sections, errors, warnings, dispatch }: SectionsF
                 </div>
               </div>
 
-              {errors.get(`sections.${sectionIndex}.components`) && (
+              {errors.get(`sections.${sectionIndex}.components`) && forceShowErrors && (
                 <p className={styles.blockError} role="alert">
                   {errors.get(`sections.${sectionIndex}.components`)}
                 </p>

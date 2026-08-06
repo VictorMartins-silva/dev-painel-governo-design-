@@ -6,22 +6,22 @@ export type IndicatorShape = (typeof INDICATOR_SHAPES)[number];
 
 export const indicatorCatalogEntrySchema = z.object({
   // identidade
-  id: z.string().min(1),
-  name: z.string().min(1),
-  unit: z.string().min(1),
-  source: z.string().min(1),
+  id: z.string().min(1, "Campo obrigatório"),
+  name: z.string().min(1, "Campo obrigatório"),
+  unit: z.string().min(1, "Campo obrigatório"),
+  source: z.string().min(1, "Campo obrigatório"),
 
   // governança
-  definition: z.string().min(1),
-  periodicity: z.string().min(1),
-  granularity: z.string().min(1),
-  owner: z.string().min(1),
-  updatedAt: z.string().min(1),
+  definition: z.string().min(1, "Campo obrigatório"),
+  periodicity: z.string().min(1, "Campo obrigatório"),
+  granularity: z.string().min(1, "Campo obrigatório"),
+  owner: z.string().min(1, "Campo obrigatório"),
+  updatedAt: z.string().min(1, "Campo obrigatório"),
   formula: z.string().optional(),
   limitations: z.string().optional(),
 
   // técnico — determina os tipos de componente compatíveis
-  shapes: z.array(z.enum(INDICATOR_SHAPES)).min(1),
+  shapes: z.array(z.enum(INDICATOR_SHAPES)).min(1, "Selecione pelo menos um formato"),
   dimensions: z.array(z.string()).default([]),
   datasets: z.array(z.string()).default([]),
   defaultFormat: z.enum(FORMAT_TYPES).optional(),

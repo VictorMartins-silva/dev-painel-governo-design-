@@ -11,6 +11,12 @@
   color: var(--pg-color-textSecondary);
 }
 
+.hint {
+  font-size: var(--pg-typography-size-xs);
+  color: var(--pg-color-textSecondary);
+  margin: 0;
+}
+
 .error {
   font-size: var(--pg-typography-size-xs);
   color: var(--pg-color-negative);

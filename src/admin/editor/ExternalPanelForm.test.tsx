@@ -3,6 +3,7 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { createEmptyExternalPanelDraft } from "./externalPanelDraft";
 import { ExternalPanelForm } from "./ExternalPanelForm";
+import { ValidationDisplayProvider } from "./ValidationDisplayContext";
 
 const ALLOWED_DOMAINS = ["app.powerbi.com"];
 
@@ -48,13 +49,15 @@ describe("ExternalPanelForm", () => {
       embed: { provider: "powerbi-public" as const, url: "https://malicioso.example.com/x" },
     };
     render(
-      <ExternalPanelForm
-        draft={draft}
-        errors={new Map()}
-        allowedEmbedDomains={ALLOWED_DOMAINS}
-        idEditable
-        onChange={vi.fn()}
-      />,
+      <ValidationDisplayProvider forceShow>
+        <ExternalPanelForm
+          draft={draft}
+          errors={new Map()}
+          allowedEmbedDomains={ALLOWED_DOMAINS}
+          idEditable
+          onChange={vi.fn()}
+        />
+      </ValidationDisplayProvider>,
     );
 
     expect(screen.getByText(/domínio/)).toBeInTheDocument();

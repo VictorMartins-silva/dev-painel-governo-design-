@@ -1,4 +1,8 @@
 import "@testing-library/jest-dom/vitest";
+import { z } from "zod";
+
+// Mensagens de validação padrão do Zod (invalid_type, enum, etc.) em português, como em produção.
+z.config(z.locales.pt());
 
 class MockCanvasRenderingContext2D {
   fillStyle = "";

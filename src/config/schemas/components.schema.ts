@@ -4,49 +4,49 @@ import { FORMAT_TYPES } from "../../domain/types";
 const formatSchema = z.enum(FORMAT_TYPES);
 
 const baseComponentFields = {
-  id: z.string().min(1),
-  title: z.string().min(1),
+  id: z.string().min(1, "Campo obrigatório"),
+  title: z.string().min(1, "Campo obrigatório"),
 };
 
 export const indicatorCardConfigSchema = z.object({
   ...baseComponentFields,
   type: z.literal("indicator-card"),
-  metric: z.string().min(1),
+  metric: z.string().min(1, "Campo obrigatório"),
   format: formatSchema,
   comparison: z.enum(["previous-period", "previous-year", "none"]).optional(),
-  indicatorId: z.string().min(1).optional(),
+  indicatorId: z.string().min(1, "Campo obrigatório").optional(),
 });
 
 export const timeSeriesConfigSchema = z.object({
   ...baseComponentFields,
   type: z.literal("time-series"),
-  metric: z.string().min(1),
-  dimension: z.string().min(1).optional(),
+  metric: z.string().min(1, "Campo obrigatório"),
+  dimension: z.string().min(1, "Campo obrigatório").optional(),
   format: formatSchema.optional(),
 });
 
 export const barChartConfigSchema = z.object({
   ...baseComponentFields,
   type: z.literal("bar-chart"),
-  metric: z.string().min(1),
-  dimension: z.string().min(1),
+  metric: z.string().min(1, "Campo obrigatório"),
+  dimension: z.string().min(1, "Campo obrigatório"),
   orientation: z.enum(["horizontal", "vertical"]).default("vertical"),
   sort: z.enum(["asc", "desc", "none"]).default("none"),
   format: formatSchema.optional(),
 });
 
 export const dataTableColumnSchema = z.object({
-  field: z.string().min(1),
-  label: z.string().min(1),
+  field: z.string().min(1, "Campo obrigatório"),
+  label: z.string().min(1, "Campo obrigatório"),
   type: formatSchema,
 });
 
 export const dataTableConfigSchema = z.object({
   ...baseComponentFields,
   type: z.literal("data-table"),
-  dataset: z.string().min(1),
-  columns: z.array(dataTableColumnSchema).min(1),
-  limit: z.number().int().positive().optional(),
+  dataset: z.string().min(1, "Campo obrigatório"),
+  columns: z.array(dataTableColumnSchema).min(1, "Adicione pelo menos uma coluna"),
+  limit: z.number().int().positive("Informe um número maior que zero").optional(),
 });
 
 export const componentConfigSchema = z.discriminatedUnion("type", [

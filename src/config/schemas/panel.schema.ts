@@ -6,16 +6,16 @@ import { componentConfigSchema } from "./components.schema";
 export const SUPPORTED_SCHEMA_VERSION = 1;
 
 const panelMetadataSchema = z.object({
-  source: z.string().min(1),
-  owner: z.string().min(1),
+  source: z.string().min(1, "Campo obrigatório"),
+  owner: z.string().min(1, "Campo obrigatório"),
   methodologyNote: z.string().optional(),
 });
 
 export const panelSectionSchema = z.object({
-  id: z.string().min(1),
-  title: z.string().min(1),
+  id: z.string().min(1, "Campo obrigatório"),
+  title: z.string().min(1, "Campo obrigatório"),
   layout: z.enum(PANEL_LAYOUTS),
-  components: z.array(componentConfigSchema).min(1),
+  components: z.array(componentConfigSchema).min(1, "Adicione pelo menos um componente"),
 });
 
 /** Painéis "kiosk" são desenhados para telão (fontes maiores, só o essencial) e não
@@ -25,10 +25,10 @@ export type PanelPresentation = (typeof PANEL_PRESENTATIONS)[number];
 
 const panelBaseSchema = {
   schemaVersion: z.literal(SUPPORTED_SCHEMA_VERSION),
-  id: z.string().min(1),
-  title: z.string().min(1),
-  description: z.string().min(1),
-  theme: z.string().min(1),
+  id: z.string().min(1, "Campo obrigatório"),
+  title: z.string().min(1, "Campo obrigatório"),
+  description: z.string().min(1, "Campo obrigatório"),
+  theme: z.string().min(1, "Campo obrigatório"),
   tags: z.array(z.string()).default([]),
   metadata: panelMetadataSchema,
   presentation: z.enum(PANEL_PRESENTATIONS).default("default"),
@@ -40,7 +40,7 @@ export const nativePanelConfigSchema = z.object({
   ...panelBaseSchema,
   kind: z.literal("native"),
   filters: z.array(filterConfigSchema).default([]),
-  sections: z.array(panelSectionSchema).min(1),
+  sections: z.array(panelSectionSchema).min(1, "Adicione pelo menos uma seção"),
 });
 
 /** Provedores de embed suportados; hoje só "Publicar na web" do Power BI. */
@@ -49,7 +49,7 @@ export type EmbedProvider = (typeof EMBED_PROVIDERS)[number];
 
 export const embedConfigSchema = z.object({
   provider: z.enum(EMBED_PROVIDERS),
-  url: z.string().min(1),
+  url: z.string().min(1, "Campo obrigatório"),
 });
 
 export const externalPanelConfigSchema = z.object({

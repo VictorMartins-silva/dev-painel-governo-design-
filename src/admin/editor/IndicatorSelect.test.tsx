@@ -3,6 +3,7 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { IndicatorCatalogEntry } from "../../config/schemas/indicator.schema";
 import { IndicatorSelect } from "./IndicatorSelect";
+import { ValidationDisplayProvider } from "./ValidationDisplayContext";
 
 function makeIndicator(overrides: Partial<IndicatorCatalogEntry>): IndicatorCatalogEntry {
   return {
@@ -117,14 +118,16 @@ describe("IndicatorSelect", () => {
 
   it("mostra erro de validação do campo", () => {
     render(
-      <IndicatorSelect
-        id="indicator"
-        indicators={indicators}
-        status="success"
-        value=""
-        onChange={vi.fn()}
-        error="Indicador é obrigatório"
-      />,
+      <ValidationDisplayProvider forceShow>
+        <IndicatorSelect
+          id="indicator"
+          indicators={indicators}
+          status="success"
+          value=""
+          onChange={vi.fn()}
+          error="Indicador é obrigatório"
+        />
+      </ValidationDisplayProvider>,
     );
 
     expect(screen.getByText("Indicador é obrigatório")).toBeInTheDocument();

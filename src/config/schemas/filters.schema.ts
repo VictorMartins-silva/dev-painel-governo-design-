@@ -1,9 +1,9 @@
 import { z } from "zod";
 
 const baseFilterFields = {
-  id: z.string().min(1),
-  label: z.string().min(1),
-  dataField: z.string().min(1),
+  id: z.string().min(1, "Campo obrigatório"),
+  label: z.string().min(1, "Campo obrigatório"),
+  dataField: z.string().min(1, "Campo obrigatório"),
 };
 
 export const singleSelectFilterSchema = z.object({

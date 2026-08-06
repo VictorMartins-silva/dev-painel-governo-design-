@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import type { NativePanelConfig } from "../../config/schemas/panel.schema";
+import { parsePanelConfig } from "../../config/schemas/panel.schema";
 import { ConfigRenderer } from "../../renderer/ConfigRenderer";
 import styles from "./EditorPreview.module.css";
 
@@ -38,7 +39,13 @@ export function EditorPreview({ draft, onCollapse, onDetach }: EditorPreviewProp
         </div>
       </div>
       <div className={styles.frame}>
-        <ConfigRenderer panelId={debounced.id || "preview"} config={debounced} />
+        {parsePanelConfig(debounced).success ? (
+          <ConfigRenderer panelId={debounced.id || "preview"} config={debounced} />
+        ) : (
+          <p className={styles.placeholder}>
+            Preencha os campos obrigatórios para visualizar o preview.
+          </p>
+        )}
       </div>
     </div>
   );
