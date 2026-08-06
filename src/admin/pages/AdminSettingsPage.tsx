@@ -1,5 +1,4 @@
 import { useState, type FormEvent } from "react";
-import { Breadcrumb } from "../../components/layout/Breadcrumb";
 import { PageHeader } from "../../components/layout/PageHeader";
 import { settingsStore } from "../store/SettingsStore";
 import styles from "./AdminSettingsPage.module.css";
@@ -32,13 +31,6 @@ export default function AdminSettingsPage() {
 
   return (
     <div>
-      <Breadcrumb
-        items={[
-          { label: "Início", href: "/" },
-          { label: "Admin", href: "/admin" },
-          { label: "Configurações" },
-        ]}
-      />
       <PageHeader
         title="Configurações"
         description="Domínios permitidos para incorporação de painéis externos via iframe (allowlist de embed)."

@@ -55,17 +55,13 @@ export default function PanelEditorPage() {
     return (
       <div>
         <Breadcrumb
-          items={[
-            { label: "Início", href: "/" },
-            { label: "Admin", href: "/admin" },
-            { label: "Painel não encontrado" },
-          ]}
+          items={[{ label: "Painéis", href: "/admin/paineis" }, { label: "Painel não encontrado" }]}
         />
         <PageHeader
           title="Painel não encontrado"
           description={`Não existe um painel com o id "${id}".`}
         />
-        <Link to="/admin" className={styles.backLink}>
+        <Link to="/admin/paineis" className={styles.backLink}>
           ← Voltar para a lista de painéis
         </Link>
       </div>
@@ -176,15 +172,14 @@ function NativePanelEditor({ existing, isNew }: NativePanelEditorProps) {
     if (!result.success || idConflict) return;
     const saved = panelStore.save(result.data);
     savedDraftRef.current = saved as NativePanelConfig;
-    navigate("/admin");
+    navigate("/admin/paineis");
   }
 
   return (
     <div>
       <Breadcrumb
         items={[
-          { label: "Início", href: "/" },
-          { label: "Admin", href: "/admin" },
+          { label: "Painéis", href: "/admin/paineis" },
           { label: state.draft.title || (isNew ? "Novo painel" : "Editar painel") },
         ]}
       />
@@ -285,7 +280,7 @@ function NativePanelEditor({ existing, isNew }: NativePanelEditorProps) {
         )}
       </div>
 
-      <Link to="/admin" className={styles.backLink}>
+      <Link to="/admin/paineis" className={styles.backLink}>
         ← Voltar para a lista de painéis
       </Link>
     </div>
@@ -350,15 +345,14 @@ function ExternalPanelEditor({ existing, isNew }: ExternalPanelEditorProps) {
     if (!canSave || !result.success) return;
     const saved = panelStore.save(result.data);
     savedDraftRef.current = saved as ExternalPanelConfig;
-    navigate("/admin");
+    navigate("/admin/paineis");
   }
 
   return (
     <div>
       <Breadcrumb
         items={[
-          { label: "Início", href: "/" },
-          { label: "Admin", href: "/admin" },
+          { label: "Painéis", href: "/admin/paineis" },
           { label: draft.title || (isNew ? "Novo painel externo" : "Editar painel externo") },
         ]}
       />
@@ -415,7 +409,7 @@ function ExternalPanelEditor({ existing, isNew }: ExternalPanelEditorProps) {
         onChange={setDraft}
       />
 
-      <Link to="/admin" className={styles.backLink}>
+      <Link to="/admin/paineis" className={styles.backLink}>
         ← Voltar para a lista de painéis
       </Link>
     </div>

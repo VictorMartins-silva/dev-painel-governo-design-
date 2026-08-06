@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom";
-import { Breadcrumb } from "../../components/layout/Breadcrumb";
 import { PageHeader } from "../../components/layout/PageHeader";
 import { collectionStore } from "../../admin/store/CollectionStore";
 import { panelStore } from "../../admin/store/PanelStore";
@@ -12,9 +11,8 @@ export default function CollectionsPage() {
 
   return (
     <div>
-      <Breadcrumb items={[{ label: "Início", href: "/" }, { label: "Sala de situação" }]} />
       <PageHeader
-        title="Sala de situação"
+        title="Apresentações"
         description="Coleção é o que roda na tela; permissão é quem pode ver. São dois conceitos diferentes — a permissão vem das estruturas organizacionais do Acto, não daqui."
       />
 

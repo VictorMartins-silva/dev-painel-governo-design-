@@ -1,5 +1,17 @@
 import { Link, Outlet } from "react-router-dom";
+import { NavItem } from "../components/nav/NavItem";
+import { ModeSwitch } from "../components/nav/ModeSwitch";
+import { ADMIN_NAV_GROUPS } from "../components/nav/navItems";
+import { panelStore } from "./store/PanelStore";
+import { collectionStore } from "./store/CollectionStore";
+import { COMPONENT_CATALOG } from "../config/componentCatalog";
 import styles from "./AdminLayout.module.css";
+
+const NAV_ITEM_COUNT: Record<string, () => number> = {
+  paineis: () => panelStore.list().length,
+  colecoes: () => collectionStore.list().length,
+  componentes: () => Object.keys(COMPONENT_CATALOG).length,
+};
 
 export default function AdminLayout() {
   return (
@@ -8,42 +20,41 @@ export default function AdminLayout() {
         Pular para o conteúdo principal
       </a>
       <div className={styles.banner} role="note">
-        <span className={styles.badge}>Ambiente de configuração</span>
+        <span className={styles.badge}>Configuração</span>
         <p className={styles.bannerText}>
-          Alterações feitas aqui afetam os painéis publicados imediatamente. Sem autenticação nesta
-          versão.
+          Alterações afetam os painéis publicados imediatamente. Sem autenticação nesta versão.
         </p>
-        <Link to="/" className={styles.exitLink}>
-          Sair do modo de configuração
-        </Link>
+        <ModeSwitch mode="toPublic" className={styles.exitLink} />
       </div>
-      <header className={styles.header}>
-        <div className={styles.inner}>
-          <Link to="/admin" className={styles.brand}>
-            Painel de Governo · Admin
+      <div className={styles.body}>
+        <aside className={styles.sidebar} aria-label="Navegação de configuração">
+          <Link to="/admin/paineis" className={styles.brand}>
+            Painel de Governo
           </Link>
-          <nav className={styles.nav} aria-label="Navegação do admin">
-            <Link to="/admin" className={styles.navLink}>
-              Painéis
-            </Link>
-            <Link to="/admin/indicadores" className={styles.navLink}>
-              Indicadores
-            </Link>
-            <Link to="/admin/componentes" className={styles.navLink}>
-              Componentes
-            </Link>
-            <Link to="/admin/colecoes" className={styles.navLink}>
-              Coleções
-            </Link>
-            <Link to="/admin/configuracoes" className={styles.navLink}>
-              Configurações
-            </Link>
-          </nav>
-        </div>
-      </header>
-      <main id="admin-conteudo" className={styles.main}>
-        <Outlet />
-      </main>
+          {ADMIN_NAV_GROUPS.map((group) => (
+            <div key={group.label} className={styles.group}>
+              <span className={styles.groupLabel}>{group.label}</span>
+              {group.items.map((item) => {
+                const count = NAV_ITEM_COUNT[item.id]?.();
+                return (
+                  <NavItem
+                    key={item.id}
+                    to={item.to}
+                    className={styles.navLink}
+                    activeClassName={styles.navLinkActive}
+                  >
+                    <span>{item.label}</span>
+                    {count !== undefined && <span className={styles.count}>{count}</span>}
+                  </NavItem>
+                );
+              })}
+            </div>
+          ))}
+        </aside>
+        <main id="admin-conteudo" className={styles.main}>
+          <Outlet />
+        </main>
+      </div>
     </div>
   );
 }

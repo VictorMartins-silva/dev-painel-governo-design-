@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Breadcrumb } from "../../components/layout/Breadcrumb";
 import { PageHeader } from "../../components/layout/PageHeader";
 import { collectionStore, type CollectionOrigin } from "../store/CollectionStore";
 import styles from "../pages/AdminPanelsPage.module.css";
@@ -40,16 +39,9 @@ export default function AdminCollectionsPage() {
 
   return (
     <div>
-      <Breadcrumb
-        items={[
-          { label: "Início", href: "/" },
-          { label: "Admin", href: "/admin" },
-          { label: "Coleções" },
-        ]}
-      />
       <PageHeader
         title="Coleções"
-        description="Coleções são o que roda na Sala de situação: uma sequência de painéis com tempo de exibição."
+        description="Coleções são o que roda em Apresentações: uma sequência de painéis com tempo de exibição."
         actions={
           <Link to="/admin/colecoes/novo" className={styles.primaryButton}>
             Nova coleção
@@ -76,7 +68,7 @@ export default function AdminCollectionsPage() {
               </div>
               <div className={styles.actions}>
                 <Link to={`/sala/${config.id}`} className={styles.linkButton}>
-                  Ver na Sala de situação
+                  Ver em Apresentações
                 </Link>
                 <Link to={`/admin/colecoes/${config.id}`} className={styles.linkButton}>
                   Editar

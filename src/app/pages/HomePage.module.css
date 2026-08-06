@@ -20,24 +20,6 @@
   line-height: var(--pg-typography-lineHeight-relaxed);
 }
 
-.searchRow {
-  display: flex;
-  justify-content: center;
-  width: 100%;
-  margin-top: var(--pg-spacing-4);
-}
-
-.search {
-  width: 100%;
-  max-width: 420px;
-  padding: var(--pg-spacing-3) var(--pg-spacing-4);
-  border: 1px solid var(--pg-color-border);
-  border-radius: var(--pg-radius-md);
-  background-color: var(--pg-color-surface);
-  color: var(--pg-color-textPrimary);
-  font-size: var(--pg-typography-size-md);
-}
-
 .sectionTitle {
   font-size: var(--pg-typography-size-xl);
   font-weight: var(--pg-typography-weight-semibold);
@@ -71,7 +53,9 @@
   border-radius: var(--pg-radius-md);
   background-color: var(--pg-color-surface);
   text-align: left;
-  transition: border-color 0.15s, transform 0.15s;
+  transition:
+    border-color 0.15s,
+    transform 0.15s;
 }
 
 .lensCard:hover {

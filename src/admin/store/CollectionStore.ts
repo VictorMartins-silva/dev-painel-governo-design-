@@ -82,5 +82,5 @@ export class LocalStorageCollectionStore implements CollectionStore {
   }
 }
 
-/** Instância compartilhada entre o app admin e as páginas públicas da Sala de Situação. */
+/** Instância compartilhada entre o app admin e as páginas públicas de Apresentações. */
 export const collectionStore: CollectionStore = new LocalStorageCollectionStore();

@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom";
-import { Breadcrumb } from "../../components/layout/Breadcrumb";
 import { PageHeader } from "../../components/layout/PageHeader";
 import { Section } from "../../components/layout/Section";
 import { AsyncBoundary } from "../../components/feedback/AsyncBoundary";
@@ -11,13 +10,6 @@ export default function AdminIndicatorsPage() {
 
   return (
     <div>
-      <Breadcrumb
-        items={[
-          { label: "Início", href: "/" },
-          { label: "Admin", href: "/admin" },
-          { label: "Indicadores" },
-        ]}
-      />
       <PageHeader
         title="Governança de indicadores"
         description="Estado do catálogo que alimenta os painéis: quem está cadastrado, quem não é usado por nenhum painel e quais painéis referenciam um indicador que não existe no catálogo."

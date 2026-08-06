@@ -19,7 +19,7 @@ export const panelSectionSchema = z.object({
 });
 
 /** Painéis "kiosk" são desenhados para telão (fontes maiores, só o essencial) e não
- *  aparecem no catálogo público — só na Sala de Situação e no admin. */
+ *  aparecem no catálogo público — só em Apresentações e no admin. */
 export const PANEL_PRESENTATIONS = ["default", "kiosk"] as const;
 export type PanelPresentation = (typeof PANEL_PRESENTATIONS)[number];
 

@@ -81,9 +81,11 @@ npm run tokens:build # regenera src/styles/tokens.css a partir de tokens.ts
 `.prettierignore` e o gerador não emite saída formatada, então `npm run format:check` acusa
 `tokens.css` depois de qualquer um desses comandos — é ruído conhecido, não regressão.
 
-Rotas disponíveis: `/`, `/paineis`, `/paineis/:id`, `/indicadores`, `/indicadores/:id`, `/admin`,
-`/admin/indicadores`, `/admin/componentes`, `/admin/paineis/novo`, `/admin/paineis/:id`. O cardápio
-de componentes fica dentro da área de configuração, não na navegação pública.
+Rotas disponíveis: `/`, `/paineis`, `/paineis/:id`, `/indicadores`, `/indicadores/:id`, `/sala`,
+`/sala/:id`, `/admin` (redireciona para `/admin/paineis`), `/admin/paineis`,
+`/admin/paineis/novo`, `/admin/paineis/:id`, `/admin/indicadores`, `/admin/componentes`,
+`/admin/colecoes`, `/admin/colecoes/novo`, `/admin/colecoes/:id`, `/admin/configuracoes`. O
+cardápio de componentes fica dentro da área de configuração, não na navegação pública.
 `/dev/galeria` redireciona para `/admin/componentes`. As rotas são registradas incondicionalmente
 em `src/app/router.tsx`.
 
@@ -154,12 +156,27 @@ Sem essas 4 alterações, um `type` presente na config mas ausente no registry r
 `ErrorState` localizado em vez de quebrar a página — o comportamento é testado em
 `src/renderer/ConfigRenderer.test.tsx`.
 
+## Navegação
+
+Os dois ambientes têm chrome estruturalmente diferente, para que se reconheçam à distância:
+
+- **Consumo** (`/`, `/paineis`, `/indicadores`, `/sala`): topbar horizontal com 3 destinos, busca
+  global (`src/components/nav/GlobalSearch.tsx`, navega para `/paineis?q=`) e o botão
+  **⚙ Configurar** à direita — é troca de modo, não item de conteúdo.
+- **Configuração** (`/admin/*`): sidebar vertical agrupada por natureza (Conteúdo, Catálogo,
+  Sistema — `src/components/nav/navItems.ts`), com contadores, e o botão **Ver como público ↗**
+  na faixa de aviso do topo.
+
+Os itens de navegação usam `NavLink` (`src/components/nav/NavItem.tsx`), que já resolve estado
+ativo e `aria-current="page"` por prefixo de rota. `src/components/nav/modeSwitch.ts` mapeia a
+rota atual para a equivalente no outro ambiente (ex.: `/admin/paineis/:id` ↔ `/paineis/:id`).
+
 ## Ambiente de configuração (`/admin`)
 
 Editor administrativo para criar e editar painéis sem escrever código — formulário estruturado
 que produz objetos `PanelConfig` válidos, mais um preview ao vivo reaproveitando o próprio
-`ConfigRenderer`. Acesso livre em `/admin`, sem autenticação nesta versão (aviso fixo no topo do
-layout do admin lembra disso).
+`ConfigRenderer`. Acesso livre em `/admin` (redireciona para `/admin/paineis`), sem autenticação
+nesta versão (aviso fixo no topo do layout do admin lembra disso).
 
 - **`PanelStore`** (`src/admin/store/PanelStore.ts`): camada de persistência com overlay —
   painéis salvos em `localStorage` sobrepõem os estáticos do `panelRegistry` por id. Um painel

@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { Breadcrumb } from "../../components/layout/Breadcrumb";
 import { PageHeader } from "../../components/layout/PageHeader";
 import { PanelGrid } from "../../components/layout/PanelGrid";
 import { PanelCard } from "../../components/panels/PanelCard";
@@ -11,8 +10,8 @@ import styles from "./CatalogPage.module.css";
 
 export default function CatalogPage() {
   const panelsState = useListPanels();
-  const [search, setSearch] = useState("");
   const [searchParams, setSearchParams] = useSearchParams();
+  const [search, setSearch] = useState(() => searchParams.get("q") ?? "");
 
   const activeValues: Partial<Record<LensId, string>> = {};
   for (const lens of LENSES) {
@@ -31,7 +30,6 @@ export default function CatalogPage() {
 
   return (
     <div>
-      <Breadcrumb items={[{ label: "Início", href: "/" }, { label: "Painéis" }]} />
       <PageHeader
         title="Catálogo de painéis"
         description="Um único índice de painéis. Tema, secretaria e ODS são lentes — recortes independentes sobre o mesmo índice, combináveis e compartilháveis por link."

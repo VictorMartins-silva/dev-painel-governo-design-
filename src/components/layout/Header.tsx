@@ -1,6 +1,10 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { applyTheme, getStoredTheme, type Theme } from "../../styles/theme";
+import { NavItem } from "../nav/NavItem";
+import { ModeSwitch } from "../nav/ModeSwitch";
+import { GlobalSearch } from "../nav/GlobalSearch";
+import { CONSUMER_NAV_ITEMS } from "../nav/navItems";
 import styles from "./Header.module.css";
 
 export function Header() {
@@ -15,34 +19,34 @@ export function Header() {
   return (
     <header className={styles.header}>
       <div className={styles.inner}>
-        <Link to="/" className={styles.brand}>
+        <Link to="/" className={styles.brand} title="Início">
           Painel de Governo
         </Link>
         <nav className={styles.nav} aria-label="Navegação principal">
-          <Link to="/" className={styles.navLink}>
-            Início
-          </Link>
-          <Link to="/paineis" className={styles.navLink}>
-            Painéis
-          </Link>
-          <Link to="/indicadores" className={styles.navLink}>
-            Indicadores
-          </Link>
-          <Link to="/sala" className={styles.navLink}>
-            Sala de situação
-          </Link>
-          <Link to="/admin" className={styles.navLink}>
-            Configuração
-          </Link>
+          {CONSUMER_NAV_ITEMS.map((item) => (
+            <NavItem
+              key={item.id}
+              to={item.to}
+              className={styles.navLink}
+              activeClassName={styles.navLinkActive}
+            >
+              {item.label}
+            </NavItem>
+          ))}
         </nav>
-        <button
-          type="button"
-          className={styles.themeToggle}
-          onClick={toggleTheme}
-          aria-label={theme === "light" ? "Ativar tema escuro" : "Ativar tema claro"}
-        >
-          {theme === "light" ? "◐ Escuro" : "◑ Claro"}
-        </button>
+        <div className={styles.toolbar}>
+          <GlobalSearch />
+          <button
+            type="button"
+            className={styles.themeToggle}
+            onClick={toggleTheme}
+            aria-label={theme === "light" ? "Ativar tema escuro" : "Ativar tema claro"}
+          >
+            {theme === "light" ? "◐ Escuro" : "◑ Claro"}
+          </button>
+          <span className={styles.divider} aria-hidden="true" />
+          <ModeSwitch mode="toAdmin" className={styles.modeSwitch} />
+        </div>
       </div>
     </header>
   );

@@ -48,10 +48,4 @@ describe("AdminComponentsPage", () => {
     expect(screen.getByText("Estados de feedback (genéricos)")).toBeInTheDocument();
     await screen.findAllByText(/indicador(es)? compatíve(l|is)/);
   });
-
-  it("mostra a trilha de navegação dentro do admin", () => {
-    renderPage();
-
-    expect(screen.getByRole("link", { name: "Admin" })).toHaveAttribute("href", "/admin");
-  });
 });

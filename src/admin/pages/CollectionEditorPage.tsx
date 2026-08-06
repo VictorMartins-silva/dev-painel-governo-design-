@@ -39,8 +39,6 @@ export default function CollectionEditorPage() {
       <div>
         <Breadcrumb
           items={[
-            { label: "Início", href: "/" },
-            { label: "Admin", href: "/admin" },
             { label: "Coleções", href: "/admin/colecoes" },
             { label: "Coleção não encontrada" },
           ]}
@@ -73,7 +71,10 @@ export default function CollectionEditorPage() {
   function addPanel() {
     const first = availablePanels[0];
     if (!first) return;
-    setDraft((current) => ({ ...current, panels: [...current.panels, { panelId: first.config.id }] }));
+    setDraft((current) => ({
+      ...current,
+      panels: [...current.panels, { panelId: first.config.id }],
+    }));
   }
 
   function removePanel(index: number) {
@@ -111,15 +112,13 @@ export default function CollectionEditorPage() {
     <div>
       <Breadcrumb
         items={[
-          { label: "Início", href: "/" },
-          { label: "Admin", href: "/admin" },
           { label: "Coleções", href: "/admin/colecoes" },
           { label: isNew ? "Nova coleção" : draft.title || draft.id },
         ]}
       />
       <PageHeader
         title={isNew ? "Nova coleção" : `Editar coleção`}
-        description="Uma coleção é uma sequência de painéis com tempo de exibição, apresentada na Sala de situação."
+        description="Uma coleção é uma sequência de painéis com tempo de exibição, apresentada em Apresentações."
       />
 
       {error && (

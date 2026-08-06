@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { Breadcrumb } from "../../components/layout/Breadcrumb";
 import { PageHeader } from "../../components/layout/PageHeader";
 import { PanelGrid } from "../../components/layout/PanelGrid";
 import { AsyncBoundary } from "../../components/feedback/AsyncBoundary";
@@ -41,7 +40,6 @@ export default function IndicatorCatalogPage() {
 
   return (
     <div>
-      <Breadcrumb items={[{ label: "Início", href: "/" }, { label: "Indicadores" }]} />
       <PageHeader
         title="Catálogo de indicadores"
         description="Todo indicador disponível para compor painéis: definição, fonte, responsável e onde já está em uso. A curadoria completa, incluindo lacunas e referências quebradas, está em Configuração › Indicadores."

@@ -39,7 +39,8 @@ export const router = createBrowserRouter([
     path: "admin",
     element: <AdminLayout />,
     children: [
-      { index: true, element: <AdminPanelsPage /> },
+      { index: true, element: <Navigate to="/admin/paineis" replace /> },
+      { path: "paineis", element: <AdminPanelsPage /> },
       { path: "indicadores", element: <AdminIndicatorsPage /> },
       { path: "componentes", element: <AdminComponentsPage /> },
       { path: "configuracoes", element: <AdminSettingsPage /> },

@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AsyncBoundary } from "../../components/feedback/AsyncBoundary";
 import { PanelGrid } from "../../components/layout/PanelGrid";
@@ -10,11 +9,8 @@ import styles from "./HomePage.module.css";
 const LENS_PREVIEW_LIMIT = 4;
 
 export default function HomePage() {
-  const [search, setSearch] = useState("");
   const panelsState = useListPanels();
   const navigate = useNavigate();
-
-  const normalizedSearch = search.trim().toLowerCase();
 
   return (
     <div>
@@ -24,16 +20,6 @@ export default function HomePage() {
           Plataforma padronizada de visualização de indicadores públicos do município, construída
           por configuração sobre uma biblioteca única de componentes analíticos.
         </p>
-        <div className={styles.searchRow}>
-          <input
-            type="search"
-            className={styles.search}
-            placeholder="Buscar painéis por título ou tema…"
-            value={search}
-            onChange={(event) => setSearch(event.target.value)}
-            aria-label="Buscar painéis"
-          />
-        </div>
       </div>
 
       <AsyncBoundary
@@ -42,14 +28,6 @@ export default function HomePage() {
         emptyMessage="Ainda não há painéis publicados."
       >
         {(panels) => {
-          const filtered = normalizedSearch
-            ? panels.filter((panel) =>
-                [panel.title, panel.theme, ...panel.tags].some((field) =>
-                  field.toLowerCase().includes(normalizedSearch),
-                ),
-              )
-            : panels;
-
           return (
             <>
               <section className={styles.lensSection} aria-label="Navegar por lente">
@@ -94,15 +72,11 @@ export default function HomePage() {
               </section>
 
               <h2 className={styles.sectionTitle}>Painéis disponíveis</h2>
-              {filtered.length === 0 ? (
-                <p>Nenhum painel encontrado para “{search}”.</p>
-              ) : (
-                <PanelGrid layout="grid-3">
-                  {filtered.map((panel) => (
-                    <PanelCard key={panel.id} panel={panel} />
-                  ))}
-                </PanelGrid>
-              )}
+              <PanelGrid layout="grid-3">
+                {panels.map((panel) => (
+                  <PanelCard key={panel.id} panel={panel} />
+                ))}
+              </PanelGrid>
             </>
           );
         }}

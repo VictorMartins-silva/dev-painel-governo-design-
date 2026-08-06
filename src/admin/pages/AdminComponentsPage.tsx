@@ -1,6 +1,5 @@
 import { useState, type ReactNode } from "react";
 import { Link } from "react-router-dom";
-import { Breadcrumb } from "../../components/layout/Breadcrumb";
 import { PageHeader } from "../../components/layout/PageHeader";
 import { Section } from "../../components/layout/Section";
 import { PanelGrid, PANEL_GRID_LAYOUTS } from "../../components/layout/PanelGrid";
@@ -190,13 +189,6 @@ export default function AdminComponentsPage() {
 
   return (
     <div className={styles.page}>
-      <Breadcrumb
-        items={[
-          { label: "Início", href: "/" },
-          { label: "Admin", href: "/admin" },
-          { label: "Componentes" },
-        ]}
-      />
       <PageHeader
         title="Cardápio de componentes"
         description="O que esta ferramenta sabe montar: os quatro tipos de componente analítico disponíveis para compor um painel, como configurar cada um e em quais estados de dados eles aparecem."

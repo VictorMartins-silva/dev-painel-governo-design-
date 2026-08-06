@@ -15,11 +15,11 @@ describe("AdminLayout", () => {
       </MemoryRouter>,
     );
 
-    expect(screen.getByText("Ambiente de configuração")).toBeInTheDocument();
+    expect(screen.getByText("Configuração")).toBeInTheDocument();
     expect(screen.getByText("Conteúdo do admin")).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Sair do modo de configuração" })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: "Ver como público" })).toHaveAttribute(
       "href",
-      "/",
+      "/paineis",
     );
   });
 });

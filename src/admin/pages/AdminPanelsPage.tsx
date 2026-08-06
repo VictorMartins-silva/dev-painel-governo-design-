@@ -1,6 +1,5 @@
 import { useRef, useState, type ChangeEvent } from "react";
 import { Link } from "react-router-dom";
-import { Breadcrumb } from "../../components/layout/Breadcrumb";
 import { PageHeader } from "../../components/layout/PageHeader";
 import type { PanelConfig } from "../../config/schemas/panel.schema";
 import { panelStore, type PanelOrigin } from "../store/PanelStore";
@@ -88,13 +87,6 @@ export default function AdminPanelsPage() {
 
   return (
     <div>
-      <Breadcrumb
-        items={[
-          { label: "Início", href: "/" },
-          { label: "Admin", href: "/admin" },
-          { label: "Painéis" },
-        ]}
-      />
       <PageHeader
         title="Painéis"
         description="Crie, edite e publique painéis. Painéis estáticos editados aqui passam a ser sombreados por uma cópia local."

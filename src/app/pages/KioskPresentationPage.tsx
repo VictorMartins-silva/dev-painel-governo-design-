@@ -19,7 +19,7 @@ export default function KioskPresentationPage() {
           message={`Não existe uma coleção com o identificador "${id ?? ""}".`}
         >
           <Link to="/sala" className={styles.backLink}>
-            Voltar para a Sala de situação
+            Voltar para Apresentações
           </Link>
         </ErrorState>
       </div>

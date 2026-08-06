@@ -29,7 +29,7 @@ export default function CollectionDetailPage() {
       <Breadcrumb
         items={[
           { label: "Início", href: "/" },
-          { label: "Sala de situação", href: "/sala" },
+          { label: "Apresentações", href: "/sala" },
           { label: collection.title },
         ]}
       />

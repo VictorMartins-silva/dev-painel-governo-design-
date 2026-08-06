@@ -24,7 +24,7 @@ function prefersReducedMotion(): boolean {
 }
 
 /**
- * Player de rotação da Sala de Situação: todos os slides ficam montados o tempo todo,
+ * Player de rotação de Apresentações: todos os slides ficam montados o tempo todo,
  * alternando só a visibilidade — evita a tela branca de remontar iframe a cada troca.
  * Os slides só são remontados de fato a cada N voltas completas (refreshEveryCycles).
  */
