@@ -1,9 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { AsyncBoundary } from "../../components/feedback/AsyncBoundary";
-import { PanelGrid } from "../../components/layout/PanelGrid";
-import { PanelCard } from "../../components/panels/PanelCard";
 import { useListPanels } from "../../data/hooks/useListPanels";
-import { allLenses, lensValues } from "../../config/lenses";
+import { allLenses, lensHref, lensValues } from "../../config/lenses";
 import { lensStore } from "../../admin/store/LensStore";
 import styles from "./HomePage.module.css";
 
@@ -49,7 +47,11 @@ export default function HomePage() {
                         key={lens.id}
                         type="button"
                         className={styles.lensCard}
-                        onClick={() => navigate(`/lentes/${lens.id}`)}
+                        onClick={() =>
+                          // Lente cadastrada no admin (flat): sem subcategorias, vai direto ao
+                          // Catálogo filtrado; lentes padrão passam pela página de subcategorias.
+                          navigate(lens.flat ? lensHref(lens, lens.label) : `/lentes/${lens.id}`)
+                        }
                       >
                         <div className={styles.lensTop}>
                           <h3 className={styles.lensTitle}>{lens.label}</h3>
@@ -69,13 +71,6 @@ export default function HomePage() {
                   })}
                 </div>
               </section>
-
-              <h2 className={styles.sectionTitle}>Painéis disponíveis</h2>
-              <PanelGrid layout="grid-3">
-                {panels.map((panel) => (
-                  <PanelCard key={panel.id} panel={panel} />
-                ))}
-              </PanelGrid>
             </>
           );
         }}

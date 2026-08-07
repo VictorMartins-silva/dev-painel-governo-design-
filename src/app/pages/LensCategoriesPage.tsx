@@ -1,4 +1,4 @@
-import { Link, useParams } from "react-router-dom";
+import { Link, Navigate, useParams } from "react-router-dom";
 import { Breadcrumb } from "../../components/layout/Breadcrumb";
 import { PageHeader } from "../../components/layout/PageHeader";
 import { AsyncBoundary } from "../../components/feedback/AsyncBoundary";
@@ -24,6 +24,11 @@ export default function LensCategoriesPage() {
         message={`Não existe uma lente com o identificador "${lensId ?? ""}".`}
       />
     );
+  }
+
+  // Lente cadastrada no admin: sem subcategorias, vai direto ao Catálogo filtrado.
+  if (lens.flat) {
+    return <Navigate to={lensHref(lens, lens.label)} replace />;
   }
 
   return (

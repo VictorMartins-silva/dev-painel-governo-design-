@@ -34,11 +34,24 @@ describe("CatalogPage", () => {
     expect(panelCardLink(/^Demografia/)).toBeInTheDocument();
   });
 
+  it("filtros de lente começam recolhidos, só com a busca visível", async () => {
+    renderCatalog();
+    await screen.findByRole("link", { name: /Trabalho e Emprego/ });
+
+    expect(screen.getByLabelText("Busca")).toBeInTheDocument();
+    expect(screen.queryByLabelText("Tema")).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Filtros/ })).toHaveAttribute(
+      "aria-expanded",
+      "false",
+    );
+  });
+
   it("filtra por tema", async () => {
     const user = userEvent.setup();
     renderCatalog();
     await screen.findByRole("link", { name: /Trabalho e Emprego/ });
 
+    await user.click(screen.getByRole("button", { name: /Filtros/ }));
     await user.selectOptions(screen.getByLabelText("Tema"), "Demografia");
 
     expect(panelCardLink(/^Demografia/)).toBeInTheDocument();
@@ -69,6 +82,7 @@ describe("CatalogPage", () => {
     renderCatalog();
     await screen.findByRole("link", { name: /Trabalho e Emprego/ });
 
+    await user.click(screen.getByRole("button", { name: /Filtros/ }));
     await user.selectOptions(screen.getByLabelText("Prioridade 2026"), "Prioridade 2026");
 
     expect(panelCardLink(/^Demografia/)).toBeInTheDocument();

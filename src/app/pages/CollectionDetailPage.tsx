@@ -4,7 +4,6 @@ import { PageHeader } from "../../components/layout/PageHeader";
 import { ErrorState } from "../../components/feedback/ErrorState";
 import { collectionStore } from "../../admin/store/CollectionStore";
 import { panelStore } from "../../admin/store/PanelStore";
-import { KioskPlayer } from "../../renderer/KioskPlayer";
 import { resolveCollectionSlides } from "../../renderer/resolveCollectionSlides";
 import styles from "./CollectionDetailPage.module.css";
 
@@ -38,7 +37,7 @@ export default function CollectionDetailPage() {
         description={collection.description}
         actions={
           <Link to={`/sala/${collection.id}/apresentar`} className={styles.presentButton}>
-            Apresentar em tela cheia
+            Iniciar apresentação
           </Link>
         }
       />
@@ -48,15 +47,6 @@ export default function CollectionDetailPage() {
           {missing} painel(is) desta coleção não foi(ram) encontrado(s) e não entra(m) na rotação.
         </p>
       )}
-
-      <div className={styles.section}>
-        <h2 className={styles.sectionTitle}>Prévia da apresentação</h2>
-        <KioskPlayer collection={collection} slides={slides} />
-        <p className={styles.hint}>
-          Rotação client-side: os painéis ficam todos montados e alternam por visibilidade, sem
-          recarregar a cada troca. Atalhos: ← → para navegar, espaço para pausar, F para tela cheia.
-        </p>
-      </div>
 
       <div className={styles.section}>
         <h2 className={styles.sectionTitle}>Sequência de painéis</h2>

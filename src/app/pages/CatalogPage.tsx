@@ -13,6 +13,7 @@ export default function CatalogPage() {
   const panelsState = useListPanels();
   const [searchParams, setSearchParams] = useSearchParams();
   const [search, setSearch] = useState(() => searchParams.get("q") ?? "");
+  const [filtersOpen, setFiltersOpen] = useState(false);
   const lenses = allLenses(lensStore.list());
 
   const activeValues: Partial<Record<LensId, string>> = {};
@@ -60,42 +61,57 @@ export default function CatalogPage() {
           return (
             <>
               <div className={styles.filters}>
-                <div className={styles.field}>
-                  <label className={styles.label} htmlFor="filtro-busca">
-                    Busca
-                  </label>
-                  <input
-                    id="filtro-busca"
-                    type="search"
-                    className={styles.search}
-                    placeholder="Título, tema ou tag…"
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                  />
+                <div className={styles.mainRow}>
+                  <div className={`${styles.field} ${styles.searchField}`}>
+                    <label className={styles.label} htmlFor="filtro-busca">
+                      Busca
+                    </label>
+                    <input
+                      id="filtro-busca"
+                      type="search"
+                      className={styles.search}
+                      placeholder="Título, tema ou tag…"
+                      value={search}
+                      onChange={(e) => setSearch(e.target.value)}
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    className={`${styles.filtersToggle} ${styles.toggleField}`}
+                    aria-expanded={filtersOpen}
+                    onClick={() => setFiltersOpen((open) => !open)}
+                  >
+                    Filtros{activeLenses.length > 0 ? ` (${activeLenses.length})` : ""}{" "}
+                    <span aria-hidden="true">{filtersOpen ? "▴" : "▾"}</span>
+                  </button>
                 </div>
-                {lenses.map((lens) => {
-                  const options = lensValues(lens, panels);
-                  return (
-                    <div className={styles.field} key={lens.id}>
-                      <label className={styles.label} htmlFor={`filtro-${lens.id}`}>
-                        {lens.label}
-                      </label>
-                      <select
-                        id={`filtro-${lens.id}`}
-                        className={styles.select}
-                        value={activeValues[lens.id] ?? ""}
-                        onChange={(e) => setLensValue(lens, e.target.value)}
-                      >
-                        <option value="">{lens.allLabel}</option>
-                        {options.map((o) => (
-                          <option key={o.value} value={o.value}>
-                            {o.value} ({o.count})
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  );
-                })}
+                {filtersOpen && (
+                  <div className={styles.lensRow}>
+                    {lenses.map((lens) => {
+                      const options = lensValues(lens, panels);
+                      return (
+                        <div className={styles.field} key={lens.id}>
+                          <label className={styles.label} htmlFor={`filtro-${lens.id}`}>
+                            {lens.label}
+                          </label>
+                          <select
+                            id={`filtro-${lens.id}`}
+                            className={styles.select}
+                            value={activeValues[lens.id] ?? ""}
+                            onChange={(e) => setLensValue(lens, e.target.value)}
+                          >
+                            <option value="">{lens.allLabel}</option>
+                            {options.map((o) => (
+                              <option key={o.value} value={o.value}>
+                                {o.value} ({o.count})
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
 
               {activeLenses.length > 0 && (

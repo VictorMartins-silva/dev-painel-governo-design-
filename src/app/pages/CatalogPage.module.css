@@ -1,13 +1,56 @@
 .filters {
   display: flex;
-  flex-wrap: wrap;
-  align-items: flex-end;
+  flex-direction: column;
   gap: var(--pg-spacing-4);
   padding: var(--pg-spacing-4);
   border: 1px solid var(--pg-color-border);
   border-radius: var(--pg-radius-md);
   background-color: var(--pg-color-surface);
   margin-bottom: var(--pg-spacing-6);
+}
+
+.mainRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--pg-spacing-4);
+}
+
+.searchField {
+  flex: 1 1 auto;
+  min-width: 240px;
+}
+
+.toggleField {
+  flex: 0 0 auto;
+  margin-left: auto;
+}
+
+.lensRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--pg-spacing-4);
+}
+
+.filtersToggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--pg-spacing-2);
+  min-width: 220px;
+  padding: var(--pg-spacing-2) var(--pg-spacing-3);
+  border: 1px solid var(--pg-color-border);
+  border-radius: var(--pg-radius-sm);
+  background-color: var(--pg-color-surface);
+  color: var(--pg-color-textSecondary);
+  font-size: var(--pg-typography-size-sm);
+  cursor: pointer;
+}
+
+.filtersToggle:hover {
+  color: var(--pg-color-textPrimary);
+  border-color: var(--pg-color-brand);
 }
 
 .field {
@@ -34,6 +77,7 @@
 }
 
 .search {
+  width: 100%;
   min-width: 220px;
 }
 

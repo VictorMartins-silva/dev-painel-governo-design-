@@ -20,6 +20,13 @@ export type Lens = {
   /** Chave usada na querystring do Catálogo (`/paineis?<param>=<valor>`). */
   param: string;
   valueOf: (panel: PanelSummary) => string;
+  /**
+   * Lentes cadastradas no admin (`lensFromConfig`) são "planas": um conjunto fixo de painéis,
+   * sem subcategorias. Para essas, a navegação deve ir direto ao Catálogo filtrado, pulando a
+   * página intermediária de subcategorias (LensCategoriesPage) — que só faz sentido para as
+   * lentes padrão (tema/secretaria/ods), com múltiplos valores possíveis.
+   */
+  flat?: boolean;
 };
 
 // Secretaria e ODS não fazem parte do contrato de dados do painel (PanelConfig). Mapeamento
@@ -73,6 +80,7 @@ export function lensFromConfig(config: LensConfig): Lens {
     param: `lente-${config.id}`,
     // string vazia para não-membros: lensValues() ignora e não gera uma categoria "de fora".
     valueOf: (panel) => (memberIds.has(panel.id) ? config.label : ""),
+    flat: true,
   };
 }
 
