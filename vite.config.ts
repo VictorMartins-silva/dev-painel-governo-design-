@@ -3,7 +3,8 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 
 // https://vite.dev/config/
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
+  base: mode === "gh-pages" ? "/dev-painel-governo-design-/" : "/",
   plugins: [react()],
   test: {
     environment: "jsdom",
@@ -12,4 +13,4 @@ export default defineConfig({
     css: true,
     testTimeout: 20000,
   },
-});
+}));

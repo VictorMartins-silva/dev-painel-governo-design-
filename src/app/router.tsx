@@ -52,4 +52,6 @@ export const router = createBrowserRouter([
     path: "sala/:id/apresentar",
     element: <KioskPresentationPage />,
   },
-]);
+], {
+  basename: import.meta.env.BASE_URL,
+});
