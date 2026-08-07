@@ -138,7 +138,7 @@ function PanelEditor({ existing, isNew, navigate }: PanelEditorProps) {
                 className={styles.secondaryButton}
                 onClick={() => downloadPanelConfig(existing)}
               >
-                Exportar original
+                Exportar
               </button>
             )}
             <button type="button" className={styles.primaryButton} onClick={handleSave}>

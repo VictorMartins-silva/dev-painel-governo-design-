@@ -54,9 +54,7 @@ export default function CollectionEditorPage() {
     );
   }
 
-  const availablePanels = [...panelStore.list()].sort((a, b) =>
-    a.config.title.localeCompare(b.config.title),
-  );
+  const availablePanels = [...panelStore.list()].sort((a, b) => a.title.localeCompare(b.title));
   const warnings = buildCollectionWarnings(draft, (panelId) => panelStore.get(panelId));
 
   function updatePanel(index: number, changes: Partial<CollectionPanelRef>) {
@@ -73,7 +71,7 @@ export default function CollectionEditorPage() {
     if (!first) return;
     setDraft((current) => ({
       ...current,
-      panels: [...current.panels, { panelId: first.config.id }],
+      panels: [...current.panels, { panelId: first.id }],
     }));
   }
 
@@ -232,7 +230,7 @@ export default function CollectionEditorPage() {
                     value={ref.panelId}
                     onChange={(e) => updatePanel(index, { panelId: e.target.value })}
                   >
-                    {availablePanels.map(({ config }) => (
+                    {availablePanels.map((config) => (
                       <option key={config.id} value={config.id}>
                         {config.title}
                       </option>

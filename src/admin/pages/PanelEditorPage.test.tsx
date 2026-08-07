@@ -112,7 +112,7 @@ describe("PanelEditorPage", () => {
     expect(screen.getByRole("heading", { name: "Painel não encontrado" })).toBeInTheDocument();
   });
 
-  it("exporta o painel original a partir do editor", async () => {
+  it("exporta o painel a partir do editor", async () => {
     const user = userEvent.setup();
     const createObjectURL = vi.fn(() => "blob:mock-url");
     const revokeObjectURL = vi.fn();
@@ -120,7 +120,7 @@ describe("PanelEditorPage", () => {
     const clickSpy = vi.spyOn(HTMLAnchorElement.prototype, "click").mockReturnValue(undefined);
 
     renderAt("/admin/paineis/demografia");
-    await user.click(screen.getByRole("button", { name: "Exportar original" }));
+    await user.click(screen.getByRole("button", { name: "Exportar" }));
 
     expect(createObjectURL).toHaveBeenCalled();
     expect(clickSpy).toHaveBeenCalled();

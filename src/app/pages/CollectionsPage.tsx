@@ -5,9 +5,7 @@ import { panelStore } from "../../admin/store/PanelStore";
 import styles from "./CollectionsPage.module.css";
 
 export default function CollectionsPage() {
-  const entries = [...collectionStore.list()].sort((a, b) =>
-    a.config.title.localeCompare(b.config.title),
-  );
+  const entries = [...collectionStore.list()].sort((a, b) => a.title.localeCompare(b.title));
 
   return (
     <div>
@@ -20,7 +18,7 @@ export default function CollectionsPage() {
         <p>Nenhuma coleção cadastrada.</p>
       ) : (
         <div className={styles.grid}>
-          {entries.map(({ config }) => {
+          {entries.map((config) => {
             return (
               <Link key={config.id} to={`/sala/${config.id}`} className={styles.card}>
                 <div className={styles.titleRow}>

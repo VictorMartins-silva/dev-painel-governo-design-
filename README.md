@@ -157,8 +157,9 @@ npm run catalogo:import   # regenera o módulo a partir da planilha
   são gerados a partir do tema e estão marcados como pendentes de revisão editorial no
   `methodologyNote` de cada painel.
 - **Editar um painel importado** não exige mexer na planilha: edite em `/admin/paineis` e o
-  `PanelStore` grava a versão editada no `localStorage`, sombreando a estática por id (badge
-  _Modificado_, com _Restaurar original_). A edição sobrevive à próxima importação.
+  `PanelStore` grava a versão editada no `localStorage`, sobrepondo a entrada do catálogo por id.
+  A edição sobrevive à próxima importação. Um painel importado também pode ser excluído pela
+  mesma listagem — não há distinção entre painel carregado por código e painel criado pela UI.
 - **Allowlist**: `DEFAULT_ALLOWED_EMBED_DOMAINS` (`src/admin/store/SettingsStore.ts`) já libera os
   cinco domínios municipais além do `app.powerbi.com`. Como a allowlist é persistida por navegador,
   há um `DEFAULTS_VERSION`: quem já tinha configurações salvas recebe os domínios novos numa
@@ -186,25 +187,25 @@ Editor administrativo para criar e editar painéis sem escrever código. Acesso 
 admin lembra disso).
 
 - **`PanelStore`** (`src/admin/store/PanelStore.ts`): camada de persistência com overlay —
-  painéis salvos em `localStorage` sobrepõem os estáticos do `panelRegistry` por id. Um painel
-  estático editado passa a ser "sombreado" por uma cópia local (badge _Modificado_ na listagem,
-  com ação _Restaurar original_); um painel novo existe só no `localStorage` até ser exportado.
-  Toda escrita passa por `panelConfigSchema.parse()` — configuração inválida nunca é persistida.
-  `MockDataProvider.listPanels()`/`getPanelConfig()` consultam o `PanelStore`, então as páginas
-  públicas (`/paineis`, `/paineis/:id`) refletem imediatamente as edições feitas no admin.
-- **`AdminPanelsPage`** (`src/admin/pages/AdminPanelsPage.tsx`): lista painéis estáticos e custom
-  com badge de origem (_Original_/_Modificado_/_Novo_) e de provider de embed; ações de criar,
-  duplicar, excluir (só custom), restaurar original, exportar (download de `<id>.panel.json`) e
-  importar (upload + validação Zod + confirmação em caso de conflito de id).
+  painéis salvos em `localStorage` sobrepõem os do `panelRegistry` por id, e ids marcados como
+  excluídos (também no `localStorage`) ficam ocultos mesmo que ainda existam no registry. Não há
+  distinção entre painel carregado por código e painel criado pela UI: qualquer um pode ser
+  editado ou excluído do mesmo jeito. Toda escrita passa por `panelConfigSchema.parse()` —
+  configuração inválida nunca é persistida. `MockDataProvider.listPanels()`/`getPanelConfig()`
+  consultam o `PanelStore`, então as páginas públicas (`/paineis`, `/paineis/:id`) refletem
+  imediatamente as edições feitas no admin.
+- **`AdminPanelsPage`** (`src/admin/pages/AdminPanelsPage.tsx`): lista todos os painéis com o
+  provider de embed de cada um; ações de criar, duplicar, excluir, exportar (download de
+  `<id>.panel.json`) e importar (upload + validação Zod + confirmação em caso de conflito de id).
 - **`PanelEditorPage`** (`src/admin/pages/PanelEditorPage.tsx` + `PanelForm`): formulário único —
   metadados de catálogo, um seletor de provider (Publicar na Web / Secure Embed) e uma única URL de
   embed (o rótulo/dica do campo muda conforme o provider), com pré-visualização que reaproveita o
   próprio `EmbedPanelView`. Sem seções, sem componentes, sem seleção de indicador — quem monta a
   visualização é o relatório Power BI.
-- **Confirmações destrutivas**: excluir e restaurar pedem confirmação (`window.confirm`) na
-  listagem. Sair do editor com alterações não salvas — pelo link "Voltar", por qualquer navegação
-  do React Router ou fechando/recarregando a aba — também pede confirmação (`useBlocker` do
-  React Router + `beforeunload`); sem alterações pendentes, a saída é imediata.
+- **Confirmações destrutivas**: excluir pede confirmação (`window.confirm`) na listagem. Sair do
+  editor com alterações não salvas — pelo link "Voltar", por qualquer navegação do React Router ou
+  fechando/recarregando a aba — também pede confirmação (`useBlocker` do React Router +
+  `beforeunload`); sem alterações pendentes, a saída é imediata.
 - **Coleções** (`src/admin/store/CollectionStore.ts`, `/admin/colecoes`): sequências curadas de
   painéis (por id) com temporização própria, consumidas pelo kiosk em `/sala/:id/apresentar`.
 

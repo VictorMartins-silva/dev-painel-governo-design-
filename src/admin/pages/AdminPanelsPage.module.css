@@ -107,11 +107,6 @@
   color: var(--pg-color-neutral);
 }
 
-.modified {
-  background-color: var(--pg-color-brandSoft);
-  color: var(--pg-color-brand);
-}
-
 .custom {
   background-color: var(--pg-color-positiveSoft);
   color: var(--pg-color-positive);

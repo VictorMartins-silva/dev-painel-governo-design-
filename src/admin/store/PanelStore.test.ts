@@ -31,7 +31,6 @@ describe("LocalStoragePanelStore", () => {
     const list = store.list();
 
     expect(list).toHaveLength(panelRegistry.length);
-    expect(list.every((entry) => entry.origin === "static")).toBe(true);
   });
 
   it("o painel salvo no overlay tem precedência sobre o estático de mesmo id", () => {
@@ -44,44 +43,52 @@ describe("LocalStoragePanelStore", () => {
     const fromGet = store.get(staticId);
     expect(fromGet?.title).toBe("Título sobrescrito");
 
-    const entry = store.list().find((item) => item.config.id === staticId);
-    expect(entry?.origin).toBe("modified");
+    const entry = store.list().find((item) => item.id === staticId);
+    expect(entry?.title).toBe("Título sobrescrito");
   });
 
-  it("um painel novo (sem contraparte estática) aparece com origin 'custom'", () => {
+  it("um painel novo (sem contraparte estática) aparece na listagem", () => {
     const store = new LocalStoragePanelStore();
     const novo = buildPanel({ id: "painel-novo" });
 
     store.save(novo);
 
-    const entry = store.list().find((item) => item.config.id === "painel-novo");
-    expect(entry?.origin).toBe("custom");
+    const entry = store.list().find((item) => item.id === "painel-novo");
+    expect(entry).toBeDefined();
     expect(store.get("painel-novo")).toEqual(novo);
   });
 
-  it("restoreOriginal remove a sombra e volta a expor o painel estático", () => {
-    const store = new LocalStoragePanelStore();
-    const staticId = panelRegistry[0].id;
-    const originalTitle = panelRegistry[0].title;
-
-    store.save(buildPanel({ id: staticId, title: "Modificado" }));
-    expect(store.get(staticId)?.title).toBe("Modificado");
-
-    store.restoreOriginal(staticId);
-
-    expect(store.get(staticId)?.title).toBe(originalTitle);
-    const entry = store.list().find((item) => item.config.id === staticId);
-    expect(entry?.origin).toBe("static");
-  });
-
-  it("restoreOriginal em um painel custom o remove por completo", () => {
+  it("remove um painel que veio do overlay, sem contraparte estática", () => {
     const store = new LocalStoragePanelStore();
     store.save(buildPanel({ id: "painel-novo" }));
 
-    store.restoreOriginal("painel-novo");
+    store.remove("painel-novo");
 
     expect(store.get("painel-novo")).toBeUndefined();
-    expect(store.list().some((item) => item.config.id === "painel-novo")).toBe(false);
+    expect(store.list().some((item) => item.id === "painel-novo")).toBe(false);
+  });
+
+  it("remove um painel estático do registry, mesmo sem edição prévia", () => {
+    const store = new LocalStoragePanelStore();
+    const staticId = panelRegistry[0].id;
+
+    store.remove(staticId);
+
+    expect(store.get(staticId)).toBeUndefined();
+    expect(store.list().some((item) => item.id === staticId)).toBe(false);
+  });
+
+  it("salvar um painel novamente depois de removido volta a exibi-lo", () => {
+    const store = new LocalStoragePanelStore();
+    const staticId = panelRegistry[0].id;
+
+    store.remove(staticId);
+    expect(store.get(staticId)).toBeUndefined();
+
+    store.save(buildPanel({ id: staticId, title: "Recriado" }));
+
+    expect(store.get(staticId)?.title).toBe("Recriado");
+    expect(store.list().some((item) => item.id === staticId)).toBe(true);
   });
 
   it("rejeita a escrita de uma configuração inválida e não persiste nada", () => {

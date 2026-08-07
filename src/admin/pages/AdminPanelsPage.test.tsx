@@ -49,12 +49,12 @@ describe("AdminPanelsPage", () => {
     vi.restoreAllMocks();
   });
 
-  it("lista os painéis estáticos com badge 'Original'", () => {
+  it("lista os painéis do registry estático", () => {
     renderPage();
 
     expect(screen.getByText("Trabalho e Emprego")).toBeInTheDocument();
     expect(screen.getByText("Demografia")).toBeInTheDocument();
-    expect(screen.getAllByText("Original")).toHaveLength(panelRegistry.length);
+    expect(screen.getAllByRole("listitem")).toHaveLength(panelRegistry.length);
   });
 
   it("lista também os painéis importados da planilha, com o provider de cada um", () => {
@@ -69,7 +69,7 @@ describe("AdminPanelsPage", () => {
     expect(within(rowFor("Atenção Especializada")).getByText("Secure Embed")).toBeInTheDocument();
   });
 
-  it("duplica um painel para um novo id, criando uma entrada 'Novo'", async () => {
+  it("duplica um painel para um novo id", async () => {
     const user = userEvent.setup();
     vi.spyOn(window, "prompt").mockReturnValue("trabalho-emprego-copia");
     renderPage();
@@ -78,8 +78,6 @@ describe("AdminPanelsPage", () => {
     await user.click(within(row).getByRole("button", { name: "Duplicar" }));
 
     expect(screen.getByText("Trabalho e Emprego (cópia)")).toBeInTheDocument();
-    const newRow = rowFor("Trabalho e Emprego (cópia)");
-    expect(within(newRow).getByText("Novo")).toBeInTheDocument();
     expect(panelStore.get("trabalho-emprego-copia")).toBeDefined();
   });
 
@@ -96,35 +94,36 @@ describe("AdminPanelsPage", () => {
     expect(screen.queryByText("Trabalho e Emprego (cópia)")).not.toBeInTheDocument();
   });
 
-  it("restaura um painel modificado e volta a exibi-lo como 'Original'", async () => {
-    const user = userEvent.setup();
+  it("edita um painel importado do catálogo e a edição substitui o valor exibido", async () => {
     panelStore.save(buildPanel({ id: "demografia", title: "Demografia (editado)" }));
-    vi.spyOn(window, "confirm").mockReturnValue(true);
     renderPage();
 
     expect(screen.getByText("Demografia (editado)")).toBeInTheDocument();
-    const row = rowFor("Demografia (editado)");
-    expect(within(row).getByText("Modificado")).toBeInTheDocument();
-
-    await user.click(within(row).getByRole("button", { name: "Restaurar original" }));
-
-    expect(screen.getByText("Demografia")).toBeInTheDocument();
-    expect(screen.queryByText("Demografia (editado)")).not.toBeInTheDocument();
+    expect(screen.queryByText("Demografia")).not.toBeInTheDocument();
   });
 
-  it("exclui um painel custom, mas não oferece exclusão para painéis estáticos", async () => {
+  it("exclui um painel custom", async () => {
     const user = userEvent.setup();
     panelStore.save(buildPanel({ id: "painel-novo", title: "Painel novo" }));
     vi.spyOn(window, "confirm").mockReturnValue(true);
     renderPage();
 
-    const staticRow = rowFor("Trabalho e Emprego");
-    expect(within(staticRow).queryByRole("button", { name: "Excluir" })).not.toBeInTheDocument();
-
     const customRow = rowFor("Painel novo");
     await user.click(within(customRow).getByRole("button", { name: "Excluir" }));
 
     expect(screen.queryByText("Painel novo")).not.toBeInTheDocument();
+  });
+
+  it("exclui um painel importado por código (sem contraparte custom)", async () => {
+    const user = userEvent.setup();
+    vi.spyOn(window, "confirm").mockReturnValue(true);
+    renderPage();
+
+    const staticRow = rowFor("Trabalho e Emprego");
+    await user.click(within(staticRow).getByRole("button", { name: "Excluir" }));
+
+    expect(screen.queryByText("Trabalho e Emprego")).not.toBeInTheDocument();
+    expect(panelStore.get("trabalho-emprego")).toBeUndefined();
   });
 
   it("exporta um painel disparando o download do JSON", async () => {
@@ -143,7 +142,7 @@ describe("AdminPanelsPage", () => {
     expect(revokeObjectURL).toHaveBeenCalledWith("blob:mock-url");
   });
 
-  it("importa um arquivo válido e cria um painel com origin 'Novo'", async () => {
+  it("importa um arquivo válido e cria um novo painel", async () => {
     const user = userEvent.setup();
     const config = buildPanel({ id: "importado", title: "Painel importado" });
     const file = new File([serializePanelConfig(config)], "importado.panel.json", {
@@ -155,8 +154,6 @@ describe("AdminPanelsPage", () => {
     await user.upload(input, file);
 
     expect(await screen.findByText("Painel importado")).toBeInTheDocument();
-    const row = rowFor("Painel importado");
-    expect(within(row).getByText("Novo")).toBeInTheDocument();
   });
 
   it("mostra erro e não importa um arquivo com JSON inválido", async () => {

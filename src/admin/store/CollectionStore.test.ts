@@ -26,7 +26,6 @@ describe("LocalStorageCollectionStore", () => {
     const list = store.list();
 
     expect(list).toHaveLength(collectionRegistry.length);
-    expect(list.every((entry) => entry.origin === "static")).toBe(true);
   });
 
   it("a coleção salva no overlay tem precedência sobre a estática de mesmo id", () => {
@@ -37,36 +36,35 @@ describe("LocalStorageCollectionStore", () => {
     store.save(overriding);
 
     expect(store.get(staticId)?.title).toBe("Título sobrescrito");
-    const entry = store.list().find((item) => item.config.id === staticId);
-    expect(entry?.origin).toBe("modified");
+    const entry = store.list().find((item) => item.id === staticId);
+    expect(entry?.title).toBe("Título sobrescrito");
   });
 
-  it("uma coleção nova aparece com origin 'custom'", () => {
+  it("uma coleção nova aparece na listagem", () => {
     const store = new LocalStorageCollectionStore();
     store.save(buildCollection({ id: "colecao-nova" }));
 
-    const entry = store.list().find((item) => item.config.id === "colecao-nova");
-    expect(entry?.origin).toBe("custom");
+    const entry = store.list().find((item) => item.id === "colecao-nova");
+    expect(entry).toBeDefined();
   });
 
-  it("restoreOriginal remove a sombra e volta a expor a coleção estática", () => {
-    const store = new LocalStorageCollectionStore();
-    const staticId = collectionRegistry[0].id;
-    const originalTitle = collectionRegistry[0].title;
-
-    store.save(buildCollection({ id: staticId, title: "Modificado" }));
-    store.restoreOriginal(staticId);
-
-    expect(store.get(staticId)?.title).toBe(originalTitle);
-  });
-
-  it("restoreOriginal em uma coleção custom a remove por completo", () => {
+  it("remove uma coleção que veio do overlay, sem contraparte estática", () => {
     const store = new LocalStorageCollectionStore();
     store.save(buildCollection({ id: "colecao-nova" }));
 
-    store.restoreOriginal("colecao-nova");
+    store.remove("colecao-nova");
 
     expect(store.get("colecao-nova")).toBeUndefined();
+  });
+
+  it("remove uma coleção estática do registry, mesmo sem edição prévia", () => {
+    const store = new LocalStorageCollectionStore();
+    const staticId = collectionRegistry[0].id;
+
+    store.remove(staticId);
+
+    expect(store.get(staticId)).toBeUndefined();
+    expect(store.list().some((item) => item.id === staticId)).toBe(false);
   });
 
   it("rejeita a escrita de uma configuração inválida e não persiste nada", () => {

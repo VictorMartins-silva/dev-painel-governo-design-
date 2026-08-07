@@ -104,13 +104,11 @@ describe("Fluxo integrado do admin", () => {
     expect(within(row).getByText("Secure Embed")).toBeInTheDocument();
   });
 
-  it("edita um painel estático (sombreando-o) e depois restaura a versão original", async () => {
+  it("edita um painel importado do catálogo e a edição é refletida na listagem", async () => {
     const user = userEvent.setup();
     renderAdmin("/admin");
 
     expect(screen.getByText("Demografia")).toBeInTheDocument();
-    const originalBadges = screen.getAllByText("Original");
-    expect(originalBadges.length).toBeGreaterThan(0);
 
     const demografiaRow = screen.getByText("Demografia").closest("li");
     if (!demografiaRow) throw new Error("Linha não encontrada");
@@ -122,15 +120,14 @@ describe("Fluxo integrado do admin", () => {
     await user.click(screen.getByRole("button", { name: "Salvar" }));
 
     await screen.findByText("Demografia (editado)");
-    expect(screen.getByText("Modificado")).toBeInTheDocument();
+    expect(screen.queryByText("Demografia")).not.toBeInTheDocument();
 
     vi.spyOn(window, "confirm").mockReturnValue(true);
-    const modifiedRow = screen.getByText("Demografia (editado)").closest("li");
-    if (!modifiedRow) throw new Error("Linha não encontrada");
-    await user.click(within(modifiedRow).getByRole("button", { name: "Restaurar original" }));
+    const editedRow = screen.getByText("Demografia (editado)").closest("li");
+    if (!editedRow) throw new Error("Linha não encontrada");
+    await user.click(within(editedRow).getByRole("button", { name: "Excluir" }));
 
-    await waitFor(() => expect(screen.getByText("Demografia")).toBeInTheDocument());
-    expect(screen.queryByText("Demografia (editado)")).not.toBeInTheDocument();
+    await waitFor(() => expect(screen.queryByText("Demografia (editado)")).not.toBeInTheDocument());
     vi.restoreAllMocks();
   });
 });

@@ -45,7 +45,7 @@ export class MockDataProvider implements DataProvider {
 
   async listPanels(): Promise<PanelSummary[]> {
     await this.wait();
-    return this.panelStore.list().map(({ config: panel }) => ({
+    return this.panelStore.list().map((panel) => ({
       id: panel.id,
       title: panel.title,
       description: panel.description,

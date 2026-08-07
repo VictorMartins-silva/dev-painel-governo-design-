@@ -2,15 +2,9 @@ import { useRef, useState, type ChangeEvent } from "react";
 import { Link } from "react-router-dom";
 import { PageHeader } from "../../components/layout/PageHeader";
 import type { PanelConfig } from "../../config/schemas/panel.schema";
-import { panelStore, type PanelOrigin } from "../store/PanelStore";
+import { panelStore } from "../store/PanelStore";
 import { downloadPanelConfig, readPanelConfigFile } from "../store/exportImport";
 import styles from "./AdminPanelsPage.module.css";
-
-const ORIGIN_LABEL: Record<PanelOrigin, string> = {
-  static: "Original",
-  modified: "Modificado",
-  custom: "Novo",
-};
 
 const PROVIDER_LABEL: Record<PanelConfig["embed"]["provider"], string> = {
   "powerbi-public": "Publicar na Web",
@@ -27,23 +21,12 @@ export default function AdminPanelsPage() {
     setVersion((current) => current + 1);
   }
 
-  const entries = [...panelStore.list()].sort((a, b) =>
-    a.config.title.localeCompare(b.config.title),
-  );
-
-  function handleRestore(id: string) {
-    const confirmed = window.confirm(
-      `Restaurar a versão original do painel "${id}"? As edições locais serão perdidas.`,
-    );
-    if (!confirmed) return;
-    panelStore.restoreOriginal(id);
-    refresh();
-  }
+  const entries = [...panelStore.list()].sort((a, b) => a.title.localeCompare(b.title));
 
   function handleDelete(id: string) {
     const confirmed = window.confirm(`Excluir o painel "${id}"? Essa ação não pode ser desfeita.`);
     if (!confirmed) return;
-    panelStore.restoreOriginal(id);
+    panelStore.remove(id);
     refresh();
   }
 
@@ -95,7 +78,7 @@ export default function AdminPanelsPage() {
     <div>
       <PageHeader
         title="Painéis"
-        description="Crie, edite e publique painéis. Painéis estáticos editados aqui passam a ser sombreados por uma cópia local."
+        description="Crie, edite, exclua e publique painéis."
         actions={
           <>
             <button type="button" className={styles.secondaryButton} onClick={handleImportClick}>
@@ -128,14 +111,11 @@ export default function AdminPanelsPage() {
         <p>Nenhum painel cadastrado.</p>
       ) : (
         <ul className={styles.list}>
-          {entries.map(({ config, origin }) => (
+          {entries.map((config) => (
             <li key={config.id} className={styles.row}>
               <div className={styles.info}>
                 <div className={styles.titleRow}>
                   <span className={styles.title}>{config.title}</span>
-                  <span className={`${styles.badge} ${styles[origin]}`}>
-                    {ORIGIN_LABEL[origin]}
-                  </span>
                   <span className={styles.externalBadge}>
                     {PROVIDER_LABEL[config.embed.provider]}
                   </span>
@@ -162,24 +142,13 @@ export default function AdminPanelsPage() {
                 >
                   Exportar
                 </button>
-                {origin === "modified" && (
-                  <button
-                    type="button"
-                    className={styles.linkButton}
-                    onClick={() => handleRestore(config.id)}
-                  >
-                    Restaurar original
-                  </button>
-                )}
-                {origin === "custom" && (
-                  <button
-                    type="button"
-                    className={`${styles.linkButton} ${styles.danger}`}
-                    onClick={() => handleDelete(config.id)}
-                  >
-                    Excluir
-                  </button>
-                )}
+                <button
+                  type="button"
+                  className={`${styles.linkButton} ${styles.danger}`}
+                  onClick={() => handleDelete(config.id)}
+                >
+                  Excluir
+                </button>
               </div>
             </li>
           ))}

@@ -2,19 +2,13 @@ import { panelConfigSchema, type PanelConfig } from "../../config/schemas/panel.
 import { panelRegistry, findPanelConfig } from "../../config/panels";
 
 const STORAGE_KEY = "admin.panels";
-
-export type PanelOrigin = "static" | "modified" | "custom";
-
-export type PanelListEntry = {
-  config: PanelConfig;
-  origin: PanelOrigin;
-};
+const DELETED_STORAGE_KEY = "admin.panels.deleted";
 
 export type PanelStore = {
-  list(): PanelListEntry[];
+  list(): PanelConfig[];
   get(id: string): PanelConfig | undefined;
   save(config: PanelConfig): PanelConfig;
-  restoreOriginal(id: string): void;
+  remove(id: string): void;
 };
 
 function readOverlay(storage: Storage): Record<string, PanelConfig> {
@@ -35,29 +29,55 @@ function writeOverlay(storage: Storage, overlay: Record<string, PanelConfig>): v
   storage.setItem(STORAGE_KEY, JSON.stringify(overlay));
 }
 
+function readDeleted(storage: Storage): Set<string> {
+  const raw = storage.getItem(DELETED_STORAGE_KEY);
+  if (!raw) return new Set();
+
+  try {
+    const parsed = JSON.parse(raw) as unknown;
+    return Array.isArray(parsed)
+      ? new Set(parsed.filter((id): id is string => typeof id === "string"))
+      : new Set();
+  } catch {
+    return new Set();
+  }
+}
+
+function writeDeleted(storage: Storage, deleted: Set<string>): void {
+  storage.setItem(DELETED_STORAGE_KEY, JSON.stringify(Array.from(deleted)));
+}
+
 /**
- * Overlay de persistência: painéis salvos no localStorage sobrepõem os estáticos do
- * panelRegistry (por id); a leitura nunca muta o registry, só a escrita local.
+ * Overlay de persistência: painéis salvos no localStorage sobrepõem os do panelRegistry por id;
+ * ids marcados como excluídos ficam ocultos mesmo que ainda existam no registry — não há
+ * distinção entre painel importado por código e painel criado pela UI, ambos podem ser
+ * editados e excluídos do mesmo jeito.
  */
 export class LocalStoragePanelStore implements PanelStore {
   constructor(private readonly storage: Storage = window.localStorage) {}
 
-  list(): PanelListEntry[] {
+  list(): PanelConfig[] {
     const overlay = readOverlay(this.storage);
-    const entries = new Map<string, PanelListEntry>();
+    const deleted = readDeleted(this.storage);
+    const entries = new Map<string, PanelConfig>();
 
     for (const panel of panelRegistry) {
-      entries.set(panel.id, { config: panel, origin: "static" });
+      entries.set(panel.id, panel);
     }
 
     for (const [id, config] of Object.entries(overlay)) {
-      entries.set(id, { config, origin: entries.has(id) ? "modified" : "custom" });
+      entries.set(id, config);
+    }
+
+    for (const id of deleted) {
+      entries.delete(id);
     }
 
     return Array.from(entries.values());
   }
 
   get(id: string): PanelConfig | undefined {
+    if (readDeleted(this.storage).has(id)) return undefined;
     return readOverlay(this.storage)[id] ?? findPanelConfig(id);
   }
 
@@ -66,16 +86,25 @@ export class LocalStoragePanelStore implements PanelStore {
     const overlay = readOverlay(this.storage);
     overlay[parsed.id] = parsed;
     writeOverlay(this.storage, overlay);
+
+    const deleted = readDeleted(this.storage);
+    if (deleted.delete(parsed.id)) {
+      writeDeleted(this.storage, deleted);
+    }
+
     return parsed;
   }
 
-  restoreOriginal(id: string): void {
+  remove(id: string): void {
     const overlay = readOverlay(this.storage);
-    if (!(id in overlay)) return;
-    const rest = Object.fromEntries(
-      Object.entries(overlay).filter(([overlayId]) => overlayId !== id),
-    );
-    writeOverlay(this.storage, rest);
+    if (id in overlay) {
+      delete overlay[id];
+      writeOverlay(this.storage, overlay);
+    }
+
+    const deleted = readDeleted(this.storage);
+    deleted.add(id);
+    writeDeleted(this.storage, deleted);
   }
 }
 

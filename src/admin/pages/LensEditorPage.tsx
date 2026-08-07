@@ -47,8 +47,8 @@ export default function LensEditorPage() {
   }
 
   const availablePanels = [...panelStore.list()]
-    .sort((a, b) => a.config.title.localeCompare(b.config.title))
-    .filter(({ config }) =>
+    .sort((a, b) => a.title.localeCompare(b.title))
+    .filter((config) =>
       panelSearch.trim()
         ? config.title.toLowerCase().includes(panelSearch.trim().toLowerCase())
         : true,
@@ -161,7 +161,7 @@ export default function LensEditorPage() {
             <p className={styles.empty}>Nenhum painel encontrado.</p>
           ) : (
             <ul className={styles.panelsList}>
-              {availablePanels.map(({ config }) => (
+              {availablePanels.map((config) => (
                 <li key={config.id} className={styles.panelRow}>
                   <label className={styles.panelCheckboxLabel}>
                     <input

@@ -5,19 +5,13 @@ import {
 import { collectionRegistry, findCollectionConfig } from "../../config/collections";
 
 const STORAGE_KEY = "admin.collections";
-
-export type CollectionOrigin = "static" | "modified" | "custom";
-
-export type CollectionListEntry = {
-  config: CollectionConfig;
-  origin: CollectionOrigin;
-};
+const DELETED_STORAGE_KEY = "admin.collections.deleted";
 
 export type CollectionStore = {
-  list(): CollectionListEntry[];
+  list(): CollectionConfig[];
   get(id: string): CollectionConfig | undefined;
   save(config: CollectionConfig): CollectionConfig;
-  restoreOriginal(id: string): void;
+  remove(id: string): void;
 };
 
 function readOverlay(storage: Storage): Record<string, CollectionConfig> {
@@ -38,29 +32,54 @@ function writeOverlay(storage: Storage, overlay: Record<string, CollectionConfig
   storage.setItem(STORAGE_KEY, JSON.stringify(overlay));
 }
 
+function readDeleted(storage: Storage): Set<string> {
+  const raw = storage.getItem(DELETED_STORAGE_KEY);
+  if (!raw) return new Set();
+
+  try {
+    const parsed = JSON.parse(raw) as unknown;
+    return Array.isArray(parsed)
+      ? new Set(parsed.filter((id): id is string => typeof id === "string"))
+      : new Set();
+  } catch {
+    return new Set();
+  }
+}
+
+function writeDeleted(storage: Storage, deleted: Set<string>): void {
+  storage.setItem(DELETED_STORAGE_KEY, JSON.stringify(Array.from(deleted)));
+}
+
 /**
- * Overlay de persistência: coleções salvas no localStorage sobrepõem as estáticas do
- * collectionRegistry (por id); a leitura nunca muta o registry, só a escrita local.
+ * Overlay de persistência: coleções salvas no localStorage sobrepõem as do collectionRegistry
+ * por id; ids marcados como excluídos ficam ocultos mesmo que ainda existam no registry — não
+ * há distinção entre coleção importada por código e coleção criada pela UI.
  */
 export class LocalStorageCollectionStore implements CollectionStore {
   constructor(private readonly storage: Storage = window.localStorage) {}
 
-  list(): CollectionListEntry[] {
+  list(): CollectionConfig[] {
     const overlay = readOverlay(this.storage);
-    const entries = new Map<string, CollectionListEntry>();
+    const deleted = readDeleted(this.storage);
+    const entries = new Map<string, CollectionConfig>();
 
     for (const collection of collectionRegistry) {
-      entries.set(collection.id, { config: collection, origin: "static" });
+      entries.set(collection.id, collection);
     }
 
     for (const [id, config] of Object.entries(overlay)) {
-      entries.set(id, { config, origin: entries.has(id) ? "modified" : "custom" });
+      entries.set(id, config);
+    }
+
+    for (const id of deleted) {
+      entries.delete(id);
     }
 
     return Array.from(entries.values());
   }
 
   get(id: string): CollectionConfig | undefined {
+    if (readDeleted(this.storage).has(id)) return undefined;
     return readOverlay(this.storage)[id] ?? findCollectionConfig(id);
   }
 
@@ -69,16 +88,25 @@ export class LocalStorageCollectionStore implements CollectionStore {
     const overlay = readOverlay(this.storage);
     overlay[parsed.id] = parsed;
     writeOverlay(this.storage, overlay);
+
+    const deleted = readDeleted(this.storage);
+    if (deleted.delete(parsed.id)) {
+      writeDeleted(this.storage, deleted);
+    }
+
     return parsed;
   }
 
-  restoreOriginal(id: string): void {
+  remove(id: string): void {
     const overlay = readOverlay(this.storage);
-    if (!(id in overlay)) return;
-    const rest = Object.fromEntries(
-      Object.entries(overlay).filter(([overlayId]) => overlayId !== id),
-    );
-    writeOverlay(this.storage, rest);
+    if (id in overlay) {
+      delete overlay[id];
+      writeOverlay(this.storage, overlay);
+    }
+
+    const deleted = readDeleted(this.storage);
+    deleted.add(id);
+    writeDeleted(this.storage, deleted);
   }
 }
 

@@ -9,9 +9,9 @@ import { catalogoOsascoPanels } from "./catalogo-osasco.generated";
  * `trabalho-emprego` continuam aqui como os dois painéis-exemplo escritos à mão, com URLs de
  * embed placeholder.
  *
- * O `PanelStore` sobrepõe qualquer entrada daqui por id com o que estiver no localStorage, então
- * editar um painel importado em /admin/paineis não é perdido na próxima importação — a edição
- * fica sombreando a versão estática, com badge "Modificado" e ação "Restaurar original".
+ * O `PanelStore` sobrepõe qualquer entrada daqui por id com o que estiver no localStorage —
+ * editar ou excluir um painel importado em /admin/paineis não é perdido na próxima importação,
+ * a edição/exclusão fica registrada no localStorage independente da origem do painel.
  */
 export const panelRegistry: PanelConfig[] = [...catalogoOsascoPanels, trabalhoEmprego, demografia];
 
