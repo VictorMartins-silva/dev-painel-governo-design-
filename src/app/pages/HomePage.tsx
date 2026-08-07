@@ -3,7 +3,7 @@ import { AsyncBoundary } from "../../components/feedback/AsyncBoundary";
 import { PanelGrid } from "../../components/layout/PanelGrid";
 import { PanelCard } from "../../components/panels/PanelCard";
 import { useListPanels } from "../../data/hooks/useListPanels";
-import { LENSES, lensHref, lensValues, topLensValue } from "../../config/lenses";
+import { LENSES, lensValues } from "../../config/lenses";
 import styles from "./HomePage.module.css";
 
 const LENS_PREVIEW_LIMIT = 4;
@@ -41,16 +41,13 @@ export default function HomePage() {
                     const values = lensValues(lens, panels);
                     const preview = values.slice(0, LENS_PREVIEW_LIMIT);
                     const rest = values.length - preview.length;
-                    const defaultValue = topLensValue(lens, panels);
 
                     return (
                       <button
                         key={lens.id}
                         type="button"
                         className={styles.lensCard}
-                        onClick={() =>
-                          navigate(defaultValue ? lensHref(lens, defaultValue) : "/paineis")
-                        }
+                        onClick={() => navigate(`/lentes/${lens.id}`)}
                       >
                         <div className={styles.lensTop}>
                           <h3 className={styles.lensTitle}>{lens.label}</h3>

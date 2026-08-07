@@ -1,6 +1,7 @@
 import { createBrowserRouter, Navigate } from "react-router-dom";
 import RootLayout from "./RootLayout";
 import HomePage from "./pages/HomePage";
+import LensCategoriesPage from "./pages/LensCategoriesPage";
 import CatalogPage from "./pages/CatalogPage";
 import PanelPage from "./pages/PanelPage";
 import CollectionsPage from "./pages/CollectionsPage";
@@ -20,6 +21,7 @@ export const router = createBrowserRouter([
     element: <RootLayout />,
     children: [
       { index: true, element: <HomePage /> },
+      { path: "lentes/:lensId", element: <LensCategoriesPage /> },
       { path: "paineis", element: <CatalogPage /> },
       { path: "paineis/:id", element: <PanelPage /> },
       { path: "sala", element: <CollectionsPage /> },

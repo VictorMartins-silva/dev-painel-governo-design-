@@ -75,11 +75,6 @@ export function lensValues(lens: Lens, panels: PanelSummary[]): LensValueCount[]
     .sort((a, b) => a.value.localeCompare(b.value, "pt-BR"));
 }
 
-/** Valor mais frequente da lente — usado como recorte inicial ao entrar pela Home. */
-export function topLensValue(lens: Lens, panels: PanelSummary[]): string | undefined {
-  return [...lensValues(lens, panels)].sort((a, b) => b.count - a.count)[0]?.value;
-}
-
 export function lensHref(lens: Lens, value: string): string {
   return `/paineis?${lens.param}=${encodeURIComponent(value)}`;
 }
