@@ -3,7 +3,8 @@ import { AsyncBoundary } from "../../components/feedback/AsyncBoundary";
 import { PanelGrid } from "../../components/layout/PanelGrid";
 import { PanelCard } from "../../components/panels/PanelCard";
 import { useListPanels } from "../../data/hooks/useListPanels";
-import { LENSES, lensValues } from "../../config/lenses";
+import { allLenses, lensValues } from "../../config/lenses";
+import { lensStore } from "../../admin/store/LensStore";
 import styles from "./HomePage.module.css";
 
 const LENS_PREVIEW_LIMIT = 4;
@@ -11,6 +12,7 @@ const LENS_PREVIEW_LIMIT = 4;
 export default function HomePage() {
   const panelsState = useListPanels();
   const navigate = useNavigate();
+  const lenses = allLenses(lensStore.list());
 
   return (
     <div>
@@ -37,7 +39,7 @@ export default function HomePage() {
                   mesmos painéis, não uma árvore de navegação separada.
                 </p>
                 <div className={styles.lensGrid}>
-                  {LENSES.map((lens) => {
+                  {lenses.map((lens) => {
                     const values = lensValues(lens, panels);
                     const preview = values.slice(0, LENS_PREVIEW_LIMIT);
                     const rest = values.length - preview.length;

@@ -12,6 +12,8 @@ import AdminLayout from "../admin/AdminLayout";
 import AdminPanelsPage from "../admin/pages/AdminPanelsPage";
 import AdminCollectionsPage from "../admin/pages/AdminCollectionsPage";
 import CollectionEditorPage from "../admin/pages/CollectionEditorPage";
+import AdminLensesPage from "../admin/pages/AdminLensesPage";
+import LensEditorPage from "../admin/pages/LensEditorPage";
 import AdminSettingsPage from "../admin/pages/AdminSettingsPage";
 import PanelEditorPage from "../admin/pages/PanelEditorPage";
 
@@ -41,6 +43,9 @@ export const router = createBrowserRouter([
       { path: "colecoes", element: <AdminCollectionsPage /> },
       { path: "colecoes/novo", element: <CollectionEditorPage /> },
       { path: "colecoes/:id", element: <CollectionEditorPage /> },
+      { path: "lentes", element: <AdminLensesPage /> },
+      { path: "lentes/novo", element: <LensEditorPage /> },
+      { path: "lentes/:id", element: <LensEditorPage /> },
     ],
   },
   {

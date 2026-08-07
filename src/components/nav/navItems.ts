@@ -22,6 +22,7 @@ export const ADMIN_NAV_GROUPS: NavGroup[] = [
     items: [
       { id: "paineis", label: "Painéis", to: "/admin/paineis" },
       { id: "colecoes", label: "Coleções", to: "/admin/colecoes" },
+      { id: "lentes", label: "Lentes", to: "/admin/lentes" },
     ],
   },
   {

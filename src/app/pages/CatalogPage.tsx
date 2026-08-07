@@ -5,16 +5,18 @@ import { PanelGrid } from "../../components/layout/PanelGrid";
 import { PanelCard } from "../../components/panels/PanelCard";
 import { AsyncBoundary } from "../../components/feedback/AsyncBoundary";
 import { useListPanels } from "../../data/hooks/useListPanels";
-import { LENSES, filterByLenses, lensValues, type Lens, type LensId } from "../../config/lenses";
+import { allLenses, filterByLenses, lensValues, type Lens, type LensId } from "../../config/lenses";
+import { lensStore } from "../../admin/store/LensStore";
 import styles from "./CatalogPage.module.css";
 
 export default function CatalogPage() {
   const panelsState = useListPanels();
   const [searchParams, setSearchParams] = useSearchParams();
   const [search, setSearch] = useState(() => searchParams.get("q") ?? "");
+  const lenses = allLenses(lensStore.list());
 
   const activeValues: Partial<Record<LensId, string>> = {};
-  for (const lens of LENSES) {
+  for (const lens of lenses) {
     const value = searchParams.get(lens.param);
     if (value) activeValues[lens.id] = value;
   }
@@ -26,7 +28,7 @@ export default function CatalogPage() {
     setSearchParams(next, { replace: true });
   }
 
-  const activeLenses = LENSES.filter((lens) => activeValues[lens.id]);
+  const activeLenses = lenses.filter((lens) => activeValues[lens.id]);
 
   return (
     <div>
@@ -43,7 +45,7 @@ export default function CatalogPage() {
         {(panels) => {
           const normalizedSearch = search.trim().toLowerCase();
 
-          const filtered = filterByLenses(panels, activeValues).filter((panel) => {
+          const filtered = filterByLenses(panels, activeValues, lenses).filter((panel) => {
             if (
               normalizedSearch &&
               ![panel.title, panel.theme, ...panel.tags].some((field) =>
@@ -71,7 +73,7 @@ export default function CatalogPage() {
                     onChange={(e) => setSearch(e.target.value)}
                   />
                 </div>
-                {LENSES.map((lens) => {
+                {lenses.map((lens) => {
                   const options = lensValues(lens, panels);
                   return (
                     <div className={styles.field} key={lens.id}>

@@ -1,11 +1,16 @@
 import type { PanelSummary } from "../data/provider";
+import type { LensConfig } from "./schemas/lens.schema";
 
 /**
  * Conceito central: não existe uma "árvore" de navegação por secretaria, outra por tema, outra
  * por ODS. Existe um único índice de painéis (o catálogo) e cada uma dessas taxonomias é uma
  * LENTE — um recorte — sobre esse mesmo índice. Ver mockup-painel-governo.html (RECORTES).
+ *
+ * Além das lentes embutidas abaixo (LENSES), o admin permite cadastrar lentes "planas": um
+ * conjunto fixo de painéis associado a um nome (ver LensConfig, admin/store/LensStore.ts).
+ * `lensFromConfig`/`allLenses` adaptam essas lentes cadastradas ao mesmo contrato `Lens`.
  */
-export type LensId = "tema" | "secretaria" | "ods";
+export type LensId = string;
 
 export type Lens = {
   id: LensId;
@@ -57,8 +62,27 @@ export const LENSES: Lens[] = [
   },
 ];
 
-export function findLens(id: string): Lens | undefined {
-  return LENSES.find((lens) => lens.id === id);
+/** Adapta uma lente cadastrada no admin (conjunto fixo de painéis) ao contrato `Lens`. */
+export function lensFromConfig(config: LensConfig): Lens {
+  const memberIds = new Set(config.panelIds);
+  return {
+    id: config.id,
+    label: config.label,
+    allLabel: config.allLabel || `Todos — ${config.label}`,
+    description: config.description,
+    param: `lente-${config.id}`,
+    // string vazia para não-membros: lensValues() ignora e não gera uma categoria "de fora".
+    valueOf: (panel) => (memberIds.has(panel.id) ? config.label : ""),
+  };
+}
+
+/** Lentes embutidas + lentes cadastradas no admin, prontas para uso pelas telas públicas. */
+export function allLenses(customLenses: LensConfig[] = []): Lens[] {
+  return [...LENSES, ...customLenses.map(lensFromConfig)];
+}
+
+export function findLens(id: string, customLenses: LensConfig[] = []): Lens | undefined {
+  return allLenses(customLenses).find((lens) => lens.id === id);
 }
 
 export type LensValueCount = { value: string; count: number };
@@ -68,6 +92,7 @@ export function lensValues(lens: Lens, panels: PanelSummary[]): LensValueCount[]
   const counts = new Map<string, number>();
   for (const panel of panels) {
     const value = lens.valueOf(panel);
+    if (!value) continue; // painel fora do recorte (lente "plana" cadastrada no admin)
     counts.set(value, (counts.get(value) ?? 0) + 1);
   }
   return Array.from(counts.entries())
@@ -79,13 +104,18 @@ export function lensHref(lens: Lens, value: string): string {
   return `/paineis?${lens.param}=${encodeURIComponent(value)}`;
 }
 
-/** Filtra o índice unificado de painéis pelos recortes de lente ativos (um valor por lente). */
+/**
+ * Filtra o índice unificado de painéis pelos recortes de lente ativos (um valor por lente).
+ * `lenses` deve incluir as cadastradas no admin (allLenses()) — do contrário um filtro ativo
+ * numa lente custom é ignorado e o catálogo volta a mostrar tudo.
+ */
 export function filterByLenses(
   panels: PanelSummary[],
   activeValues: Partial<Record<LensId, string>>,
+  lenses: Lens[] = LENSES,
 ): PanelSummary[] {
   return panels.filter((panel) =>
-    LENSES.every((lens) => {
+    lenses.every((lens) => {
       const active = activeValues[lens.id];
       return !active || lens.valueOf(panel) === active;
     }),
