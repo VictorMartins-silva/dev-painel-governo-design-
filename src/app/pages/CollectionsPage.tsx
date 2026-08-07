@@ -21,10 +21,6 @@ export default function CollectionsPage() {
       ) : (
         <div className={styles.grid}>
           {entries.map(({ config }) => {
-            const embedded = config.panels.filter(
-              (ref) => panelStore.get(ref.panelId)?.kind === "native",
-            ).length;
-
             return (
               <Link key={config.id} to={`/sala/${config.id}`} className={styles.card}>
                 <div className={styles.titleRow}>
@@ -46,10 +42,6 @@ export default function CollectionsPage() {
                 </ol>
                 <div className={styles.footer}>
                   <span>{config.timerSeconds}s por painel</span>
-                  <span>·</span>
-                  <span>
-                    {embedded} de {config.panels.length} nativos
-                  </span>
                 </div>
               </Link>
             );

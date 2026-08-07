@@ -11,7 +11,6 @@ export function PanelCard({ panel }: PanelCardProps) {
     <Link to={`/paineis/${panel.id}`} className={styles.card}>
       <div className={styles.headerRow}>
         <span className={styles.theme}>{panel.theme}</span>
-        {panel.isExternal && <span className={styles.externalBadge}>Painel externo</span>}
       </div>
       <span className={styles.title}>{panel.title}</span>
       <p className={styles.description}>{panel.description}</p>

@@ -13,6 +13,7 @@ function renderAt(path: string) {
   const router = createMemoryRouter(
     [
       { path: "/admin", element: <div>Lista de painéis</div> },
+      { path: "/admin/paineis", element: <div>Lista de painéis</div> },
       { path: "/admin/paineis/novo", element: <PanelEditorPage /> },
       { path: "/admin/paineis/:id", element: <PanelEditorPage /> },
     ],
@@ -52,15 +53,6 @@ describe("PanelEditorPage", () => {
     expect(screen.getAllByRole("alert").length).toBeGreaterThan(0);
   });
 
-  it("mostra o preview ao vivo do painel carregado", async () => {
-    renderAt("/admin/paineis/demografia");
-
-    await waitFor(() => expect(screen.getByText("Preview ao vivo")).toBeInTheDocument());
-    await waitFor(() =>
-      expect(screen.queryByText("Configuração de painel inválida")).not.toBeInTheDocument(),
-    );
-  });
-
   it("carrega um painel existente com os campos preenchidos", async () => {
     renderAt("/admin/paineis/demografia");
 
@@ -68,12 +60,23 @@ describe("PanelEditorPage", () => {
     expect(screen.getByLabelText("Id (slug)")).toHaveValue("demografia");
     expect(screen.getByLabelText("Id (slug)")).toBeDisabled();
     expect(screen.getByRole("button", { name: "Salvar" })).toBeEnabled();
+    expect(
+      screen.getByRole("radio", { name: "Publicar na Web (público, sem login)" }),
+    ).toBeChecked();
+  });
 
-    await waitFor(() => {
-      for (const select of screen.getAllByLabelText("Indicador")) {
-        expect(select).not.toBeDisabled();
-      }
-    });
+  it("troca a dica da URL de embed ao trocar para Secure Embed", async () => {
+    const user = userEvent.setup();
+    renderAt("/admin/paineis/novo");
+
+    await user.click(
+      screen.getByRole("radio", {
+        name: "Secure Embed (exige login no Power BI, respeita RLS/OLS)",
+      }),
+    );
+
+    expect(screen.getByLabelText("URL de incorporação")).toBeInTheDocument();
+    expect(screen.getByText(/Incorporar relatório → Site ou portal/)).toBeInTheDocument();
   });
 
   it("edita metadados de um painel existente e salva as alterações", async () => {
@@ -101,24 +104,6 @@ describe("PanelEditorPage", () => {
     await user.click(screen.getByRole("button", { name: "Salvar" }));
 
     expect(screen.queryByText("Lista de painéis")).not.toBeInTheDocument();
-  });
-
-  it("remover todas as seções de um painel válido bloqueia salvar novamente", async () => {
-    const user = userEvent.setup();
-    renderAt("/admin/paineis/demografia");
-
-    expect(screen.getByRole("button", { name: "Salvar" })).toBeEnabled();
-
-    let removeSectionButtons = screen.queryAllByRole("button", { name: "Remover seção" });
-    while (removeSectionButtons.length > 0) {
-      await user.click(removeSectionButtons[0]);
-      removeSectionButtons = screen.queryAllByRole("button", { name: "Remover seção" });
-    }
-
-    await user.click(screen.getByRole("button", { name: "Salvar" }));
-
-    expect(screen.queryByText("Lista de painéis")).not.toBeInTheDocument();
-    expect(screen.getByText("Corrija os campos destacados abaixo para salvar:")).toBeInTheDocument();
   });
 
   it("mostra mensagem de não encontrado para um id inexistente", () => {
@@ -176,36 +161,9 @@ describe("PanelEditorPage", () => {
     expect(await screen.findByText("Lista de painéis")).toBeInTheDocument();
   });
 
-  it("recolhe o preview e permite mostrá-lo novamente", async () => {
-    const user = userEvent.setup();
+  it("mostra a pré-visualização quando a URL de embed é válida", async () => {
     renderAt("/admin/paineis/demografia");
 
-    await waitFor(() => expect(screen.getByText("Preview ao vivo")).toBeInTheDocument());
-    await user.click(screen.getByRole("button", { name: "Recolher" }));
-
-    expect(screen.queryByText("Preview ao vivo")).not.toBeInTheDocument();
-    expect(screen.getByText("Preview recolhido")).toBeInTheDocument();
-
-    await user.click(screen.getByRole("button", { name: "Mostrar preview" }));
-
-    await waitFor(() => expect(screen.getByText("Preview ao vivo")).toBeInTheDocument());
-  });
-
-  it("abre o preview em outra aba e volta ao modo inline quando ela é fechada", async () => {
-    const user = userEvent.setup();
-    const openSpy = vi.spyOn(window, "open").mockReturnValue(null);
-    renderAt("/admin/paineis/demografia");
-
-    await waitFor(() => expect(screen.getByText("Preview ao vivo")).toBeInTheDocument());
-    await user.click(screen.getByRole("button", { name: "Abrir em nova aba" }));
-
-    expect(openSpy).toHaveBeenCalledWith("/admin/preview", "pg-preview");
-    expect(screen.getByText("Preview aberto em outra aba")).toBeInTheDocument();
-
-    const channel = new BroadcastChannel("pg-editor-preview");
-    channel.postMessage({ type: "preview-closed" });
-    channel.close();
-
-    await waitFor(() => expect(screen.getByText("Preview ao vivo")).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByText("Pré-visualização")).toBeInTheDocument());
   });
 });

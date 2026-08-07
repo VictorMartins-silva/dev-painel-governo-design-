@@ -1,7 +1,0 @@
-[
-  { "value": "comercio", "label": "Comércio" },
-  { "value": "servicos", "label": "Serviços" },
-  { "value": "industria", "label": "Indústria" },
-  { "value": "construcao", "label": "Construção" },
-  { "value": "agropecuaria", "label": "Agropecuária" }
-]

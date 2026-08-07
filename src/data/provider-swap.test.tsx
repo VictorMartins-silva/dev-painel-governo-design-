@@ -3,47 +3,34 @@ import { render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import type { DataProvider } from "./provider";
 import { DataProviderRoot, useDataProvider } from "./DataProviderContext";
-import { useIndicator } from "./hooks/useIndicator";
+import { useListPanels } from "./hooks/useListPanels";
 
 // Prova do critério "separação de responsabilidades": um provider mínimo, que não usa
 // MockDataProvider nem os fixtures JSON, é suficiente para a camada de dados funcionar —
 // basta implementar a interface DataProvider e trocar 1 linha no bootstrap (aqui, no teste).
 const stubProvider: DataProvider = {
-  listPanels: async () => [],
+  listPanels: async () => [
+    {
+      id: "stub",
+      title: "Painel stub",
+      description: "Painel de teste",
+      theme: "Teste",
+      tags: [],
+      source: "stub",
+      updatedAt: "2026-01-01",
+      embedProvider: "powerbi-public",
+    },
+  ],
   getPanelConfig: async () => {
     throw new Error("não implementado no stub");
   },
   getPanelFreshness: async () => ({}),
-  getIndicator: async () => ({
-    data: { value: 42, unit: "unidades" },
-    metadata: { source: "stub" },
-  }),
-  getTimeSeries: async () => ({ data: [], metadata: {} }),
-  getCategoricalSeries: async () => ({ data: [], metadata: {} }),
-  getTable: async () => ({ data: { columns: [], rows: [] }, metadata: {} }),
-  getFilterOptions: async () => [],
-  getIndicatorMetadata: async () => {
-    throw new Error("não implementado no stub");
-  },
-  listIndicators: async () => [],
-  getIndicatorUsage: async () => [],
-  getCatalogHealth: async () => ({
-    entries: [],
-    usageCountByIndicatorId: {},
-    orphans: [],
-    dangling: [],
-    invalid: [],
-  }),
 };
 
 function Probe() {
-  const state = useIndicator({ metric: "qualquer", filters: {} });
+  const state = useListPanels();
   if (state.status !== "success") return null;
-  return (
-    <span>
-      {state.data.value} {state.data.unit}
-    </span>
-  );
+  return <span>{state.data.map((panel) => panel.title).join(", ")}</span>;
 }
 
 describe("troca de DataProvider", () => {
@@ -56,7 +43,7 @@ describe("troca de DataProvider", () => {
       </MemoryRouter>,
     );
 
-    await waitFor(() => expect(screen.getByText("42 unidades")).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByText("Painel stub")).toBeInTheDocument());
   });
 
   it("useDataProvider expõe exatamente a instância injetada", () => {

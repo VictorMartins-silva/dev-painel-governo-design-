@@ -15,6 +15,7 @@ function renderAdmin(initialPath: string) {
   const router = createMemoryRouter(
     [
       { path: "/admin", element: <AdminPanelsPage /> },
+      { path: "/admin/paineis", element: <AdminPanelsPage /> },
       { path: "/admin/paineis/novo", element: <PanelEditorPage /> },
       { path: "/admin/paineis/:id", element: <PanelEditorPage /> },
       { path: "/paineis", element: <CatalogPage /> },
@@ -32,20 +33,12 @@ function renderAdmin(initialPath: string) {
   return router;
 }
 
-async function waitForIndicatorsLoaded() {
-  await waitFor(() => {
-    for (const select of screen.getAllByLabelText("Indicador")) {
-      expect(select).not.toBeDisabled();
-    }
-  });
-}
-
 describe("Fluxo integrado do admin", () => {
   beforeEach(() => {
     window.localStorage.clear();
   });
 
-  it("cria um painel do zero, salva e o painel passa a renderizar em /paineis/:id", async () => {
+  it("cria um painel novo (Publicar na Web), salva e ele aparece no catálogo e renderiza o iframe", async () => {
     const user = userEvent.setup();
     const router = renderAdmin("/admin/paineis/novo");
 
@@ -55,40 +48,8 @@ describe("Fluxo integrado do admin", () => {
     await user.type(screen.getByLabelText("Tema"), "Teste");
     await user.type(screen.getByLabelText("Fonte"), "Fonte de teste");
     await user.type(screen.getByLabelText("Responsável"), "Equipe de Testes");
-
-    await user.click(screen.getByRole("button", { name: "Adicionar seção" }));
-    await user.type(screen.getByLabelText("Título da seção"), "Resumo");
-
-    await user.click(screen.getByRole("button", { name: "Adicionar componente" }));
-    await user.type(screen.getByLabelText("Título"), "População");
-    await waitForIndicatorsLoaded();
-    await user.selectOptions(screen.getByLabelText("Indicador"), "populacao_total");
-
-    expect(screen.getByRole("button", { name: "Salvar" })).toBeEnabled();
-    await user.click(screen.getByRole("button", { name: "Salvar" }));
-
-    await screen.findByRole("heading", { name: "Painéis" });
-
-    await act(async () => {
-      await router.navigate("/paineis/painel-teste");
-    });
-
-    expect(await screen.findByRole("heading", { name: "Painel de teste" })).toBeInTheDocument();
-    await waitFor(() => expect(screen.getByText("População")).toBeInTheDocument());
-  });
-
-  it("cria um painel externo, salva e ele aparece no catálogo e renderiza o iframe", async () => {
-    const user = userEvent.setup();
-    const router = renderAdmin("/admin/paineis/novo?kind=external");
-
-    await user.type(screen.getByLabelText("Id (slug)"), "painel-externo-teste");
-    await user.type(screen.getByLabelText("Título do painel"), "Painel externo de teste");
-    await user.type(screen.getByLabelText("Descrição"), "Descrição do painel externo de teste.");
-    await user.type(screen.getByLabelText("Tema"), "Teste");
-    await user.type(screen.getByLabelText("Fonte"), "Fonte de teste");
-    await user.type(screen.getByLabelText("Responsável"), "Equipe de Testes");
     await user.type(
-      screen.getByLabelText("URL de incorporação (Power BI — Publicar na web)"),
+      screen.getByLabelText("URL de incorporação"),
       "https://app.powerbi.com/view?r=abc123",
     );
 
@@ -96,24 +57,51 @@ describe("Fluxo integrado do admin", () => {
     await user.click(screen.getByRole("button", { name: "Salvar" }));
 
     await screen.findByRole("heading", { name: "Painéis" });
-    expect(screen.getByText("Painel externo")).toBeInTheDocument();
+    expect(screen.getByText("Painel de teste")).toBeInTheDocument();
 
     await act(async () => {
       await router.navigate("/paineis");
     });
 
-    expect(await screen.findByText("Painel externo de teste")).toBeInTheDocument();
-    expect(screen.getAllByText("Painel externo").length).toBeGreaterThan(0);
+    expect(await screen.findByText("Painel de teste")).toBeInTheDocument();
 
     await act(async () => {
-      await router.navigate("/paineis/painel-externo-teste");
+      await router.navigate("/paineis/painel-teste");
     });
 
-    expect(
-      await screen.findByRole("heading", { name: "Painel externo de teste" }),
-    ).toBeInTheDocument();
-    const iframe = screen.getByTitle("Painel externo de teste");
+    expect(await screen.findByRole("heading", { name: "Painel de teste" })).toBeInTheDocument();
+    const iframe = screen.getByTitle("Painel de teste");
     expect(iframe).toHaveAttribute("src", "https://app.powerbi.com/view?r=abc123");
+  });
+
+  it("cria um painel Secure Embed e ele aparece no admin com o provider correto", async () => {
+    const user = userEvent.setup();
+    renderAdmin("/admin/paineis/novo");
+
+    await user.type(screen.getByLabelText("Id (slug)"), "painel-seguro-teste");
+    await user.type(screen.getByLabelText("Título do painel"), "Painel seguro de teste");
+    await user.type(screen.getByLabelText("Descrição"), "Descrição.");
+    await user.type(screen.getByLabelText("Tema"), "Teste");
+    await user.type(screen.getByLabelText("Fonte"), "Fonte de teste");
+    await user.type(screen.getByLabelText("Responsável"), "Equipe de Testes");
+
+    await user.click(
+      screen.getByRole("radio", {
+        name: "Secure Embed (exige login no Power BI, respeita RLS/OLS)",
+      }),
+    );
+    await user.type(
+      screen.getByLabelText("URL de incorporação"),
+      "https://app.powerbi.com/reportEmbed?reportId=abc&ctid=def",
+    );
+
+    expect(screen.getByRole("button", { name: "Salvar" })).toBeEnabled();
+    await user.click(screen.getByRole("button", { name: "Salvar" }));
+
+    await screen.findByRole("heading", { name: "Painéis" });
+    const row = screen.getByText("Painel seguro de teste").closest("li");
+    if (!row) throw new Error("Linha não encontrada");
+    expect(within(row).getByText("Secure Embed")).toBeInTheDocument();
   });
 
   it("edita um painel estático (sombreando-o) e depois restaura a versão original", async () => {

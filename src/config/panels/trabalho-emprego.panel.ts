@@ -1,8 +1,7 @@
-import type { NativePanelConfig } from "../schemas/panel.schema";
+import type { PanelConfig } from "../schemas/panel.schema";
 
-export const trabalhoEmprego: NativePanelConfig = {
-  schemaVersion: 1,
-  kind: "native",
+export const trabalhoEmprego: PanelConfig = {
+  schemaVersion: 3,
   id: "trabalho-emprego",
   title: "Trabalho e Emprego",
   description: "Indicadores do mercado formal de trabalho no município.",
@@ -12,95 +11,13 @@ export const trabalhoEmprego: NativePanelConfig = {
     source: "CAGED / Ministério do Trabalho (dados fictícios)",
     owner: "Equipe de Serviços",
     methodologyNote:
-      "Saldo = admissões menos desligamentos, apurado por competência de referência. Os indicadores de resumo e a evolução mensal não são segmentados por sexo ou faixa etária nesta versão do protótipo — selecionar esses filtros pode resultar em ausência de dados.",
+      "Exemplo de demonstração: a URL de embed abaixo é um placeholder. Substitua por um " +
+      "relatório real publicado no Power BI (Arquivo → Publicar na Web) ou por um relatório " +
+      "do Power BI Embedded configurado em /admin/paineis.",
   },
   presentation: "default",
-  filters: [
-    { id: "ano", type: "single-select", label: "Ano", dataField: "ano" },
-    { id: "mes", type: "single-select", label: "Mês", dataField: "mes" },
-    { id: "sexo", type: "multi-select", label: "Sexo", dataField: "sexo" },
-    { id: "faixa_etaria", type: "multi-select", label: "Faixa etária", dataField: "faixaEtaria" },
-    { id: "setor", type: "multi-select", label: "Setor econômico", dataField: "setor" },
-  ],
-  sections: [
-    {
-      id: "resumo",
-      title: "Resumo",
-      layout: "grid-4",
-      components: [
-        {
-          id: "saldo",
-          type: "indicator-card",
-          title: "Saldo de empregos",
-          metric: "saldo_empregos",
-          format: "integer",
-          comparison: "previous-period",
-          indicatorId: "saldo_empregos",
-        },
-        {
-          id: "admissoes",
-          type: "indicator-card",
-          title: "Admissões",
-          metric: "admissoes",
-          format: "integer",
-          comparison: "previous-period",
-          indicatorId: "admissoes",
-        },
-        {
-          id: "desligamentos",
-          type: "indicator-card",
-          title: "Desligamentos",
-          metric: "desligamentos",
-          format: "integer",
-          comparison: "previous-period",
-          indicatorId: "desligamentos",
-        },
-        {
-          id: "estoque",
-          type: "indicator-card",
-          title: "Estoque de vínculos",
-          metric: "estoque_vinculos",
-          format: "integer",
-          comparison: "previous-period",
-          indicatorId: "estoque_vinculos",
-        },
-      ],
-    },
-    {
-      id: "evolucao",
-      title: "Evolução",
-      layout: "stack",
-      components: [
-        {
-          id: "saldo-tempo",
-          type: "time-series",
-          title: "Evolução mensal do saldo",
-          metric: "saldo_empregos",
-          format: "integer",
-        },
-        {
-          id: "por-setor",
-          type: "bar-chart",
-          title: "Vínculos por setor econômico",
-          metric: "estoque_vinculos",
-          dimension: "setor",
-          orientation: "horizontal",
-          sort: "desc",
-          format: "integer",
-        },
-        {
-          id: "tab-atividade",
-          type: "data-table",
-          title: "Vínculos por atividade econômica",
-          dataset: "vinculos_por_atividade",
-          columns: [
-            { field: "atividade", label: "Atividade", type: "text" },
-            { field: "vinculos", label: "Vínculos", type: "integer" },
-            { field: "variacao", label: "Variação", type: "percent" },
-          ],
-          limit: 15,
-        },
-      ],
-    },
-  ],
+  embed: {
+    provider: "powerbi-public",
+    url: "https://app.powerbi.com/view?r=SUBSTITUA_PELA_URL_PUBLICADA",
+  },
 };

@@ -1,5 +1,11 @@
 # Escopo do protótipo — validação do conceito operacional
 
+> **Superado.** Este documento descreve o conceito original de "painéis por configuração" com um
+> motor de renderização nativo — decisão revertida em favor de um MVP construído sobre o Power BI
+> (catálogo + lentes + Power BI Embedded + kiosk). O escopo atual está no [`README.md`](../../README.md),
+> seção "Escopo do MVP". Mantido como registro histórico da validação de conceito que precedeu essa
+> decisão.
+
 ## 1. Objetivo
 
 Este protótipo existe para validar o **conceito operacional** de uma ferramenta única para navegar,

@@ -1,9 +1,13 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { CollectionConfig } from "../config/schemas/collection.schema";
 import type { PanelConfig } from "../config/schemas/panel.schema";
-import { ConfigRenderer } from "./ConfigRenderer";
 import { EmbedPanelView } from "./EmbedPanelView";
 import styles from "./KioskPlayer.module.css";
+
+const PROVIDER_LABEL: Record<PanelConfig["embed"]["provider"], string> = {
+  "powerbi-public": "Publicar na Web",
+  "powerbi-secure": "Secure Embed",
+};
 
 type KioskSlide = {
   panel: PanelConfig;
@@ -117,9 +121,7 @@ export function KioskPlayer({ collection, slides }: KioskPlayerProps) {
         </span>
         <div className={styles.right}>
           <span>{current.panel.title}</span>
-          <span className={styles.tag}>
-            {current.panel.kind === "external" ? "externo · abre fora do kiosk" : "embed nativo"}
-          </span>
+          <span className={styles.tag}>{PROVIDER_LABEL[current.panel.embed.provider]}</span>
         </div>
       </div>
 
@@ -130,11 +132,7 @@ export function KioskPlayer({ collection, slides }: KioskPlayerProps) {
             className={slideIndex === index ? styles.slideVisible : styles.slideHidden}
             aria-hidden={slideIndex !== index}
           >
-            {slide.panel.kind === "external" ? (
-              <EmbedPanelView panel={slide.panel} />
-            ) : (
-              <ConfigRenderer panelId={slide.panel.id} config={slide.panel} />
-            )}
+            <EmbedPanelView panel={slide.panel} />
           </div>
         ))}
       </div>

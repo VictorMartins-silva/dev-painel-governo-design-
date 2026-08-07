@@ -11,8 +11,6 @@ export function toAdminPath(pathname: string): string {
   if (collectionMatch) return `/admin/colecoes/${collectionMatch[1]}`;
   if (pathname === "/sala") return "/admin/colecoes";
 
-  if (pathname.startsWith("/indicadores")) return "/admin/indicadores";
-
   return "/admin/paineis";
 }
 
@@ -24,8 +22,6 @@ export function toPublicPath(pathname: string): string {
   const collectionMatch = pathname.match(/^\/admin\/colecoes\/([^/]+)$/);
   if (collectionMatch && collectionMatch[1] !== "novo") return `/sala/${collectionMatch[1]}`;
   if (pathname === "/admin/colecoes") return "/sala";
-
-  if (pathname.startsWith("/admin/indicadores")) return "/indicadores";
 
   return "/paineis";
 }

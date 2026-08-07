@@ -4,13 +4,11 @@ import { ModeSwitch } from "../components/nav/ModeSwitch";
 import { ADMIN_NAV_GROUPS } from "../components/nav/navItems";
 import { panelStore } from "./store/PanelStore";
 import { collectionStore } from "./store/CollectionStore";
-import { COMPONENT_CATALOG } from "../config/componentCatalog";
 import styles from "./AdminLayout.module.css";
 
 const NAV_ITEM_COUNT: Record<string, () => number> = {
   paineis: () => panelStore.list().length,
   colecoes: () => collectionStore.list().length,
-  componentes: () => Object.keys(COMPONENT_CATALOG).length,
 };
 
 export default function AdminLayout() {

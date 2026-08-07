@@ -5,6 +5,16 @@
   min-height: 100vh;
 }
 
+.note {
+  margin: 0;
+  padding: var(--pg-spacing-2) var(--pg-spacing-3);
+  border: 1px solid var(--pg-color-border);
+  border-radius: var(--pg-radius-sm);
+  background-color: var(--pg-color-brandSoft);
+  color: var(--pg-color-textSecondary);
+  font-size: var(--pg-typography-size-sm);
+}
+
 .toolbar {
   display: flex;
   justify-content: flex-end;

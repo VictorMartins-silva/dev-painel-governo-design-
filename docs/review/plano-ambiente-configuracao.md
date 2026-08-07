@@ -1,5 +1,10 @@
 # Plano — Ambiente de Configuração de Painéis
 
+> **Parcialmente superado.** Este plano cobre o editor visual de painéis nativos (seções,
+> componentes, `listIndicators()`) removido do MVP — ver [`README.md`](../../README.md), seção
+> "Ambiente de configuração", para o editor atual (metadados + provider de embed). As seções 6
+> (migração para Fabric/API) e 7 (riscos) continuam válidas para o caminho de dados do catálogo.
+
 > **Status:** aprovado para implementação · **Data:** 2026-08-04
 > **Escopo:** editor administrativo para criar e editar páginas (painéis) atribuindo tipo de componente + indicador, com dados mock e caminho de migração para Fabric via API.
 

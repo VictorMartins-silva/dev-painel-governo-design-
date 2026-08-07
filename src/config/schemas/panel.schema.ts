@@ -1,21 +1,11 @@
 import { z } from "zod";
-import { PANEL_LAYOUTS } from "../../domain/types";
-import { filterConfigSchema } from "./filters.schema";
-import { componentConfigSchema } from "./components.schema";
 
-export const SUPPORTED_SCHEMA_VERSION = 1;
+export const SUPPORTED_SCHEMA_VERSION = 3;
 
 const panelMetadataSchema = z.object({
   source: z.string().min(1, "Campo obrigatório"),
   owner: z.string().min(1, "Campo obrigatório"),
   methodologyNote: z.string().optional(),
-});
-
-export const panelSectionSchema = z.object({
-  id: z.string().min(1, "Campo obrigatório"),
-  title: z.string().min(1, "Campo obrigatório"),
-  layout: z.enum(PANEL_LAYOUTS),
-  components: z.array(componentConfigSchema).min(1, "Adicione pelo menos um componente"),
 });
 
 /** Painéis "kiosk" são desenhados para telão (fontes maiores, só o essencial) e não
@@ -36,15 +26,17 @@ const panelBaseSchema = {
   variantOf: z.string().optional(),
 };
 
-export const nativePanelConfigSchema = z.object({
-  ...panelBaseSchema,
-  kind: z.literal("native"),
-  filters: z.array(filterConfigSchema).default([]),
-  sections: z.array(panelSectionSchema).min(1, "Adicione pelo menos uma seção"),
-});
-
-/** Provedores de embed suportados; hoje só "Publicar na web" do Power BI. */
-export const EMBED_PROVIDERS = ["powerbi-public"] as const;
+/**
+ * Provedores de embed suportados — ambos são, do ponto de vista da aplicação, só uma URL de
+ * iframe do Power BI; o que muda é quem pode ver:
+ * - "powerbi-public": Arquivo → Publicar na Web. Iframe público, sem login, sem RLS/OLS.
+ * - "powerbi-secure": Arquivo → Incorporar relatório → Site ou portal ("Secure Embed"/"embed for
+ *   your organization"). Exige que quem está vendo esteja autenticado no Power BI do tenant —
+ *   nesse caso a visualização respeita RLS/OLS e permissões reais, sem precisar de service
+ *   principal nem de backend emitindo token. No kiosk (telão sem interação humana), isso só
+ *   funciona se o navegador que roda a apresentação já tiver uma sessão Power BI persistida.
+ */
+export const EMBED_PROVIDERS = ["powerbi-public", "powerbi-secure"] as const;
 export type EmbedProvider = (typeof EMBED_PROVIDERS)[number];
 
 export const embedConfigSchema = z.object({
@@ -52,31 +44,13 @@ export const embedConfigSchema = z.object({
   url: z.string().min(1, "Campo obrigatório"),
 });
 
-export const externalPanelConfigSchema = z.object({
+export const panelConfigSchema = z.object({
   ...panelBaseSchema,
-  kind: z.literal("external"),
   embed: embedConfigSchema,
 });
 
-const panelConfigUnionSchema = z.discriminatedUnion("kind", [
-  nativePanelConfigSchema,
-  externalPanelConfigSchema,
-]);
-
-/** Configurações antigas sem `kind` são tratadas como `native` (retrocompatibilidade com o overlay do localStorage). */
-export const panelConfigSchema = z.preprocess((input) => {
-  if (input && typeof input === "object" && !("kind" in (input as Record<string, unknown>))) {
-    return { ...(input as Record<string, unknown>), kind: "native" };
-  }
-  return input;
-}, panelConfigUnionSchema);
-
-export type PanelSectionConfig = z.infer<typeof panelSectionSchema>;
 export type EmbedConfig = z.infer<typeof embedConfigSchema>;
-export type NativePanelConfig = z.infer<typeof nativePanelConfigSchema>;
-export type ExternalPanelConfig = z.infer<typeof externalPanelConfigSchema>;
-export type PanelConfig = z.infer<typeof panelConfigUnionSchema>;
-export type PanelKind = PanelConfig["kind"];
+export type PanelConfig = z.infer<typeof panelConfigSchema>;
 
 export function parsePanelConfig(input: unknown) {
   return panelConfigSchema.safeParse(input);

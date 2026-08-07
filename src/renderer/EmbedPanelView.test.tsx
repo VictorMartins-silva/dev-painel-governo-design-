@@ -1,14 +1,13 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { EmbedPanelView } from "./EmbedPanelView";
-import type { ExternalPanelConfig } from "../config/schemas/panel.schema";
+import type { PanelConfig } from "../config/schemas/panel.schema";
 
-function buildExternalPanel(overrides: Partial<ExternalPanelConfig> = {}): ExternalPanelConfig {
+function buildPublicPanel(overrides: Partial<PanelConfig> = {}): PanelConfig {
   return {
-    schemaVersion: 1,
-    kind: "external",
-    id: "painel-externo",
-    title: "Painel externo",
+    schemaVersion: 3,
+    id: "painel-publico",
+    title: "Painel público",
     description: "Descrição",
     theme: "Tema",
     tags: [],
@@ -19,16 +18,34 @@ function buildExternalPanel(overrides: Partial<ExternalPanelConfig> = {}): Exter
   };
 }
 
-describe("EmbedPanelView", () => {
+function buildSecurePanel(overrides: Partial<PanelConfig> = {}): PanelConfig {
+  return {
+    schemaVersion: 3,
+    id: "painel-seguro",
+    title: "Painel seguro",
+    description: "Descrição",
+    theme: "Tema",
+    tags: [],
+    metadata: { source: "Power BI", owner: "Equipe" },
+    presentation: "default",
+    embed: {
+      provider: "powerbi-secure",
+      url: "https://app.powerbi.com/reportEmbed?reportId=abc&ctid=def",
+    },
+    ...overrides,
+  };
+}
+
+describe("EmbedPanelView — powerbi-public", () => {
   beforeEach(() => {
     window.localStorage.clear();
   });
 
   it("renderiza o iframe com sandbox, título acessível e link para abrir em nova aba", () => {
-    const panel = buildExternalPanel();
+    const panel = buildPublicPanel();
     render(<EmbedPanelView panel={panel} />);
 
-    const iframe = screen.getByTitle("Painel externo");
+    const iframe = screen.getByTitle("Painel público");
     expect(iframe.tagName).toBe("IFRAME");
     expect(iframe).toHaveAttribute("src", panel.embed.url);
     expect(iframe).toHaveAttribute(
@@ -42,24 +59,44 @@ describe("EmbedPanelView", () => {
     expect(link).toHaveAttribute("target", "_blank");
   });
 
+  it("não mostra nenhum aviso de login", () => {
+    render(<EmbedPanelView panel={buildPublicPanel()} />);
+    expect(screen.queryByRole("status")).not.toBeInTheDocument();
+  });
+
   it("mostra um ErrorState quando o domínio da URL não está na allowlist", () => {
     window.localStorage.setItem(
       "admin.settings",
       JSON.stringify({ allowedEmbedDomains: ["outro-dominio.com"] }),
     );
-    const panel = buildExternalPanel();
+    const panel = buildPublicPanel();
     render(<EmbedPanelView panel={panel} />);
 
     expect(screen.getByRole("alert")).toBeInTheDocument();
-    expect(screen.queryByTitle("Painel externo")).not.toBeInTheDocument();
+    expect(screen.queryByTitle("Painel público")).not.toBeInTheDocument();
   });
 
   it("mostra um ErrorState quando a URL não usa https", () => {
-    const panel = buildExternalPanel({
+    const panel = buildPublicPanel({
       embed: { provider: "powerbi-public", url: "http://app.powerbi.com/view?r=abc123" },
     });
     render(<EmbedPanelView panel={panel} />);
 
     expect(screen.getByRole("alert")).toBeInTheDocument();
+  });
+});
+
+describe("EmbedPanelView — powerbi-secure", () => {
+  beforeEach(() => {
+    window.localStorage.clear();
+  });
+
+  it("renderiza o iframe e o aviso de que exige login no Power BI", () => {
+    const panel = buildSecurePanel();
+    render(<EmbedPanelView panel={panel} />);
+
+    const iframe = screen.getByTitle("Painel seguro");
+    expect(iframe).toHaveAttribute("src", panel.embed.url);
+    expect(screen.getByRole("status")).toHaveTextContent(/Requer login no Power BI/);
   });
 });

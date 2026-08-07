@@ -6,7 +6,6 @@ import { AsyncBoundary } from "../../components/feedback/AsyncBoundary";
 import { ErrorState } from "../../components/feedback/ErrorState";
 import { usePanelConfig } from "../../data/hooks/usePanelConfig";
 import { usePanelFreshness } from "../../data/hooks/usePanelFreshness";
-import { ConfigRenderer } from "../../renderer/ConfigRenderer";
 import { EmbedPanelView } from "../../renderer/EmbedPanelView";
 
 export default function PanelPage() {
@@ -41,11 +40,7 @@ export default function PanelPage() {
             ]}
           />
           <PageHeader title={panel.title} description={panel.description} />
-          {panel.kind === "external" ? (
-            <EmbedPanelView panel={panel} />
-          ) : (
-            <ConfigRenderer panelId={panel.id} config={panel} />
-          )}
+          <EmbedPanelView panel={panel} />
           <MetadataBlock
             source={panel.metadata.source}
             referencePeriod={freshness?.referencePeriod}

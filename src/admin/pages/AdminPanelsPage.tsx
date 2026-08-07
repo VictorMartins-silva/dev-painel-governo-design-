@@ -12,6 +12,11 @@ const ORIGIN_LABEL: Record<PanelOrigin, string> = {
   custom: "Novo",
 };
 
+const PROVIDER_LABEL: Record<PanelConfig["embed"]["provider"], string> = {
+  "powerbi-public": "Publicar na Web",
+  "powerbi-secure": "Secure Embed",
+};
+
 export default function AdminPanelsPage() {
   const [, setVersion] = useState(0);
   const [importError, setImportError] = useState<string | null>(null);
@@ -106,10 +111,7 @@ export default function AdminPanelsPage() {
               }}
             />
             <Link to="/admin/paineis/novo" className={styles.primaryButton}>
-              Novo painel nativo
-            </Link>
-            <Link to="/admin/paineis/novo?kind=external" className={styles.secondaryButton}>
-              Novo painel externo
+              Novo painel
             </Link>
           </>
         }
@@ -133,9 +135,9 @@ export default function AdminPanelsPage() {
                   <span className={`${styles.badge} ${styles[origin]}`}>
                     {ORIGIN_LABEL[origin]}
                   </span>
-                  {config.kind === "external" && (
-                    <span className={styles.externalBadge}>Painel externo</span>
-                  )}
+                  <span className={styles.externalBadge}>
+                    {PROVIDER_LABEL[config.embed.provider]}
+                  </span>
                 </div>
                 <span className={styles.meta}>
                   {config.id} · {config.theme}

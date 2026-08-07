@@ -1,11 +1,10 @@
 import { describe, expect, it } from "vitest";
-import type { NativePanelConfig } from "../../config/schemas/panel.schema";
+import type { PanelConfig } from "../../config/schemas/panel.schema";
 import { readPanelConfigFile, serializePanelConfig } from "./exportImport";
 
-function buildPanel(overrides: Partial<NativePanelConfig> = {}): NativePanelConfig {
+function buildPanel(overrides: Partial<PanelConfig> = {}): PanelConfig {
   return {
-    schemaVersion: 1,
-    kind: "native",
+    schemaVersion: 3,
     id: "painel-teste",
     title: "Painel de teste",
     description: "Descrição do painel de teste.",
@@ -16,23 +15,7 @@ function buildPanel(overrides: Partial<NativePanelConfig> = {}): NativePanelConf
       owner: "Equipe de Testes",
     },
     presentation: "default",
-    filters: [],
-    sections: [
-      {
-        id: "secao",
-        title: "Seção",
-        layout: "grid-2",
-        components: [
-          {
-            id: "card",
-            type: "indicator-card",
-            title: "Indicador",
-            metric: "populacao_total",
-            format: "integer",
-          },
-        ],
-      },
-    ],
+    embed: { provider: "powerbi-public", url: "https://app.powerbi.com/view?r=abc" },
     ...overrides,
   };
 }

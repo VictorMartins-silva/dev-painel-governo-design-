@@ -1,53 +1,44 @@
-# Painel de Governo — Protótipo
+# Painel de Governo — MVP
 
-Protótipo de uma plataforma padronizada de visualização de indicadores públicos municipais,
-construída sobre o princípio de **painéis por configuração**: uma única página renderizadora
-interpreta arquivos de configuração validados por schema e monta os painéis a partir de um
-registry fechado de componentes analíticos. O objetivo é provar que um segundo painel pode ser
-adicionado **apenas por configuração + dados**, sem escrever JSX ou CSS novos.
+Plataforma de descoberta e consumo de indicadores públicos municipais. O produto **não é** um
+motor próprio de dashboards — é uma camada sobre o Power BI: catálogo unificado de painéis, lentes
+de navegação (Tema, Secretaria, ODS), Power BI como mecanismo de visualização (embed público ou
+Secure Embed autenticado) e modo kiosk/carrossel para telões e salas de situação.
 
-## Escopo da validação
+## Escopo do MVP
 
-O objetivo desta versão é validar o **conceito operacional**, e não prontidão para produção:
+Esta versão corresponde à Fase 1 de um roadmap de 4 fases; construir um motor de renderização
+próprio, um catálogo de indicadores com relações automáticas indicador↔painel, ou IA sobre os
+dados são fases posteriores, deliberadamente fora deste ciclo.
+
+O que o MVP entrega:
 
 - um único índice de painéis, navegado por lentes combináveis de Tema, Secretaria e ODS;
-- navegação dos painéis para os detalhes de seus indicadores;
-- criação e edição de painéis dentro da própria ferramenta;
-- composição restrita a quatro componentes fixos e padronizados;
-- posicionamento definido por seções ordenadas e layouts `grid-2`, `grid-3`, `grid-4` ou `stack`;
-- preview e publicação usando o mesmo renderizador;
-- painel salvo aparecendo imediatamente na área pública da aplicação no mesmo navegador.
-
-Nesta fase, **publicar** significa validar e salvar no armazenamento local do protótipo, tornando o
-painel acessível no catálogo e na rota pública da própria ferramenta. Não significa ainda publicação
-multiusuário com backend, autenticação, aprovação, histórico ou operação produtiva.
-
-O escopo completo, os critérios de sucesso e o estado de cada capacidade estão documentados em
-[`docs/review/escopo-do-prototipo.md`](docs/review/escopo-do-prototipo.md). A próxima etapa é melhorar a experiência
-da página de configuração até chegar às telas e aos comportamentos necessários para apresentar esse
-conceito com clareza.
+- busca global sobre esse índice;
+- criação e edição de painéis dentro da própria ferramenta — metadados de catálogo + o mecanismo
+  de embed, sem editor visual de componentes;
+- todo painel é um relatório Power BI incorporado por iframe, por um de dois mecanismos:
+  **Publicar na Web** (público, sem login) ou **Secure Embed** (Arquivo → Incorporar relatório →
+  Site ou portal — exige que quem vê esteja autenticado no Power BI do tenant, respeitando RLS/OLS
+  e permissões reais, sem backend nem service principal);
+- modo kiosk/carrossel (`/sala`) para telões e salas de situação, com coleções de painéis e
+  temporização configurável.
 
 Documentação relacionada:
 
-| Documento                                                                                          | Para quê                                                                      |
-| -------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
-| [`docs/review/escopo-do-prototipo.md`](docs/review/escopo-do-prototipo.md)                         | O que a validação precisa provar e o que está deliberadamente fora dela.      |
-| [`docs/review/plano-ambiente-configuracao.md`](docs/review/plano-ambiente-configuracao.md)         | Arquitetura do `/admin`, opções de deploy e migração para Fabric/API.         |
-| [`docs/review/relatorio-avaliacao-aplicacao.html`](docs/review/relatorio-avaliacao-aplicacao.html) | Avaliação técnica com números verificados, dívida técnica e roadmap.          |
-| [`docs/review/discordancias-documentacao.md`](docs/review/discordancias-documentacao.md)           | Divergências apuradas entre a documentação e o código, e o que foi corrigido. |
+| Documento                                                                                  | Para quê                                                                                                                                    |
+| ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| [`docs/review/plano-ambiente-configuracao.md`](docs/review/plano-ambiente-configuracao.md) | Arquitetura do `/admin` original e migração para Fabric/API (parcialmente superada por este README — ver seção "Ambiente de configuração"). |
+| [`docs/plano-navegacao.md`](docs/plano-navegacao.md)                                       | Arquitetura de navegação (chrome consumo × configuração) — implementada.                                                                    |
 
 ## Stack
 
 - **Vite + React 18 + TypeScript (`strict: true`)**
 - **React Router** (SPA, sem SSR)
-- **Apache ECharts** (`echarts/core` modular — só `EChartsBase` importa a lib)
 - **Zod** para validação de configuração em runtime
 - **CSS Modules** + design tokens em custom properties
 - **Vitest + React Testing Library**
 - **ESLint (strict + stylistic) + Prettier**
-
-O racional completo das decisões técnicas está no plano de execução mantido no acervo operacional
-do projeto, fora deste repositório.
 
 ## Como rodar
 
@@ -55,11 +46,6 @@ Pré-requisito: Node.js na faixa declarada em `engines` (`^22.22.2 || ^24.15.0 |
 do `jsdom` (30.x), a dependência mais restritiva. O projeto é desenvolvido e testado em Node 24 —
 há um `.nvmrc` na raiz, então gerenciadores de versão (`fnm`, `nvm`) selecionam o runtime correto
 automaticamente ao entrar na pasta.
-
-Node 18 **não funciona mais**: o `jsdom` daquela época injetava a própria classe `AbortSignal` no
-escopo global, e o `undici` embutido no Node moderno recusa esse objeto ao construir um `Request`.
-Isso derrubava os testes que disparam navegação do React Router (fluxos do admin). O `jsdom` 30
-passou a reutilizar os globais do runtime e o problema deixou de existir.
 
 As faixas em `package.json` usam `^`, então quem garante a reprodutibilidade é o
 `package-lock.json`.
@@ -81,102 +67,88 @@ npm run tokens:build # regenera src/styles/tokens.css a partir de tokens.ts
 `.prettierignore` e o gerador não emite saída formatada, então `npm run format:check` acusa
 `tokens.css` depois de qualquer um desses comandos — é ruído conhecido, não regressão.
 
-Rotas disponíveis: `/`, `/paineis`, `/paineis/:id`, `/indicadores`, `/indicadores/:id`, `/sala`,
-`/sala/:id`, `/admin` (redireciona para `/admin/paineis`), `/admin/paineis`,
-`/admin/paineis/novo`, `/admin/paineis/:id`, `/admin/indicadores`, `/admin/componentes`,
-`/admin/colecoes`, `/admin/colecoes/novo`, `/admin/colecoes/:id`, `/admin/configuracoes`. O
-cardápio de componentes fica dentro da área de configuração, não na navegação pública.
-`/dev/galeria` redireciona para `/admin/componentes`. As rotas são registradas incondicionalmente
-em `src/app/router.tsx`.
+Rotas disponíveis: `/`, `/paineis`, `/paineis/:id`, `/sala`, `/sala/:id`, `/sala/:id/apresentar`
+(kiosk, sem chrome), `/admin` (redireciona para `/admin/paineis`), `/admin/paineis`,
+`/admin/paineis/novo`, `/admin/paineis/:id`, `/admin/colecoes`, `/admin/colecoes/novo`,
+`/admin/colecoes/:id`, `/admin/configuracoes`. As rotas são registradas incondicionalmente em
+`src/app/router.tsx`.
 
-## Arquitetura em 4 camadas
+## Arquitetura
 
 ```
-Páginas (Home, Catálogo, PanelPage, IndicatorDetailPage)
+Páginas (Home, Catálogo, PanelPage, Coleções, Kiosk)
     ↓
-Renderizador de configuração (ConfigRenderer + ComponentRegistry + FilterContext)
-    ↓
-Biblioteca de componentes (analíticos + estruturais + feedback)   Camada de dados (DataProvider + hooks)
-    ↓                                                                  ↓
-Design system (tokens, tema ECharts, CSS Modules)                 MockDataProvider (JSON local)
+EmbedPanelView (iframe: Publicar na Web · Secure Embed)
+    ↓                                                              ↓
+Design system (tokens, CSS Modules)                    Camada de dados (DataProvider + hooks)
+                                                                    ↓
+                                                        MockDataProvider (JSON local)
 ```
 
-- **`ComponentRegistry`** (`src/renderer/ComponentRegistry.tsx`): mapa fechado `type → componente`.
-  Um `type` de componente sem entrada no registry renderiza um `ErrorState` localizado — a página
-  não quebra.
-- **`ConfigRenderer`** (`src/renderer/ConfigRenderer.tsx`): recebe a config do painel como
-  `unknown`, valida com `panelConfigSchema` (Zod) e só então renderiza. Config inválida produz um
-  erro estruturado com os `issues` do Zod (caminho + mensagem), nunca um crash.
-- **`DataProvider`** (`src/data/provider.ts`): interface única de acesso a dados. A implementação
-  atual é `MockDataProvider` (JSON local em `src/data/mock/datasets/`, descoberto automaticamente
-  via `import.meta.glob` — nenhum arquivo precisa ser editado para registrar um novo dataset).
-  Trocar por outra implementação (ex.: uma `HttpDataProvider` futura) é uma troca de 1 linha em
-  `src/main.tsx` (`new MockDataProvider()` → `new HttpDataProvider()`); veja também
+Não existe mais um motor de renderização próprio: um painel é metadados de catálogo (`PanelConfig`)
+mais um bloco `embed` (`{ provider, url }`) que aponta para um relatório Power BI. Quem desenha a
+visualização é o próprio relatório publicado no Power BI — a aplicação só descobre, organiza e
+incorpora.
+
+- **`EmbedPanelView`** (`src/renderer/EmbedPanelView.tsx`): renderiza qualquer painel como um
+  iframe da URL configurada, validada contra a allowlist de domínios em `/admin/configuracoes`
+  (`src/domain/embedUrl.ts`). Os dois providers de embed usam exatamente o mesmo mecanismo — a
+  diferença está inteiramente do lado do Power BI, não do app:
+  - `powerbi-public`: URL de "Publicar na Web" — pública, sem login, sem RLS/OLS.
+  - `powerbi-secure`: URL de "Incorporar relatório → Site ou portal" ("Secure Embed"/"embed for
+    your organization") — exige que quem abre esteja autenticado no Power BI do tenant (login via
+    cookie de sessão, dentro do próprio iframe); a partir daí, RLS/OLS e permissões do relatório
+    são aplicadas normalmente. Não depende de service principal, embed token nem backend — só do
+    navegador de quem está vendo já ter (ou conseguir fazer) login no Power BI. No kiosk, isso
+    significa que o navegador da apresentação precisa manter uma sessão Power BI logada.
+- **`DataProvider`** (`src/data/provider.ts`): interface única de acesso a dados —
+  `listPanels`/`getPanelConfig`/`getPanelFreshness`, nada além disso; o catálogo não precisa saber
+  como o relatório é renderizado. A implementação atual é `MockDataProvider` (painéis em
+  `src/config/panels/`, sobrepostos pelo `PanelStore`; frescor em
+  `src/data/mock/datasets/freshness/<panelId>.json`). Trocar por outra implementação (ex.: uma
+  `FabricDataProvider` futura) é uma troca de 1 linha em `src/main.tsx`; veja
   `src/data/provider-swap.test.tsx`, que prova isso com um stub mínimo.
-- **`getPanelFreshness(panelId)`** (`DataProvider`): período de referência e data de atualização
-  de um painel **não** são campos configuráveis em `PanelConfig` — vêm sempre da origem de dados.
-  `MockDataProvider` resolve isso com fixtures em `src/data/mock/datasets/freshness/<panelId>.json`
-  (simulando a tabela de monitoramento de atualizações do Fabric); em produção, o
-  `FabricDataProvider` consultará essa tabela real, que dispara automaticamente quando há dado
-  novo. `PanelPage` consome via o hook `usePanelFreshness`.
-- **`FilterContext`**: estado dos filtros globais de um painel. Os componentes analíticos nunca
-  leem filtros diretamente — os hooks de dados combinam a query da config com os filtros ativos do
-  contexto.
+- **`getPanelFreshness(panelId)`**: período de referência e data de atualização de um painel vêm
+  sempre da origem de dados, nunca de um campo editável em `PanelConfig` — em produção, viriam da
+  tabela de monitoramento de atualizações do Fabric. `PanelPage` consome via o hook
+  `usePanelFreshness`.
 
 ## Como criar um novo painel
 
-Prova de arquitetura: o Painel 2 (Demografia) foi criado tocando **apenas**
-`src/config/panels/demografia.panel.ts`, os fixtures em `src/data/mock/datasets/` e uma linha de
-registro em `src/config/panels/index.ts` — nenhum componente, página ou CSS novos.
+1. No Power BI, publique o relatório pelo mecanismo desejado:
+   - **Publicar na Web**: Arquivo → Publicar na Web. Gera uma URL pública.
+   - **Secure Embed**: no relatório, no Serviço Power BI → Arquivo → Incorporar relatório → Site ou
+     portal. Gera uma URL/iframe que só abre para quem estiver logado no Power BI do tenant.
+2. Em `/admin/paineis/novo`, preencha os metadados de catálogo (id, título, descrição, tema, tags,
+   fonte, responsável), escolha o provider e cole a URL gerada no passo anterior.
+3. Salve. O painel aparece imediatamente no catálogo público (`/paineis`) e pode ser adicionado a
+   uma coleção em `/admin/colecoes` para aparecer no kiosk (`/sala`).
 
-1. Crie os arquivos de mock em `src/data/mock/datasets/` (metrics/categorical/tables conforme o
-   conteúdo do painel, mais um registro por indicador em `indicators/<id>.json` — ver
-   `indicator.schema.ts` para os campos obrigatórios de governança — e
-   `filter-options/<panelId>/` se necessário, e `freshness/<id>.json` com
-   `referencePeriod`/`updatedAt`). Os arquivos são descobertos automaticamente pelo
-   `MockDataProvider` — não é preciso importar nada manualmente.
-2. Crie `src/config/panels/<id>.panel.ts` exportando um objeto `PanelConfig` (filtros, seções,
-   componentes — só os 4 tipos do registry: `indicator-card`, `time-series`, `bar-chart`,
-   `data-table`).
-3. Registre o painel em `src/config/panels/index.ts` (adicione ao array `panelRegistry`).
-4. Acesse `/paineis/<id>` — pronto.
-
-## Como adicionar um novo tipo de componente
-
-1. Crie o componente presentacional em `src/components/<categoria>/` (recebe dados já resolvidos
-   via props, nunca busca dados sozinho).
-2. Adicione o schema Zod do novo tipo em `src/config/schemas/components.schema.ts` e inclua-o no
-   `componentConfigSchema` (`z.discriminatedUnion`).
-3. Crie um container em `src/renderer/containers.tsx` que usa o hook de dados apropriado
-   (`useIndicator`/`useTimeSeries`/`useCategoricalSeries`/`useTable`, ou um novo hook em
-   `src/data/hooks/`) e envolve o componente presentacional em `<AsyncBoundary>`.
-4. Registre o container em `componentRegistry` (`src/renderer/ComponentRegistry.tsx`).
-
-Sem essas 4 alterações, um `type` presente na config mas ausente no registry renderiza um
-`ErrorState` localizado em vez de quebrar a página — o comportamento é testado em
-`src/renderer/ConfigRenderer.test.tsx`.
+Alternativamente, crie um `PanelConfig` estático em `src/config/panels/<id>.panel.ts` e registre em
+`src/config/panels/index.ts` — é o mesmo caminho usado pelos dois painéis de exemplo do repositório
+(`demografia`, `trabalho-emprego`), cujas URLs de embed são placeholders a substituir por
+relatórios reais.
 
 ## Navegação
 
 Os dois ambientes têm chrome estruturalmente diferente, para que se reconheçam à distância:
 
-- **Consumo** (`/`, `/paineis`, `/indicadores`, `/sala`): topbar horizontal com 3 destinos, busca
-  global (`src/components/nav/GlobalSearch.tsx`, navega para `/paineis?q=`) e o botão
+- **Consumo** (`/`, `/paineis`, `/sala`): topbar horizontal com 2 destinos, busca global
+  (`src/components/nav/GlobalSearch.tsx`, navega para `/paineis?q=`) e o botão
   **⚙ Configurar** à direita — é troca de modo, não item de conteúdo.
-- **Configuração** (`/admin/*`): sidebar vertical agrupada por natureza (Conteúdo, Catálogo,
-  Sistema — `src/components/nav/navItems.ts`), com contadores, e o botão **Ver como público ↗**
-  na faixa de aviso do topo.
+- **Configuração** (`/admin/*`): sidebar vertical agrupada por natureza (Conteúdo: Painéis,
+  Coleções; Sistema: Configurações — `src/components/nav/navItems.ts`), com contadores, e o botão
+  **Ver como público ↗** na faixa de aviso do topo.
 
 Os itens de navegação usam `NavLink` (`src/components/nav/NavItem.tsx`), que já resolve estado
-ativo e `aria-current="page"` por prefixo de rota. `src/components/nav/modeSwitch.ts` mapeia a
+ativo e `aria-current="page"` por prefixo de rota. `src/components/nav/modeSwitchPaths.ts` mapeia a
 rota atual para a equivalente no outro ambiente (ex.: `/admin/paineis/:id` ↔ `/paineis/:id`).
 
 ## Ambiente de configuração (`/admin`)
 
-Editor administrativo para criar e editar painéis sem escrever código — formulário estruturado
-que produz objetos `PanelConfig` válidos, mais um preview ao vivo reaproveitando o próprio
-`ConfigRenderer`. Acesso livre em `/admin` (redireciona para `/admin/paineis`), sem autenticação
-nesta versão (aviso fixo no topo do layout do admin lembra disso).
+Editor administrativo para criar e editar painéis sem escrever código. Acesso livre em `/admin`
+(redireciona para `/admin/paineis`), sem autenticação nesta versão (aviso fixo no topo do layout do
+admin lembra disso).
 
 - **`PanelStore`** (`src/admin/store/PanelStore.ts`): camada de persistência com overlay —
   painéis salvos em `localStorage` sobrepõem os estáticos do `panelRegistry` por id. Um painel
@@ -186,42 +158,28 @@ nesta versão (aviso fixo no topo do layout do admin lembra disso).
   `MockDataProvider.listPanels()`/`getPanelConfig()` consultam o `PanelStore`, então as páginas
   públicas (`/paineis`, `/paineis/:id`) refletem imediatamente as edições feitas no admin.
 - **`AdminPanelsPage`** (`src/admin/pages/AdminPanelsPage.tsx`): lista painéis estáticos e custom
-  com badge de origem (_Original_/_Modificado_/_Novo_); ações de criar, duplicar, excluir (só
-  custom), restaurar original, exportar (download de `<id>.panel.json`) e importar (upload +
-  validação Zod + confirmação em caso de conflito de id).
-- **`PanelEditorPage`** (`src/admin/pages/PanelEditorPage.tsx`): editor em split view — formulário
-  à esquerda (`PanelMetadataForm`, `FiltersForm`, `SectionsForm` → `ComponentForm` por componente)
-  e `EditorPreview` à direita, que renderiza o draft atual através do `ConfigRenderer` com
-  debounce de 300 ms. Config inválida aparece no preview como o mesmo `ErrorState` estruturado
-  (issues do Zod) usado pelas páginas públicas — o preview também serve de feedback de validação.
-  `ComponentForm` traz campos condicionais por tipo de componente e o `IndicatorSelect` (busca +
-  filtro de compatibilidade tipo ↔ indicador via `listIndicators()`); colunas de `data-table` podem
-  ser pré-preenchidas a partir do schema real do dataset selecionado.
+  com badge de origem (_Original_/_Modificado_/_Novo_) e de provider de embed; ações de criar,
+  duplicar, excluir (só custom), restaurar original, exportar (download de `<id>.panel.json`) e
+  importar (upload + validação Zod + confirmação em caso de conflito de id).
+- **`PanelEditorPage`** (`src/admin/pages/PanelEditorPage.tsx` + `PanelForm`): formulário único —
+  metadados de catálogo, um seletor de provider (Publicar na Web / Secure Embed) e uma única URL de
+  embed (o rótulo/dica do campo muda conforme o provider), com pré-visualização que reaproveita o
+  próprio `EmbedPanelView`. Sem seções, sem componentes, sem seleção de indicador — quem monta a
+  visualização é o relatório Power BI.
 - **Confirmações destrutivas**: excluir e restaurar pedem confirmação (`window.confirm`) na
   listagem. Sair do editor com alterações não salvas — pelo link "Voltar", por qualquer navegação
   do React Router ou fechando/recarregando a aba — também pede confirmação (`useBlocker` do
   React Router + `beforeunload`); sem alterações pendentes, a saída é imediata.
-- **Catálogo de indicadores**: `listIndicators()` (`DataProvider`) devolve `IndicatorCatalogEntry[]`
-  — um registro por indicador que une o técnico (`shapes`, `dimensions`, `datasets`,
-  `defaultFormat`) e a governança (`definition`, `periodicity`, `granularity`, `owner`,
-  `updatedAt`). É usado pelo `IndicatorSelect` no editor, pelo índice público em `/indicadores` e
-  pela curadoria em `/admin/indicadores` (indicadores órfãos, referências quebradas e fixtures
-  inválidas), que também alimenta avisos não bloqueantes no editor quando um componente referencia
-  um indicador fora do catálogo.
-
-O caminho de migração para Fabric/API está documentado em
-`docs/review/plano-ambiente-configuracao.md` — `PanelStore` e `listIndicators()` são os dois pontos de
-troca (localStorage → endpoints HTTP, mock → catálogo real).
+- **Coleções** (`src/admin/store/CollectionStore.ts`, `/admin/colecoes`): sequências curadas de
+  painéis (por id) com temporização própria, consumidas pelo kiosk em `/sala/:id/apresentar`.
 
 ## Testes
 
-142 testes cobrindo: schemas Zod (casos válidos e inválidos), `MockDataProvider` (filtro em
-memória, soma por período, erros simulados), hooks de dados (4 estados: loading/success/empty/
-error), componentes analíticos e de filtro (RTL), o renderizador (config sintética, config
-inválida, componente não registrado, refetch ao mudar filtro), os dois painéis reais (schema +
-integração end-to-end), as páginas de navegação (Home, Catálogo, Detalhe do indicador) e o
-ambiente de configuração (`PanelStore`, editor por etapa, preview ao vivo e os fluxos integrados
-criar → salvar → renderizar / editar estático → sombrear → restaurar).
+84 testes cobrindo: schemas Zod (casos válidos e inválidos, os dois providers de embed),
+`MockDataProvider` (catálogo, frescor), `EmbedPanelView` (iframe, validação de domínio/https, aviso
+de login no provider `powerbi-secure`), as páginas de navegação (Home, Catálogo), o kiosk
+(`resolveCollectionSlides`) e o ambiente de configuração (`PanelStore`, editor, e os fluxos
+integrados criar → salvar → renderizar / editar estático → sombrear → restaurar).
 
 ```bash
 npm run test
@@ -230,48 +188,65 @@ npm run test
 `@vitest/coverage-v8` está instalado, mas não há script `test:coverage` nem bloco `coverage` em
 `vite.config.ts` — nenhuma métrica de cobertura é produzida hoje.
 
-## Estados de carregamento, vazio e erro
+## Limitações conhecidas do MVP
 
-Todo hook de dados retorna `{ status: 'loading' | 'success' | 'empty' | 'error', ... }`;
-`<AsyncBoundary>` traduz isso em `LoadingState` / `EmptyState` / `ErrorState` de forma consistente
-em todos os componentes analíticos. Os 4 estados de cada componente podem ser inspecionados
-manualmente em `/admin/componentes` (cardápio de componentes, substituto do Storybook neste protótipo) ou via os filtros reais do
-Painel "Trabalho e Emprego": selecionar Sexo = Masculino/Feminino produz um estado vazio real
-(os indicadores de resumo não são segmentados por sexo/faixa etária nesse painel — ver nota
-metodológica na própria página). O metric `__mock_error__` (indicador) e dataset `__mock_error__`
-(tabela) forçam um erro simulado em qualquer painel.
-
-## Limitações conhecidas do protótipo
-
-- Dados 100% fictícios, gerados por `scripts/generate-mock-fixtures.mjs` (determinístico —
-  rode `node scripts/generate-mock-fixtures.mjs` para regenerar).
-- `MockDataProvider` soma linhas que compartilham o mesmo período após aplicar os filtros (ex.:
-  somar `sexo=masculino` + `sexo=feminino` reconstrói o total) — é a única forma de agregação
-  dinâmica no protótipo; fora isso, os mocks já vêm no grain de exibição.
+- **Secure Embed depende de sessão de navegador** — ver checklist completo em "Pendências para
+  produção — Secure Embed", abaixo.
+- Não existe (ainda) o fluxo "app owns data" (Power BI Embedded com service principal + embed
+  token), que permitiria telas verdadeiramente anônimas com RLS aplicado — ficou fora do MVP porque
+  exige acesso ao Azure Portal para registrar o app e gerar o segredo, que este ciclo não tem.
 - Secretaria e ODS no Catálogo são mapeados heuristicamente a partir do `theme` de cada painel
-  (não são campos do contrato `PanelConfig`) — a spec permite dados simulados para esses filtros
-  nesta etapa.
-- Sem autenticação no `/admin`, sem rascunho/publicado/versionamento e sem motor de consultas —
-  fora de escopo da v1 (ver `docs/review/plano-ambiente-configuracao.md`, seção 8). O editor
-  administrativo é um formulário estruturado com preview ao vivo, não um construtor visual
-  drag-and-drop.
-- Bundle de produção ainda não usa code-splitting (aviso do Vite no build): um único JS de
-  ~994 kB minificado / ~319 kB gzip, carregando ECharts e o admin junto com a área pública.
-  Aceitável para o volume atual do protótipo.
-- `panelConfigSchema` valida estrutura e formato, não semântica: não checa unicidade de IDs de
-  filtros/seções/componentes nem se as métricas e datasets referenciados existem. O editor evita
-  isso pela seleção guiada, mas um JSON importado à mão pode ser aceito e render componentes
-  permanentemente vazios ou em erro.
+  (não são campos do contrato `PanelConfig`) — a lente de Território ainda não existe.
+- Sem autenticação no `/admin`, sem rascunho/publicado/versionamento — o editor administrativo é um
+  formulário estruturado, não um construtor visual.
 - Sem CI, deploy, telemetria ou tratamento global de falhas. `createBrowserRouter` exige rewrite
   para `index.html` no servidor que hospedar o `dist/`.
-- `npm audit` reporta 8 ocorrências (2 críticas, 3 altas, 3 moderadas), concentradas em
-  ferramentas de desenvolvimento; com `--omit=dev` restam 2 altas na cadeia `react-router`,
-  relativas ao modo RSC que esta SPA não usa.
+- `npm audit` pode reportar vulnerabilidades concentradas em ferramentas de desenvolvimento — vale
+  checar com `npm audit --omit=dev` antes de tratar como bloqueante.
 
-## Pós-protótipo (não implementado)
+## Pendências para produção — Secure Embed
 
-`HttpDataProvider` consultando uma API FastAPI, que por sua vez consulta o SQL Endpoint do
-Fabric — o caminho de migração está preservado pela interface `DataProvider` já ser assíncrona e
-pelo envelope de resposta (`DataEnvelope<T>`) já ser o formato que a futura API usaria.
-`getPanelFreshness()` seguirá o mesmo caminho, consultando o schema de tabelas de monitoramento
-de atualização do Fabric que disparam automaticamente quando há dado novo.
+O provider `powerbi-secure` (`src/renderer/EmbedPanelView.tsx`) foi adotado no lugar do fluxo "app
+owns data" porque funciona sem backend e sem acesso ao Azure Portal — mas isso desloca um conjunto
+de responsabilidades que, hoje, **não são resolvidas pela aplicação**. Antes de qualquer uso em
+produção (especialmente no kiosk, sem interação humana), alguém precisa fechar:
+
+- **Licenciamento Power BI dos viewers**: Secure Embed exige que quem visualiza tenha uma licença
+  Power BI Pro/PPU, **ou** que o workspace do relatório esteja em capacidade Premium/Fabric (que
+  libera visualização para usuários sem Pro). Decisão de custo/procurement que precisa ser tomada
+  antes do rollout — a aplicação não verifica nem alerta sobre isso, só reflete o que o Power BI
+  retornar.
+- **Sessão persistente no navegador do kiosk**: o telão precisa manter login no Power BI ativo
+  continuamente. Isso implica uma conta de serviço/funcional dedicada, com política de
+  senha/MFA compatível com sessão de longa duração (accesso condicional, se aplicável), e um plano
+  para o que acontece quando a sessão expira — hoje, se expirar, o iframe simplesmente mostra a
+  tela de login da Microsoft no telão, sem nenhum alerta operacional.
+- **Cookies de terceiros no navegador do kiosk**: Secure Embed depende do cookie de sessão do Power
+  BI ser acessível dentro de um iframe cross-origin. Navegadores modernos restringem isso cada vez
+  mais (Safari ITP, particionamento de cookies no Chrome/CHIPS) — precisa validar no navegador e na
+  versão real que vai rodar no dispositivo do telão antes de confiar no mecanismo.
+- **RLS/OLS configurado no Power BI**: a aplicação não define nem valida regras de segurança de
+  linha/objeto — isso é inteiramente responsabilidade de quem administra os relatórios no Power BI
+  Service/Fabric. Precisa haver um dono claro desse mapeamento (quem vê o quê) antes de publicar
+  relatórios sensíveis.
+- **Autenticação do `/admin`**: hoje qualquer pessoa com a URL consegue trocar a URL de embed de um
+  painel público. Combinado com a allowlist de domínios (`/admin/configuracoes`, hoje só
+  `app.powerbi.com` por padrão), isso é um vetor de risco que precisa de autenticação real antes de
+  produção.
+- **Validação do fluxo de login dentro do `sandbox` do iframe**: o atributo `sandbox` atual
+  (`allow-scripts allow-same-origin allow-popups allow-forms`) nunca foi testado contra o fluxo
+  completo de login/MFA da Microsoft (redirecionos, popup de autenticação) em um tenant real —
+  precisa de um teste ponta a ponta com uma conta de produção antes do go-live.
+
+## Pós-MVP (não implementado)
+
+- Power BI Embedded "app owns data" (service principal + embed token via backend), para telas
+  verdadeiramente anônimas com RLS — hoje o `powerbi-secure` cobre a necessidade sem backend, ao
+  custo de exigir sessão de navegador logada.
+- `FabricDataProvider` consultando o catálogo de painéis a partir do Fabric/Lakehouse em vez do
+  `MockDataProvider` — a interface `DataProvider` já é assíncrona e mínima o bastante para isso ser
+  uma troca de 1 linha.
+- Fase 2 do roadmap: catálogo de indicadores com relações automáticas indicador↔painel,
+  documentação automática, APIs mais maduras.
+- Fase 3: painéis nativos, configurador visual, motor de renderização próprio.
+- Fase 4: IA — explicação automática de indicadores, perguntas em linguagem natural, alertas.

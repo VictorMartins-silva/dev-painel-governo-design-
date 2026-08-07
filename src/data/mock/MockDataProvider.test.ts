@@ -4,59 +4,35 @@ import { MockDataProvider } from "./MockDataProvider";
 const provider = new MockDataProvider({ simulateLatency: false });
 
 describe("MockDataProvider", () => {
-  it("carrega metadados do indicador a partir dos fixtures", async () => {
-    const metadata = await provider.getIndicatorMetadata("saldo_empregos");
-    expect(metadata.name).toBe("Saldo de empregos");
-    expect(metadata.unit).toBe("vínculos");
+  it("lista os painéis registrados com metadados do catálogo", async () => {
+    const panels = await provider.listPanels();
+
+    expect(panels.length).toBeGreaterThan(0);
+    const demografia = panels.find((panel) => panel.id === "demografia");
+    expect(demografia?.embedProvider).toBe("powerbi-public");
+    expect(demografia?.updatedAt).toBe("2026-07-15");
   });
 
-  it("rejeita metadados de um indicador inexistente", async () => {
-    await expect(provider.getIndicatorMetadata("indicador_inexistente")).rejects.toThrow();
+  it("carrega a config de um painel existente", async () => {
+    const config = await provider.getPanelConfig("trabalho-emprego");
+    expect(config.title).toBe("Trabalho e Emprego");
+    expect(config.embed.provider).toBe("powerbi-public");
   });
 
-  it("carrega opções de filtro a partir dos fixtures", async () => {
-    const options = await provider.getFilterOptions("trabalho-emprego", "ano");
-    expect(options).toEqual([
-      { value: "2024", label: "2024" },
-      { value: "2025", label: "2025" },
-    ]);
+  it("rejeita a config de um painel inexistente", async () => {
+    await expect(provider.getPanelConfig("painel-inexistente")).rejects.toThrow();
   });
 
-  it("retorna lista vazia para opções de filtro inexistentes", async () => {
-    const options = await provider.getFilterOptions("painel-inexistente", "campo-inexistente");
-    expect(options).toEqual([]);
-  });
-
-  it("soma linhas de mesmo período ao aplicar getIndicator (populacao_total tem 8 linhas por período)", async () => {
-    const total = await provider.getIndicator({ metric: "populacao_total", filters: {} });
-    const masculino = await provider.getIndicator({
-      metric: "populacao_total",
-      filters: { sexo: ["masculino"] },
+  it("carrega o frescor de um painel a partir dos fixtures", async () => {
+    const freshness = await provider.getPanelFreshness("demografia");
+    expect(freshness).toEqual({
+      referencePeriod: "jan/2024 – dez/2025",
+      updatedAt: "2026-07-15",
     });
-    const feminino = await provider.getIndicator({
-      metric: "populacao_total",
-      filters: { sexo: ["feminino"] },
-    });
-
-    expect(total.data.value).not.toBeNull();
-    expect((masculino.data.value ?? 0) + (feminino.data.value ?? 0)).toBe(total.data.value);
   });
 
-  it("soma linhas de mesmo período ao aplicar getTimeSeries, sem duplicar pontos por período", async () => {
-    const series = await provider.getTimeSeries({ metric: "populacao_total", filters: {} });
-    const periods = series.data.map((point) => point.period);
-    expect(new Set(periods).size).toBe(periods.length);
-  });
-
-  it("lista o catálogo de indicadores com formas e ids únicos", async () => {
-    const indicators = await provider.listIndicators();
-
-    expect(indicators.length).toBeGreaterThan(0);
-    const ids = indicators.map((indicator) => indicator.id);
-    expect(new Set(ids).size).toBe(ids.length);
-    expect(indicators.every((indicator) => indicator.shapes.length > 0)).toBe(true);
-
-    const estoque = indicators.find((indicator) => indicator.id === "estoque_vinculos");
-    expect(estoque?.shapes).toEqual(expect.arrayContaining(["metric", "categorical"]));
+  it("retorna frescor vazio para um painel sem fixture", async () => {
+    const freshness = await provider.getPanelFreshness("painel-inexistente");
+    expect(freshness).toEqual({});
   });
 });

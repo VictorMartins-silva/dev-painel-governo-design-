@@ -1,12 +1,11 @@
 import { describe, expect, it } from "vitest";
 import type { CollectionConfig } from "../config/schemas/collection.schema";
-import type { NativePanelConfig } from "../config/schemas/panel.schema";
+import type { PanelConfig } from "../config/schemas/panel.schema";
 import { resolveCollectionSlides } from "./resolveCollectionSlides";
 
-function buildPanel(id: string): NativePanelConfig {
+function buildPanel(id: string): PanelConfig {
   return {
-    schemaVersion: 1,
-    kind: "native",
+    schemaVersion: 3,
     id,
     title: id,
     description: "Descrição.",
@@ -14,17 +13,7 @@ function buildPanel(id: string): NativePanelConfig {
     tags: [],
     presentation: "default",
     metadata: { source: "fonte", owner: "equipe" },
-    filters: [],
-    sections: [
-      {
-        id: "secao",
-        title: "Seção",
-        layout: "grid-2",
-        components: [
-          { id: "c", type: "indicator-card", title: "Indicador", metric: "x", format: "integer" },
-        ],
-      },
-    ],
+    embed: { provider: "powerbi-public", url: "https://app.powerbi.com/view?r=abc" },
   };
 }
 

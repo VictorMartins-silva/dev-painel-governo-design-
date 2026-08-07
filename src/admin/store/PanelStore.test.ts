@@ -1,12 +1,11 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { panelRegistry } from "../../config/panels";
-import type { NativePanelConfig } from "../../config/schemas/panel.schema";
+import type { PanelConfig } from "../../config/schemas/panel.schema";
 import { LocalStoragePanelStore } from "./PanelStore";
 
-function buildPanel(overrides: Partial<NativePanelConfig> = {}): NativePanelConfig {
+function buildPanel(overrides: Partial<PanelConfig> = {}): PanelConfig {
   return {
-    schemaVersion: 1,
-    kind: "native",
+    schemaVersion: 3,
     id: "painel-teste",
     title: "Painel de teste",
     description: "Descrição do painel de teste.",
@@ -17,23 +16,7 @@ function buildPanel(overrides: Partial<NativePanelConfig> = {}): NativePanelConf
       owner: "Equipe de Testes",
     },
     presentation: "default",
-    filters: [],
-    sections: [
-      {
-        id: "secao",
-        title: "Seção",
-        layout: "grid-2",
-        components: [
-          {
-            id: "card",
-            type: "indicator-card",
-            title: "Indicador",
-            metric: "populacao_total",
-            format: "integer",
-          },
-        ],
-      },
-    ],
+    embed: { provider: "powerbi-public", url: "https://app.powerbi.com/view?r=abc" },
     ...overrides,
   };
 }
@@ -103,7 +86,7 @@ describe("LocalStoragePanelStore", () => {
 
   it("rejeita a escrita de uma configuração inválida e não persiste nada", () => {
     const store = new LocalStoragePanelStore();
-    const invalid = { ...buildPanel(), title: "" } as NativePanelConfig;
+    const invalid = { ...buildPanel(), title: "" } as PanelConfig;
 
     expect(() => store.save(invalid)).toThrow();
     expect(store.get(invalid.id)).toBeUndefined();

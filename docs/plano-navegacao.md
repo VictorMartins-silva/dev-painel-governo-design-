@@ -1,6 +1,7 @@
 # Plano — Reorganização da Navegação (consumo × configuração)
 
-> **Status:** proposta para aprovação · **Data:** 2026-08-05
+> **Status:** implementado (nav "Indicadores" removida do consumo e "Catálogo" do admin junto com o
+> corte do MVP — ver [`README.md`](../README.md)) · **Data:** 2026-08-05
 > **Escopo:** arquitetura de navegação e chrome das duas áreas da aplicação — ambiente de consumo (`/`) e ambiente de configuração (`/admin`). Não altera renderização de painéis, schemas, stores nem provider de dados.
 
 ---
@@ -9,26 +10,26 @@
 
 As duas áreas hoje usam **o mesmo padrão de chrome**: uma barra superior horizontal com marca à esquerda e uma fileira plana de links. O CSS é praticamente duplicado — `Header.module.css:61-96` e `AdminLayout.module.css:61-96` têm as mesmas regras `.header/.inner/.brand/.nav/.navLink`. O resultado é que a única pista de que se mudou de ambiente é o texto da marca e a faixa `Ambiente de configuração` (`AdminLayout.tsx:10-19`).
 
-| Problema                              | Evidência                                                                                                                            | Consequência                                                                                                       |
-| ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------ |
-| **Menus quase idênticos**             | Consumo: Início · Painéis · Indicadores · Sala de situação · Configuração (`Header.tsx:21-37`). Admin: Painéis · Indicadores · Componentes · Coleções · Configurações (`AdminLayout.tsx:25-41`) | "Painéis" e "Indicadores" aparecem nos dois lados com significados diferentes (ver × administrar) e visual igual   |
-| **Sem estado ativo em lugar nenhum**  | `grep NavLink\|aria-current` não encontra nenhuma ocorrência de navegação: ambos usam `<Link>` puro                                  | O usuário nunca sabe em que seção está; falha de acessibilidade (sem `aria-current="page"`)                        |
-| **Troca de ambiente como item de menu** | `Configuração` é o 5º link do nav público, irmão de Painéis/Indicadores                                                            | Uma mudança de **modo** disfarçada de destino de conteúdo; a volta (`Sair do modo de configuração`) fica na faixa, em outro lugar |
-| **Admin plano, com itens de naturezas distintas** | 5 links irmãos: conteúdo editável (Painéis, Coleções), catálogo/referência (Indicadores, Componentes), sistema (Configurações) | Tudo com o mesmo peso; a Galeria de componentes (referência de dev) parece uma área de gestão                       |
-| **Breadcrumb redundante**             | Presente em 16 páginas, inclusive de profundidade 1 (`CatalogPage.tsx:34`, `CollectionsPage.tsx:15`) e sempre reancorado em `Início` mesmo dentro do admin (`AdminPanelsPage.tsx:91-97`) | Duas navegações dizendo a mesma coisa; no admin o breadcrumb sai do ambiente ("Início / Admin / Painéis")            |
-| **`/admin` index é a lista de painéis** | `router.tsx:42` (`index: true` → `AdminPanelsPage`)                                                                                | Rota sem URL própria: não dá para linkar "lista de painéis" nem marcar o item ativo sem caso especial               |
-| **Sem responsivo**                    | `.nav { display: flex; gap }` sem colapso nem menu móvel nos dois shells                                                             | Em telas estreitas os links espremem/estouram                                                                       |
-| **Conceito de "lente" não chega ao menu** | A Home explica que existe um índice único navegado por lentes (`HomePage.tsx:55-60`, `config/lenses.ts`)                          | O nav contradiz o modelo: oferece destinos planos e não expõe as lentes onde a navegação de fato acontece            |
+| Problema                                          | Evidência                                                                                                                                                                                       | Consequência                                                                                                                      |
+| ------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| **Menus quase idênticos**                         | Consumo: Início · Painéis · Indicadores · Sala de situação · Configuração (`Header.tsx:21-37`). Admin: Painéis · Indicadores · Componentes · Coleções · Configurações (`AdminLayout.tsx:25-41`) | "Painéis" e "Indicadores" aparecem nos dois lados com significados diferentes (ver × administrar) e visual igual                  |
+| **Sem estado ativo em lugar nenhum**              | `grep NavLink\|aria-current` não encontra nenhuma ocorrência de navegação: ambos usam `<Link>` puro                                                                                             | O usuário nunca sabe em que seção está; falha de acessibilidade (sem `aria-current="page"`)                                       |
+| **Troca de ambiente como item de menu**           | `Configuração` é o 5º link do nav público, irmão de Painéis/Indicadores                                                                                                                         | Uma mudança de **modo** disfarçada de destino de conteúdo; a volta (`Sair do modo de configuração`) fica na faixa, em outro lugar |
+| **Admin plano, com itens de naturezas distintas** | 5 links irmãos: conteúdo editável (Painéis, Coleções), catálogo/referência (Indicadores, Componentes), sistema (Configurações)                                                                  | Tudo com o mesmo peso; a Galeria de componentes (referência de dev) parece uma área de gestão                                     |
+| **Breadcrumb redundante**                         | Presente em 16 páginas, inclusive de profundidade 1 (`CatalogPage.tsx:34`, `CollectionsPage.tsx:15`) e sempre reancorado em `Início` mesmo dentro do admin (`AdminPanelsPage.tsx:91-97`)        | Duas navegações dizendo a mesma coisa; no admin o breadcrumb sai do ambiente ("Início / Admin / Painéis")                         |
+| **`/admin` index é a lista de painéis**           | `router.tsx:42` (`index: true` → `AdminPanelsPage`)                                                                                                                                             | Rota sem URL própria: não dá para linkar "lista de painéis" nem marcar o item ativo sem caso especial                             |
+| **Sem responsivo**                                | `.nav { display: flex; gap }` sem colapso nem menu móvel nos dois shells                                                                                                                        | Em telas estreitas os links espremem/estouram                                                                                     |
+| **Conceito de "lente" não chega ao menu**         | A Home explica que existe um índice único navegado por lentes (`HomePage.tsx:55-60`, `config/lenses.ts`)                                                                                        | O nav contradiz o modelo: oferece destinos planos e não expõe as lentes onde a navegação de fato acontece                         |
 
-**Resumo:** o problema não é estética de barra — é que a navegação não expressa o modelo mental do produto. Consumir é *explorar um acervo*; configurar é *operar uma ferramenta*. São tarefas de naturezas opostas recebendo o mesmo chrome.
+**Resumo:** o problema não é estética de barra — é que a navegação não expressa o modelo mental do produto. Consumir é _explorar um acervo_; configurar é _operar uma ferramenta_. São tarefas de naturezas opostas recebendo o mesmo chrome.
 
 ---
 
 ## 2. Princípios da proposta
 
-1. **Ambiente se reconhece em 200 ms.** Consumo e configuração devem diferir em *estrutura* (topo × lateral), não só em cor ou rótulo.
+1. **Ambiente se reconhece em 200 ms.** Consumo e configuração devem diferir em _estrutura_ (topo × lateral), não só em cor ou rótulo.
 2. **Navegar ≠ trocar de modo.** Ir para o admin é mudar de ferramenta; sai do nav e vira um controle explícito de modo, com caminho de volta simétrico.
-3. **Um nível de navegação por vez.** Nav global diz *onde estou*; a segmentação fina (lentes, filtros, abas) mora na página, não no topo.
+3. **Um nível de navegação por vez.** Nav global diz _onde estou_; a segmentação fina (lentes, filtros, abas) mora na página, não no topo.
 4. **Estado ativo obrigatório.** `NavLink` + `aria-current` em toda navegação, sem exceção.
 5. **Agrupar por natureza no admin**, porque a lista cresce (hoje 5 itens, com backend virão usuários, permissões, fontes de dados, auditoria).
 6. **Breadcrumb só onde há profundidade real** (≥ 2 níveis) e sempre ancorado na raiz do próprio ambiente.
@@ -122,12 +123,12 @@ Mudanças em relação ao atual:
 
 ## 4. Mudanças de rota
 
-| Hoje                                                | Proposto                                      | Motivo                                                                                      |
-| --------------------------------------------------- | --------------------------------------------- | ------------------------------------------------------------------------------------------- |
-| `/admin` (index → `AdminPanelsPage`)               | `/admin` → redirect para `/admin/paineis`    | URL própria para a lista; item ativo sem caso especial; abre espaço para uma futura visão geral |
-| `/admin/colecoes`, `/admin/paineis`, …             | inalterados                                   | —                                                                                             |
-| `/dev/galeria` → `/admin/componentes`              | inalterado                                    | —                                                                                             |
-| Público: `/`, `/paineis`, `/indicadores`, `/sala`  | inalterados                                   | Nenhuma URL pública quebra                                                                    |
+| Hoje                                              | Proposto                                  | Motivo                                                                                          |
+| ------------------------------------------------- | ----------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| `/admin` (index → `AdminPanelsPage`)              | `/admin` → redirect para `/admin/paineis` | URL própria para a lista; item ativo sem caso especial; abre espaço para uma futura visão geral |
+| `/admin/colecoes`, `/admin/paineis`, …            | inalterados                               | —                                                                                               |
+| `/dev/galeria` → `/admin/componentes`             | inalterado                                | —                                                                                               |
+| Público: `/`, `/paineis`, `/indicadores`, `/sala` | inalterados                               | Nenhuma URL pública quebra                                                                      |
 
 **Nenhum link externo quebra** — a única mudança é um redirect adicional.
 
@@ -137,25 +138,25 @@ Mudanças em relação ao atual:
 
 ### 5.1 Componentes novos (`src/components/nav/`)
 
-| Arquivo             | Responsabilidade                                                                                            |
-| ------------------- | ------------------------------------------------------------------------------------------------------------ |
-| `navItems.ts`       | Fonte única dos itens de cada ambiente: `{ id, label, to, match, group? }`. Hoje os rótulos estão hard-coded em dois JSX diferentes |
-| `NavItem.tsx`       | `NavLink` + estado ativo por prefixo + `aria-current` — usado pelo topo e pela sidebar                       |
-| `ModeSwitch.tsx`    | Botão `⚙ Configurar` / `Ver como público ↗`, com mapeamento de rota equivalente entre ambientes              |
-| `GlobalSearch.tsx`  | Busca no topo (extraída do hero da Home), navegando para `/paineis?q=…`                                      |
+| Arquivo            | Responsabilidade                                                                                                                    |
+| ------------------ | ----------------------------------------------------------------------------------------------------------------------------------- |
+| `navItems.ts`      | Fonte única dos itens de cada ambiente: `{ id, label, to, match, group? }`. Hoje os rótulos estão hard-coded em dois JSX diferentes |
+| `NavItem.tsx`      | `NavLink` + estado ativo por prefixo + `aria-current` — usado pelo topo e pela sidebar                                              |
+| `ModeSwitch.tsx`   | Botão `⚙ Configurar` / `Ver como público ↗`, com mapeamento de rota equivalente entre ambientes                                     |
+| `GlobalSearch.tsx` | Busca no topo (extraída do hero da Home), navegando para `/paineis?q=…`                                                             |
 
 ### 5.2 Arquivos alterados
 
-| Arquivo                                       | Mudança                                                                                    |
-| --------------------------------------------- | -------------------------------------------------------------------------------------------- |
-| `src/components/layout/Header.tsx`            | 3 destinos + `NavItem` + busca + `ModeSwitch`; remove link "Configuração" e "Início"        |
-| `src/components/layout/Header.module.css`     | Divisor à direita, estado ativo, breakpoint móvel                                           |
-| `src/admin/AdminLayout.tsx`                   | Grid `faixa / sidebar + conteúdo`; nav vertical agrupada; faixa reduzida                    |
-| `src/admin/AdminLayout.module.css`            | Reescrito para sidebar (deixa de duplicar `Header.module.css`)                              |
-| `src/app/pages/HomePage.tsx`                  | Remove o campo de busca do hero (subiu para o topo)                                         |
-| `src/app/router.tsx`                          | `/admin` → `<Navigate to="/admin/paineis" replace />` + rota `paineis` explícita            |
-| 16 páginas com `<Breadcrumb>`                 | Remover nas de profundidade 1; nas de profundidade ≥ 2 do admin, ancorar em "Configuração" (não em "Início") |
-| `AdminLayout.test.tsx`, `admin.integration.test.tsx`, `HomePage.test.tsx` | Ajuste das asserções de nav/busca                        |
+| Arquivo                                                                   | Mudança                                                                                                      |
+| ------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| `src/components/layout/Header.tsx`                                        | 3 destinos + `NavItem` + busca + `ModeSwitch`; remove link "Configuração" e "Início"                         |
+| `src/components/layout/Header.module.css`                                 | Divisor à direita, estado ativo, breakpoint móvel                                                            |
+| `src/admin/AdminLayout.tsx`                                               | Grid `faixa / sidebar + conteúdo`; nav vertical agrupada; faixa reduzida                                     |
+| `src/admin/AdminLayout.module.css`                                        | Reescrito para sidebar (deixa de duplicar `Header.module.css`)                                               |
+| `src/app/pages/HomePage.tsx`                                              | Remove o campo de busca do hero (subiu para o topo)                                                          |
+| `src/app/router.tsx`                                                      | `/admin` → `<Navigate to="/admin/paineis" replace />` + rota `paineis` explícita                             |
+| 16 páginas com `<Breadcrumb>`                                             | Remover nas de profundidade 1; nas de profundidade ≥ 2 do admin, ancorar em "Configuração" (não em "Início") |
+| `AdminLayout.test.tsx`, `admin.integration.test.tsx`, `HomePage.test.tsx` | Ajuste das asserções de nav/busca                                                                            |
 
 ### 5.3 O que **não** muda
 
@@ -208,13 +209,13 @@ _Cada etapa entrega valor sozinha e termina com testes verdes. A Etapa 1 já res
 ## 8. Riscos e pontos de atenção
 
 | Risco                                                                     | Mitigação                                                                                       |
-| ------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
-| Tirar "Início" do nav pode desorientar quem espera o link                 | Marca é link para `/` com `title="Início"`; padrão consolidado em produtos web                    |
-| Busca global exige que `/paineis` aceite `?q=`                            | Já há filtro por título/tema/tags na Home; mover a lógica para o Catálogo é reaproveitamento      |
-| Sidebar consome largura no editor de painel (que já é split form+preview) | Sidebar colapsável, com colapso automático nas rotas de editor                                    |
-| Contadores na sidebar leem os stores a cada render                        | Stores são síncronos sobre `localStorage`; se pesar, calcular no layout e passar por contexto     |
-| Remover breadcrumbs pode quebrar testes de página                         | Etapa 4 isolada, com ajuste de asserções no mesmo commit                                          |
-| Divergência entre `ModeSwitch` e rotas equivalentes                       | Mapa explícito em `navItems.ts`; fallback para a raiz do ambiente quando não houver equivalente   |
+| ------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| Tirar "Início" do nav pode desorientar quem espera o link                 | Marca é link para `/` com `title="Início"`; padrão consolidado em produtos web                  |
+| Busca global exige que `/paineis` aceite `?q=`                            | Já há filtro por título/tema/tags na Home; mover a lógica para o Catálogo é reaproveitamento    |
+| Sidebar consome largura no editor de painel (que já é split form+preview) | Sidebar colapsável, com colapso automático nas rotas de editor                                  |
+| Contadores na sidebar leem os stores a cada render                        | Stores são síncronos sobre `localStorage`; se pesar, calcular no layout e passar por contexto   |
+| Remover breadcrumbs pode quebrar testes de página                         | Etapa 4 isolada, com ajuste de asserções no mesmo commit                                        |
+| Divergência entre `ModeSwitch` e rotas equivalentes                       | Mapa explícito em `navItems.ts`; fallback para a raiz do ambiente quando não houver equivalente |
 
 ---
 

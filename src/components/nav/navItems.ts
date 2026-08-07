@@ -12,7 +12,6 @@ export type NavGroup = {
 /** Destinos de conteúdo do ambiente de consumo. "Início" fica de fora — a marca já leva para "/". */
 export const CONSUMER_NAV_ITEMS: NavItem[] = [
   { id: "paineis", label: "Painéis", to: "/paineis" },
-  { id: "indicadores", label: "Indicadores", to: "/indicadores" },
   { id: "sala", label: "Apresentações", to: "/sala" },
 ];
 
@@ -23,13 +22,6 @@ export const ADMIN_NAV_GROUPS: NavGroup[] = [
     items: [
       { id: "paineis", label: "Painéis", to: "/admin/paineis" },
       { id: "colecoes", label: "Coleções", to: "/admin/colecoes" },
-    ],
-  },
-  {
-    label: "Catálogo",
-    items: [
-      { id: "indicadores", label: "Indicadores", to: "/admin/indicadores" },
-      { id: "componentes", label: "Componentes", to: "/admin/componentes" },
     ],
   },
   {

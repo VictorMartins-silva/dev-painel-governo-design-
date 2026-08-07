@@ -20,7 +20,7 @@ export function buildCollectionWarnings(
       return;
     }
 
-    if (panel.kind === "native" && panel.presentation !== "kiosk") {
+    if (panel.presentation !== "kiosk") {
       warnings.set(
         prefix,
         `"${panel.title}" não tem uma versão de telão — pode ficar difícil de ler no telão.`,

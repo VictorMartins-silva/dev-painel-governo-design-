@@ -1,12 +1,8 @@
-import {
-  SUPPORTED_SCHEMA_VERSION,
-  type ExternalPanelConfig,
-} from "../../config/schemas/panel.schema";
+import { SUPPORTED_SCHEMA_VERSION, type PanelConfig } from "../../config/schemas/panel.schema";
 
-export function createEmptyExternalPanelDraft(): ExternalPanelConfig {
+export function createEmptyPanelDraft(): PanelConfig {
   return {
     schemaVersion: SUPPORTED_SCHEMA_VERSION,
-    kind: "external",
     id: "",
     title: "",
     description: "",

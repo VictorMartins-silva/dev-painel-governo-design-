@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { parsePanelConfig } from "./panel.schema";
 
-function buildValidPanel() {
+function buildValidPublicPanel() {
   return {
-    schemaVersion: 1,
+    schemaVersion: 3,
     id: "trabalho-emprego",
     title: "Trabalho e Emprego",
     description: "Indicadores do mercado formal de trabalho no município.",
@@ -13,85 +13,6 @@ function buildValidPanel() {
       source: "CAGED / Ministério do Trabalho",
       owner: "Equipe de Serviços",
     },
-    filters: [{ id: "ano", type: "single-select", label: "Ano", dataField: "ano" }],
-    sections: [
-      {
-        id: "resumo",
-        title: "Resumo",
-        layout: "grid-4",
-        components: [
-          {
-            id: "saldo",
-            type: "indicator-card",
-            title: "Saldo de empregos",
-            metric: "saldo_empregos",
-            format: "integer",
-          },
-        ],
-      },
-    ],
-  };
-}
-
-describe("panelConfigSchema", () => {
-  it("aceita uma configuração de painel completa e válida", () => {
-    const result = parsePanelConfig(buildValidPanel());
-    expect(result.success).toBe(true);
-  });
-
-  it("rejeita schemaVersion não suportada", () => {
-    const invalid = { ...buildValidPanel(), schemaVersion: 2 };
-    const result = parsePanelConfig(invalid);
-    expect(result.success).toBe(false);
-  });
-
-  it("rejeita componente com type desconhecido dentro de uma seção", () => {
-    const invalid = buildValidPanel();
-    invalid.sections[0].components[0] = {
-      id: "mapa",
-      type: "heatmap",
-      title: "Mapa",
-    } as never;
-    const result = parsePanelConfig(invalid);
-    expect(result.success).toBe(false);
-  });
-
-  it("rejeita filtro sem dataField", () => {
-    const invalid = buildValidPanel();
-    invalid.filters[0] = { id: "ano", type: "single-select", label: "Ano" } as never;
-    const result = parsePanelConfig(invalid);
-    expect(result.success).toBe(false);
-  });
-
-  it("rejeita layout de seção fora dos presets permitidos", () => {
-    const invalid = buildValidPanel();
-    invalid.sections[0].layout = "grid-livre";
-    const result = parsePanelConfig(invalid);
-    expect(result.success).toBe(false);
-  });
-
-  it("mensagens de erro incluem o caminho do campo inválido", () => {
-    const invalid = { ...buildValidPanel(), schemaVersion: 2 };
-    const result = parsePanelConfig(invalid);
-    if (!result.success) {
-      expect(result.error.issues[0].path).toContain("schemaVersion");
-    }
-  });
-});
-
-function buildValidExternalPanel() {
-  return {
-    schemaVersion: 1,
-    kind: "external",
-    id: "painel-externo",
-    title: "Painel externo",
-    description: "Painel incorporado via Power BI.",
-    theme: "Desenvolvimento Econômico",
-    tags: ["powerbi"],
-    metadata: {
-      source: "Power BI",
-      owner: "Equipe de Serviços",
-    },
     embed: {
       provider: "powerbi-public",
       url: "https://app.powerbi.com/view?r=abc123",
@@ -99,56 +20,74 @@ function buildValidExternalPanel() {
   };
 }
 
-describe("panelConfigSchema — painéis externos e retrocompatibilidade", () => {
-  it("aceita uma configuração nativa explícita (kind: native)", () => {
-    const result = parsePanelConfig({ ...buildValidPanel(), kind: "native" });
+function buildValidSecurePanel() {
+  return {
+    schemaVersion: 3,
+    id: "trabalho-emprego",
+    title: "Trabalho e Emprego",
+    description: "Indicadores do mercado formal de trabalho no município.",
+    theme: "Desenvolvimento Econômico",
+    tags: ["emprego", "caged"],
+    metadata: {
+      source: "CAGED / Ministério do Trabalho",
+      owner: "Equipe de Serviços",
+    },
+    embed: {
+      provider: "powerbi-secure",
+      url: "https://app.powerbi.com/reportEmbed?reportId=abc&ctid=def",
+    },
+  };
+}
+
+describe("panelConfigSchema", () => {
+  it("aceita um painel com embed powerbi-public", () => {
+    const result = parsePanelConfig(buildValidPublicPanel());
+    expect(result.success).toBe(true);
+  });
+
+  it("aceita um painel com embed powerbi-secure", () => {
+    const result = parsePanelConfig(buildValidSecurePanel());
     expect(result.success).toBe(true);
     if (result.success) {
-      expect(result.data.kind).toBe("native");
+      expect(result.data.embed.provider).toBe("powerbi-secure");
+      expect(result.data.embed.url).toContain("reportEmbed");
     }
   });
 
-  it("aceita uma configuração de painel externo completa e válida", () => {
-    const result = parsePanelConfig(buildValidExternalPanel());
-    expect(result.success).toBe(true);
-    if (result.success && result.data.kind === "external") {
-      expect(result.data.embed.url).toBe("https://app.powerbi.com/view?r=abc123");
+  it("rejeita schemaVersion não suportada", () => {
+    const invalid = { ...buildValidPublicPanel(), schemaVersion: 1 };
+    const result = parsePanelConfig(invalid);
+    expect(result.success).toBe(false);
+  });
+
+  it("mensagens de erro incluem o caminho do campo inválido", () => {
+    const invalid = { ...buildValidPublicPanel(), schemaVersion: 1 };
+    const result = parsePanelConfig(invalid);
+    if (!result.success) {
+      expect(result.error.issues[0].path).toContain("schemaVersion");
     }
   });
 
-  it("trata uma configuração antiga sem `kind` como native (retrocompatibilidade)", () => {
-    const legacy = buildValidPanel();
-    expect("kind" in legacy).toBe(false);
-
-    const result = parsePanelConfig(legacy);
-    expect(result.success).toBe(true);
-    if (result.success) {
-      expect(result.data.kind).toBe("native");
-    }
-  });
-
-  it("rejeita um painel externo sem embed.url", () => {
-    const invalid = buildValidExternalPanel();
+  it("rejeita um painel sem embed.url no provider powerbi-public", () => {
+    const invalid = buildValidPublicPanel();
     invalid.embed = { provider: "powerbi-public", url: "" };
     const result = parsePanelConfig(invalid);
     expect(result.success).toBe(false);
   });
 
-  it("rejeita um painel externo com provider desconhecido", () => {
-    const invalid = {
-      ...buildValidExternalPanel(),
-      embed: { provider: "outro", url: "https://x.com" },
-    };
+  it("rejeita um painel sem embed.url no provider powerbi-secure", () => {
+    const invalid = buildValidSecurePanel();
+    invalid.embed = { provider: "powerbi-secure", url: "" };
     const result = parsePanelConfig(invalid);
     expect(result.success).toBe(false);
   });
 
-  it("um painel externo não exige sections nem filters", () => {
-    const result = parsePanelConfig(buildValidExternalPanel());
-    expect(result.success).toBe(true);
-    if (result.success && result.data.kind === "external") {
-      expect("sections" in result.data).toBe(false);
-      expect("filters" in result.data).toBe(false);
-    }
+  it("rejeita um painel com provider de embed desconhecido", () => {
+    const invalid = {
+      ...buildValidPublicPanel(),
+      embed: { provider: "outro", url: "https://x.com" },
+    };
+    const result = parsePanelConfig(invalid);
+    expect(result.success).toBe(false);
   });
 });
