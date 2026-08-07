@@ -2,6 +2,10 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { EmbedPanelView } from "./EmbedPanelView";
 import type { PanelConfig } from "../config/schemas/panel.schema";
+import {
+  DEFAULT_ALLOWED_EMBED_DOMAINS,
+  LocalStorageSettingsStore,
+} from "../admin/store/SettingsStore";
 
 function buildPublicPanel(overrides: Partial<PanelConfig> = {}): PanelConfig {
   return {
@@ -65,10 +69,12 @@ describe("EmbedPanelView — powerbi-public", () => {
   });
 
   it("mostra um ErrorState quando o domínio da URL não está na allowlist", () => {
-    window.localStorage.setItem(
-      "admin.settings",
-      JSON.stringify({ allowedEmbedDomains: ["outro-dominio.com"] }),
-    );
+    // Pelo store, e não escrevendo o localStorage à mão: um JSON cru sem `defaultsVersion` é
+    // tratado como legado e dispara a migração, que devolveria app.powerbi.com à allowlist.
+    const store = new LocalStorageSettingsStore();
+    for (const domain of DEFAULT_ALLOWED_EMBED_DOMAINS) store.removeAllowedEmbedDomain(domain);
+    store.addAllowedEmbedDomain("outro-dominio.com");
+
     const panel = buildPublicPanel();
     render(<EmbedPanelView panel={panel} />);
 
@@ -98,5 +104,38 @@ describe("EmbedPanelView — powerbi-secure", () => {
     const iframe = screen.getByTitle("Painel seguro");
     expect(iframe).toHaveAttribute("src", panel.embed.url);
     expect(screen.getByRole("status")).toHaveTextContent(/Requer login no Power BI/);
+  });
+});
+
+describe("EmbedPanelView — iframe-externo", () => {
+  beforeEach(() => {
+    window.localStorage.clear();
+  });
+
+  it("renderiza um portal da prefeitura liberado por padrão, com aviso de origem externa", () => {
+    const panel = buildPublicPanel({
+      id: "acessos-ao-sistema-ged",
+      title: "Acessos ao Sistema GED",
+      embed: {
+        provider: "iframe-externo",
+        url: "https://bi-gestaoeducacional.osasco.sp.gov.br/ged-bi/#/publico/dashboard-acessos",
+      },
+    });
+
+    render(<EmbedPanelView panel={panel} />);
+
+    expect(screen.getByTitle("Acessos ao Sistema GED")).toHaveAttribute("src", panel.embed.url);
+    expect(screen.getByRole("status")).toHaveTextContent(/portal da própria prefeitura/);
+  });
+
+  it("recusa um domínio externo fora da allowlist", () => {
+    const panel = buildPublicPanel({
+      embed: { provider: "iframe-externo", url: "https://dominio-nao-autorizado.com/painel" },
+    });
+
+    render(<EmbedPanelView panel={panel} />);
+
+    expect(screen.queryByTitle("Painel público")).not.toBeInTheDocument();
+    expect(screen.getByRole("alert")).toBeInTheDocument();
   });
 });

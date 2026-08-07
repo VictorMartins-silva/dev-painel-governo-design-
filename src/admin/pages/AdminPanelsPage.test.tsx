@@ -3,6 +3,7 @@ import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router-dom";
 import type { PanelConfig } from "../../config/schemas/panel.schema";
+import { panelRegistry } from "../../config/panels";
 import { panelStore } from "../store/PanelStore";
 import { serializePanelConfig } from "../store/exportImport";
 import AdminPanelsPage from "./AdminPanelsPage";
@@ -53,7 +54,19 @@ describe("AdminPanelsPage", () => {
 
     expect(screen.getByText("Trabalho e Emprego")).toBeInTheDocument();
     expect(screen.getByText("Demografia")).toBeInTheDocument();
-    expect(screen.getAllByText("Original")).toHaveLength(2);
+    expect(screen.getAllByText("Original")).toHaveLength(panelRegistry.length);
+  });
+
+  it("lista também os painéis importados da planilha, com o provider de cada um", () => {
+    renderPage();
+
+    const row = rowFor("Protocolos 156 - Visão Executiva do Prefeito");
+    expect(within(row).getByText("Publicar na Web")).toBeInTheDocument();
+
+    expect(
+      within(rowFor("Acessos ao Sistema GED")).getByText("Portal externo"),
+    ).toBeInTheDocument();
+    expect(within(rowFor("Atenção Especializada")).getByText("Secure Embed")).toBeInTheDocument();
   });
 
   it("duplica um painel para um novo id, criando uma entrada 'Novo'", async () => {

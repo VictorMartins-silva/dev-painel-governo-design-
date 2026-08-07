@@ -15,6 +15,7 @@ const ORIGIN_LABEL: Record<PanelOrigin, string> = {
 const PROVIDER_LABEL: Record<PanelConfig["embed"]["provider"], string> = {
   "powerbi-public": "Publicar na Web",
   "powerbi-secure": "Secure Embed",
+  "iframe-externo": "Portal externo",
 };
 
 export default function AdminPanelsPage() {

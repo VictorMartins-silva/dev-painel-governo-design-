@@ -16,6 +16,7 @@ type PanelFormProps = {
 const PROVIDER_LABEL: Record<EmbedProvider, string> = {
   "powerbi-public": "Publicar na Web (público, sem login)",
   "powerbi-secure": "Secure Embed (exige login no Power BI, respeita RLS/OLS)",
+  "iframe-externo": "Portal externo (painel que não é Power BI)",
 };
 
 const PROVIDER_URL_HINT: Record<EmbedProvider, string> = {
@@ -24,6 +25,9 @@ const PROVIDER_URL_HINT: Record<EmbedProvider, string> = {
     "Gerada em Arquivo → Incorporar relatório → Site ou portal. Quem abrir precisa estar " +
     "autenticado no Power BI do tenant; no kiosk, isso depende do navegador da apresentação já " +
     "ter uma sessão Power BI logada.",
+  "iframe-externo":
+    "URL pública de um portal de BI da prefeitura (GED, Painel 156, BI corporativo). O domínio " +
+    "precisa estar liberado em Configurações, e o portal precisa aceitar ser exibido em iframe.",
 };
 
 /** Formulário único de painel: metadados + provider e URL de embed. Sem seções nem filtros —

@@ -12,6 +12,8 @@ const PROVIDER_NOTE: Record<EmbedProvider, string | null> = {
   "powerbi-public": null,
   "powerbi-secure":
     "Requer login no Power BI do tenant — quem não estiver autenticado vê a tela de login da Microsoft dentro do quadro abaixo.",
+  "iframe-externo":
+    "Painel mantido fora do Power BI, em um portal da própria prefeitura — disponibilidade, dados e regras de acesso são de responsabilidade do sistema de origem.",
 };
 
 /**

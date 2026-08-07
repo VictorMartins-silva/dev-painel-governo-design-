@@ -39,7 +39,32 @@ function buildValidSecurePanel() {
   };
 }
 
+function buildValidExternalPanel() {
+  return {
+    ...buildValidPublicPanel(),
+    id: "acessos-ao-sistema-ged",
+    embed: {
+      provider: "iframe-externo",
+      url: "https://bi-gestaoeducacional.osasco.sp.gov.br/ged-bi/#/publico/dashboard-acessos",
+    },
+  };
+}
+
 describe("panelConfigSchema", () => {
+  it("aceita um painel com embed iframe-externo (portal de BI da prefeitura)", () => {
+    const result = parsePanelConfig(buildValidExternalPanel());
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.embed.provider).toBe("iframe-externo");
+    }
+  });
+
+  it("rejeita um provider de embed desconhecido", () => {
+    const invalid = buildValidPublicPanel();
+    invalid.embed = { provider: "tableau", url: "https://exemplo.com/painel" };
+    expect(parsePanelConfig(invalid).success).toBe(false);
+  });
+
   it("aceita um painel com embed powerbi-public", () => {
     const result = parsePanelConfig(buildValidPublicPanel());
     expect(result.success).toBe(true);

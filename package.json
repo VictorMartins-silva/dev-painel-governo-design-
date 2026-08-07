@@ -12,6 +12,7 @@
     "prebuild": "npm run tokens:build",
     "build": "tsc -b && vite build",
     "tokens:build": "node scripts/generate-tokens.mjs",
+    "catalogo:import": "node scripts/import-catalogo.mjs",
     "lint": "eslint .",
     "preview": "vite preview",
     "pretest": "npm run tokens:build",

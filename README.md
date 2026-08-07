@@ -86,14 +86,13 @@ Design system (tokens, CSS Modules)                    Camada de dados (DataProv
 ```
 
 Não existe mais um motor de renderização próprio: um painel é metadados de catálogo (`PanelConfig`)
-mais um bloco `embed` (`{ provider, url }`) que aponta para um relatório Power BI. Quem desenha a
-visualização é o próprio relatório publicado no Power BI — a aplicação só descobre, organiza e
-incorpora.
+mais um bloco `embed` (`{ provider, url }`) que aponta para um relatório já publicado em outro
+lugar. Quem desenha a visualização é esse relatório — a aplicação só descobre, organiza e incorpora.
 
 - **`EmbedPanelView`** (`src/renderer/EmbedPanelView.tsx`): renderiza qualquer painel como um
   iframe da URL configurada, validada contra a allowlist de domínios em `/admin/configuracoes`
-  (`src/domain/embedUrl.ts`). Os dois providers de embed usam exatamente o mesmo mecanismo — a
-  diferença está inteiramente do lado do Power BI, não do app:
+  (`src/domain/embedUrl.ts`). Os três providers de embed usam exatamente o mesmo mecanismo — a
+  diferença está inteiramente do lado de quem publica o relatório, não do app:
   - `powerbi-public`: URL de "Publicar na Web" — pública, sem login, sem RLS/OLS.
   - `powerbi-secure`: URL de "Incorporar relatório → Site ou portal" ("Secure Embed"/"embed for
     your organization") — exige que quem abre esteja autenticado no Power BI do tenant (login via
@@ -101,6 +100,11 @@ incorpora.
     são aplicadas normalmente. Não depende de service principal, embed token nem backend — só do
     navegador de quem está vendo já ter (ou conseguir fazer) login no Power BI. No kiosk, isso
     significa que o navegador da apresentação precisa manter uma sessão Power BI logada.
+  - `iframe-externo`: painel que **não** é Power BI — um portal de BI da própria prefeitura (GED,
+    Painel 156, BI corporativo, Protocolo, Parcerias) exposto por uma rota pública. Foi preciso
+    para publicar o catálogo real de Osasco, em que 29 dos 78 painéis vivem fora do Power BI. A
+    aplicação não tem controle nenhum sobre autenticação, RLS ou frescor nesses casos: só valida o
+    domínio e incorpora a página.
 - **`DataProvider`** (`src/data/provider.ts`): interface única de acesso a dados —
   `listPanels`/`getPanelConfig`/`getPanelFreshness`, nada além disso; o catálogo não precisa saber
   como o relatório é renderizado. A implementação atual é `MockDataProvider` (painéis em
@@ -128,6 +132,37 @@ Alternativamente, crie um `PanelConfig` estático em `src/config/panels/<id>.pan
 `src/config/panels/index.ts` — é o mesmo caminho usado pelos dois painéis de exemplo do repositório
 (`demografia`, `trabalho-emprego`), cujas URLs de embed são placeholders a substituir por
 relatórios reais.
+
+## Catálogo de Osasco (importação da planilha)
+
+Os 78 painéis do catálogo real vêm de `docs/catalogo_paineis_osasco.xlsx`, aba `dash-panel`
+(colunas: tema, título, link de embed). A planilha é a fonte da verdade; o módulo estático
+`src/config/panels/catalogo-osasco.generated.ts` é derivado dela:
+
+```bash
+npm run catalogo:import   # regenera o módulo a partir da planilha
+```
+
+- **Persistência**: os painéis ficam versionados no repositório, não no `localStorage` — quem
+  clonar o projeto já sobe com o catálogo publicado, e limpar o navegador não apaga nada.
+- **Determinismo**: o importador (`scripts/import-catalogo.mjs`) não emite datas nem contadores,
+  então rodar duas vezes sobre a mesma planilha produz um arquivo byte a byte idêntico. Ele lê o
+  `.xlsx` (zip + XML) com o `node:zlib` da biblioteca padrão, sem dependência nova, e formata a
+  saída com o Prettier do próprio projeto.
+- **Ids**: derivados do título por slug, estáveis entre execuções — são a chave de rota em
+  `/paineis/:id`.
+- **Provider**: inferido pela forma da URL — `app.powerbi.com/view?r=` → `powerbi-public`,
+  `app.powerbi.com/reportEmbed` → `powerbi-secure`, qualquer outro host → `iframe-externo`.
+- **Metadados provisórios**: a planilha só traz tema, título e URL. Descrição, responsável e tags
+  são gerados a partir do tema e estão marcados como pendentes de revisão editorial no
+  `methodologyNote` de cada painel.
+- **Editar um painel importado** não exige mexer na planilha: edite em `/admin/paineis` e o
+  `PanelStore` grava a versão editada no `localStorage`, sombreando a estática por id (badge
+  _Modificado_, com _Restaurar original_). A edição sobrevive à próxima importação.
+- **Allowlist**: `DEFAULT_ALLOWED_EMBED_DOMAINS` (`src/admin/store/SettingsStore.ts`) já libera os
+  cinco domínios municipais além do `app.powerbi.com`. Como a allowlist é persistida por navegador,
+  há um `DEFAULTS_VERSION`: quem já tinha configurações salvas recebe os domínios novos numa
+  migração única, em vez de ficar preso à lista antiga.
 
 ## Navegação
 
@@ -175,10 +210,12 @@ admin lembra disso).
 
 ## Testes
 
-84 testes cobrindo: schemas Zod (casos válidos e inválidos, os dois providers de embed),
+98 testes cobrindo: schemas Zod (casos válidos e inválidos, os três providers de embed),
 `MockDataProvider` (catálogo, frescor), `EmbedPanelView` (iframe, validação de domínio/https, aviso
-de login no provider `powerbi-secure`), as páginas de navegação (Home, Catálogo), o kiosk
-(`resolveCollectionSlides`) e o ambiente de configuração (`PanelStore`, editor, e os fluxos
+de login no `powerbi-secure`, aviso de origem externa no `iframe-externo`), o catálogo importado
+(78 painéis válidos, ids únicos, provider coerente com a URL, token de Publicar na Web não
+truncado), a allowlist e sua migração de defaults, as páginas de navegação (Home, Catálogo), o
+kiosk (`resolveCollectionSlides`) e o ambiente de configuração (`PanelStore`, editor, e os fluxos
 integrados criar → salvar → renderizar / editar estático → sombrear → restaurar).
 
 ```bash
@@ -196,7 +233,24 @@ npm run test
   token), que permitiria telas verdadeiramente anônimas com RLS aplicado — ficou fora do MVP porque
   exige acesso ao Azure Portal para registrar o app e gerar o segredo, que este ciclo não tem.
 - Secretaria e ODS no Catálogo são mapeados heuristicamente a partir do `theme` de cada painel
-  (não são campos do contrato `PanelConfig`) — a lente de Território ainda não existe.
+  (não são campos do contrato `PanelConfig`) — a lente de Território ainda não existe. Com o
+  catálogo de Osasco importado isso ficou visível: os 13 temas da planilha não estão nos mapas de
+  `src/config/lenses.ts`, então a lente de Secretaria repete o tema e a de ODS mostra "—" para
+  quase todo o catálogo. Preencher esses mapas é decisão editorial da prefeitura, não do código.
+- **Os 3 painéis em `bi.osasco.sp.gov.br` não renderizam dentro do iframe**: a URL
+  (`acessoSemlogin.xhtml?...&biusu=visitante&bipass=visitante`) faz login automático quando aberta
+  em uma aba normal, mas dentro de um iframe cross-site para na tela de login do portal.
+  Verificado que **não** é o atributo `sandbox` do `EmbedPanelView` — o mesmo iframe sem `sandbox`
+  nenhum se comporta igual; é a sessão do portal não sobreviver ao contexto de terceira parte.
+  Resolver depende de quem administra o BI corporativo (Carteira da Dívida Ativa, Valores
+  Arrecadados por Categoria de Tributo, Processos Administrativos). Enquanto isso, o link
+  "Abrir em nova aba" funciona normalmente.
+- A célula do painel "Ocorrências por Mês (2023 - 2026)" chega truncada da planilha (o token de
+  Publicar na Web corta no meio do tenant id). O importador reconstrói a URL a partir do tenant
+  usado pelos outros painéis de Segurança/Trânsito — **conferir no Power BI** antes de divulgar
+  esse painel; ver `URL_FIXES` em `scripts/import-catalogo.mjs`.
+- Descrição, responsável e tags dos 78 painéis importados são derivados do tema, não escritos por
+  alguém — precisam de uma passada editorial antes de irem a público.
 - Sem autenticação no `/admin`, sem rascunho/publicado/versionamento — o editor administrativo é um
   formulário estruturado, não um construtor visual.
 - Sem CI, deploy, telemetria ou tratamento global de falhas. `createBrowserRouter` exige rewrite

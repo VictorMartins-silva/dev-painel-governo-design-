@@ -27,16 +27,22 @@ const panelBaseSchema = {
 };
 
 /**
- * Provedores de embed suportados — ambos são, do ponto de vista da aplicação, só uma URL de
- * iframe do Power BI; o que muda é quem pode ver:
+ * Provedores de embed suportados — todos são, do ponto de vista da aplicação, só uma URL de
+ * iframe validada contra a allowlist de domínios; o que muda é quem pode ver e quem responde
+ * pela renderização:
  * - "powerbi-public": Arquivo → Publicar na Web. Iframe público, sem login, sem RLS/OLS.
  * - "powerbi-secure": Arquivo → Incorporar relatório → Site ou portal ("Secure Embed"/"embed for
  *   your organization"). Exige que quem está vendo esteja autenticado no Power BI do tenant —
  *   nesse caso a visualização respeita RLS/OLS e permissões reais, sem precisar de service
  *   principal nem de backend emitindo token. No kiosk (telão sem interação humana), isso só
  *   funciona se o navegador que roda a apresentação já tiver uma sessão Power BI persistida.
+ * - "iframe-externo": painel que não é Power BI — um portal de BI próprio da prefeitura
+ *   (GED, Painel 156, BI corporativo, Protocolo, Parcerias) exposto por uma rota pública. A
+ *   aplicação não tem controle nenhum sobre autenticação, RLS ou frescor: só incorpora a página
+ *   e depende do domínio estar na allowlist. Parte relevante do catálogo municipal está aqui,
+ *   então o produto é uma camada sobre o Power BI *e* sobre esses portais legados.
  */
-export const EMBED_PROVIDERS = ["powerbi-public", "powerbi-secure"] as const;
+export const EMBED_PROVIDERS = ["powerbi-public", "powerbi-secure", "iframe-externo"] as const;
 export type EmbedProvider = (typeof EMBED_PROVIDERS)[number];
 
 export const embedConfigSchema = z.object({

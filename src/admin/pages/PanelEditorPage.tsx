@@ -74,10 +74,11 @@ function PanelEditor({ existing, isNew, navigate }: PanelEditorProps) {
   const errors = useMemo(() => buildFieldErrors(result), [result]);
 
   const idConflict = isNew && draft.id.trim() !== "" && panelStore.get(draft.id) !== undefined;
-  const urlValidation =
-    draft.embed.provider === "powerbi-public" && draft.embed.url
-      ? validateEmbedUrl(draft.embed.url, settings.allowedEmbedDomains)
-      : null;
+  // A allowlist vale para todo provider — o EmbedPanelView recusa qualquer domínio fora dela.
+  // Validar só um provider aqui deixaria salvar um painel que falha silenciosamente ao renderizar.
+  const urlValidation = draft.embed.url
+    ? validateEmbedUrl(draft.embed.url, settings.allowedEmbedDomains)
+    : null;
   const canSave = result.success && !idConflict && (!urlValidation || urlValidation.ok);
   const isDirty = !isSameDraft(draft, savedDraftRef.current);
 

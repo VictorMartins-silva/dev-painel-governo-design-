@@ -7,6 +7,7 @@ import styles from "./KioskPlayer.module.css";
 const PROVIDER_LABEL: Record<PanelConfig["embed"]["provider"], string> = {
   "powerbi-public": "Publicar na Web",
   "powerbi-secure": "Secure Embed",
+  "iframe-externo": "Portal externo",
 };
 
 type KioskSlide = {
